@@ -1,0 +1,171 @@
+class Account
+{
+  unique username;
+password;
+}
+
+class OwnerAccount
+{
+  isA Account;
+}
+
+class Appointment
+{
+  1 appointment -- 1 TimeSlot timeSlot;
+  * -> * Service currentService;
+  * appointments -- * Service Services;
+}
+
+class TimeSlot
+{
+  Time startTime;
+  Time endTime;
+}
+
+class Calendar
+{
+  Date date;
+  1 calendar -- * Day days;
+  * calendar -- * TimeSlot schedule;
+}
+
+class Service
+{
+  name;
+  Integer duration;
+  
+}
+
+class Combo
+{
+  
+    1 serviceCombo -- * Service services;
+}
+
+class Business
+{
+  name;
+  address;
+  phoneNumber;
+  emailAddress;
+  1 business -- 1 DailyHour timeTable;
+  1 business -- 1 OwnerAccount owner;
+}
+
+class Day
+{
+  Boolean isClosed;
+}
+
+class DailyHour
+{
+   Time openTime;
+  Time endTime;
+  Time lunchBreakStart;
+  Time lunchBreakEnd;
+  1 availability -- * Day day;
+}
+class CustomerAccount
+{
+  isA Account;
+  1 <@>- * Appointment;
+  0..1 account -> * Appointment currentAppointment;
+}
+
+class MainService
+{
+  isA Service;
+}
+
+class SubService
+{
+  isA Service;
+}
+
+//$?[End_of_model]$?
+
+namespace -;
+
+
+class Account
+{
+  position 327 141 141 75;
+}
+
+class OwnerAccount
+{
+  position 410 328 109 40;
+}
+
+class Appointment
+{
+  position 129 228 109 40;
+  position.association Appointment__TimeSlot 32,40 95,0;
+  position.association Appointment__Service 77,40 0,43;
+  position.association Appointment__Service 109,32 93,0;
+  position.association Appointment__Service 75,40 21,0;
+  position.association Appointment:appointment__TimeSlot 2,40 137,0;
+  position.association Appointment:appointment__TimeSlot:timeSlot 2,40 137,0;
+}
+
+class TimeSlot
+{
+  position 21 412 138 75;
+}
+
+class Calendar
+{
+  position 13 121 109 57;
+  position.association Calendar__Day 87,0 0,35;
+  position.association Calendar__TimeSlot 50,57 41,0;
+}
+
+class Service
+{
+  position 252 396 139 75;
+  position.association Combo__Service 139,27 0,19;
+    position.association Combo:subservice__Service 140,10 0,10;
+}
+
+class Business
+{
+  position 556 205 169 110;
+  position.association Business__DailyHour 87,0 89,110;
+  position.association Business__OwnerAccount 0,27 109,1;
+  position.association Business:business__OwnerAccount:owner 0,10 110,1;
+}
+
+class Day
+{
+  position 189 18 142 57;
+}
+
+class DailyHour
+{
+  position 548 8 182 110;
+  position.association DailyHour__Day 0,40 142,20;
+  position.association DailyHour:availability__Day:day 0,10 143,10;
+}
+
+class Combo
+{
+  position 555 441 109 41;
+  position.association Combo__Service 0,13 139,37;
+  position.association Combo__Service 0,20 140,11;
+  position.association Combo:serviceCombo__Service:services 0,10 140,10;
+}
+
+class CustomerAccount
+{
+  position 277 328 109 41;
+}
+
+class MainService
+{
+  position 195 486 109 41;
+}
+
+class SubService
+{
+  position 340 490 109 41;
+}
