@@ -1,12 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
-
+package ca.mcgill.ecse223.flexibook.model;
 import java.sql.Time;
 import java.util.*;
 
-// line 45 "DomainModel.ump"
-// line 130 "DomainModel.ump"
+// line 47 "../../../../../DomainModel.ump"
+// line 132 "../../../../../DomainModel.ump"
 public class Business
 {
 

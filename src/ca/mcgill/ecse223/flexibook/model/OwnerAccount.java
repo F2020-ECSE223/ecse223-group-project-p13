@@ -1,11 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
-
+package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
-// line 7 "DomainModel.ump"
-// line 95 "DomainModel.ump"
+// line 9 "../../../../../DomainModel.ump"
+// line 97 "../../../../../DomainModel.ump"
 public class OwnerAccount extends Account
 {
 

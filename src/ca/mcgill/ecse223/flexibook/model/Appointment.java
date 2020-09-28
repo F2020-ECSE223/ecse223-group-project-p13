@@ -1,12 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
-
+package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 import java.sql.Time;
 
-// line 12 "DomainModel.ump"
-// line 100 "DomainModel.ump"
+// line 14 "../../../../../DomainModel.ump"
+// line 102 "../../../../../DomainModel.ump"
 public class Appointment
 {
 

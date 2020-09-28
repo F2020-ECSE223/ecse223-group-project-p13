@@ -1,12 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
-
+package ca.mcgill.ecse223.flexibook.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 25 "DomainModel.ump"
-// line 116 "DomainModel.ump"
+// line 27 "../../../../../DomainModel.ump"
+// line 118 "../../../../../DomainModel.ump"
 public class Calendar
 {
 

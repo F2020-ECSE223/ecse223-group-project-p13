@@ -1,11 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
-
+package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
-// line 80 "DomainModel.ump"
-// line 168 "DomainModel.ump"
+// line 82 "../../../../../DomainModel.ump"
+// line 170 "../../../../../DomainModel.ump"
 public class SubService extends Service
 {
 

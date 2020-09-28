@@ -1,3 +1,5 @@
+namespace ca.mcgill.ecse223.flexibook.model;
+
 class Account
 {
   unique username;
