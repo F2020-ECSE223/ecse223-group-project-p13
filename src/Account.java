@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 1 "Untitled.ump"
-// line 90 "Untitled.ump"
+// line 1 "DomainModel.ump"
+// line 90 "DomainModel.ump"
 public class Account
 {
 

@@ -1,11 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
-
+package ca.mcgill.ecse223.flexibook.model
 
 import java.util.*;
 
-// line 39 "DomainModel.ump"
-// line 150 "DomainModel.ump"
+// line 39 "Untitled.ump"
+// line 150 "Untitled.ump"
 public class Combo
 {
 
@@ -64,9 +64,9 @@ public class Combo
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Service addService(String aName, int aDuration, boolean aHasDowntime)
+  public Service addService(String aName, int aDuration)
   {
-    return new Service(aName, aDuration, aHasDowntime, this);
+    return new Service(aName, aDuration, this);
   }
 
   public boolean addService(Service aService)

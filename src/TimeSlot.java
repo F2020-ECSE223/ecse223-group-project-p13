@@ -5,8 +5,8 @@
 import java.sql.Time;
 import java.util.*;
 
-// line 19 "Untitled.ump"
-// line 111 "Untitled.ump"
+// line 19 "DomainModel.ump"
+// line 111 "DomainModel.ump"
 public class TimeSlot
 {
 

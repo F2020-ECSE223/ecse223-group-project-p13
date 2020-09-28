@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 80 "Untitled.ump"
-// line 168 "Untitled.ump"
+// line 80 "DomainModel.ump"
+// line 168 "DomainModel.ump"
 public class SubService extends Service
 {
 
@@ -17,9 +17,9 @@ public class SubService extends Service
   // CONSTRUCTOR
   //------------------------
 
-  public SubService(String aName, int aDuration, Combo aServiceCombo)
+  public SubService(String aName, int aDuration, boolean aHasDowntime, Combo aServiceCombo)
   {
-    super(aName, aDuration, aServiceCombo);
+    super(aName, aDuration, aHasDowntime, aServiceCombo);
   }
 
   //------------------------

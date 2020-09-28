@@ -3,8 +3,8 @@
 
 
 
-// line 55 "Untitled.ump"
-// line 138 "Untitled.ump"
+// line 55 "DomainModel.ump"
+// line 138 "DomainModel.ump"
 public class Day
 {
 

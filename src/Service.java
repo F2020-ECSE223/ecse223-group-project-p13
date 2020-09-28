@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 32 "Untitled.ump"
-// line 123 "Untitled.ump"
+// line 32 "DomainModel.ump"
+// line 123 "DomainModel.ump"
 public class Service
 {
 
@@ -16,6 +16,7 @@ public class Service
   //Service Attributes
   private String name;
   private int duration;
+  private boolean hasDowntime;
 
   //Service Associations
   private List<Appointment> appointments;
@@ -25,10 +26,11 @@ public class Service
   // CONSTRUCTOR
   //------------------------
 
-  public Service(String aName, int aDuration, Combo aServiceCombo)
+  public Service(String aName, int aDuration, boolean aHasDowntime, Combo aServiceCombo)
   {
     name = aName;
     duration = aDuration;
+    hasDowntime = aHasDowntime;
     appointments = new ArrayList<Appointment>();
     boolean didAddServiceCombo = setServiceCombo(aServiceCombo);
     if (!didAddServiceCombo)
@@ -57,6 +59,14 @@ public class Service
     return wasSet;
   }
 
+  public boolean setHasDowntime(boolean aHasDowntime)
+  {
+    boolean wasSet = false;
+    hasDowntime = aHasDowntime;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getName()
   {
     return name;
@@ -65,6 +75,16 @@ public class Service
   public int getDuration()
   {
     return duration;
+  }
+
+  public boolean getHasDowntime()
+  {
+    return hasDowntime;
+  }
+  /* Code from template attribute_IsBoolean */
+  public boolean isHasDowntime()
+  {
+    return hasDowntime;
   }
   /* Code from template association_GetMany */
   public Appointment getAppointment(int index)
@@ -225,7 +245,8 @@ public class Service
   {
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
-            "duration" + ":" + getDuration()+ "]" + System.getProperties().getProperty("line.separator") +
+            "duration" + ":" + getDuration()+ "," +
+            "hasDowntime" + ":" + getHasDowntime()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "serviceCombo = "+(getServiceCombo()!=null?Integer.toHexString(System.identityHashCode(getServiceCombo())):"null");
   }
 }

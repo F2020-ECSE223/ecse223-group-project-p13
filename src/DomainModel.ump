@@ -33,7 +33,7 @@ class Service
 {
   name;
   Integer duration;
-  
+  Boolean hasDowntime;
 }
 
 class Combo
@@ -152,7 +152,7 @@ class Combo
   position 555 441 109 41;
   position.association Combo__Service 0,13 139,37;
   position.association Combo__Service 0,20 140,11;
-  position.association Combo:serviceCombo__Service:services 0,10 140,10;
+  position.association Combo:serviceCombo__Service:services 0,10 166,17;
 }
 
 class CustomerAccount

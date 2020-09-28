@@ -5,8 +5,8 @@
 import java.sql.Time;
 import java.util.*;
 
-// line 60 "Untitled.ump"
-// line 143 "Untitled.ump"
+// line 60 "DomainModel.ump"
+// line 143 "DomainModel.ump"
 public class DailyHour
 {
 

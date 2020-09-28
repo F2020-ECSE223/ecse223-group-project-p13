@@ -5,8 +5,8 @@
 import java.sql.Time;
 import java.util.*;
 
-// line 45 "Untitled.ump"
-// line 130 "Untitled.ump"
+// line 45 "DomainModel.ump"
+// line 130 "DomainModel.ump"
 public class Business
 {
 

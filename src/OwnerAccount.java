@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 7 "Untitled.ump"
-// line 95 "Untitled.ump"
+// line 7 "DomainModel.ump"
+// line 95 "DomainModel.ump"
 public class OwnerAccount extends Account
 {
 

@@ -5,8 +5,8 @@
 import java.util.*;
 import java.sql.Time;
 
-// line 12 "Untitled.ump"
-// line 100 "Untitled.ump"
+// line 12 "DomainModel.ump"
+// line 100 "DomainModel.ump"
 public class Appointment
 {
 
