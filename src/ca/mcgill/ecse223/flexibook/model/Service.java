@@ -5,7 +5,7 @@ package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
 // line 34 "../../../../../DomainModel.ump"
-// line 125 "../../../../../DomainModel.ump"
+// line 129 "../../../../../DomainModel.ump"
 public class Service
 {
 
@@ -20,23 +20,17 @@ public class Service
 
   //Service Associations
   private List<Appointment> appointments;
-  private Combo serviceCombo;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Service(String aName, int aDuration, boolean aHasDowntime, Combo aServiceCombo)
+  public Service(String aName, int aDuration, boolean aHasDowntime)
   {
     name = aName;
     duration = aDuration;
     hasDowntime = aHasDowntime;
     appointments = new ArrayList<Appointment>();
-    boolean didAddServiceCombo = setServiceCombo(aServiceCombo);
-    if (!didAddServiceCombo)
-    {
-      throw new RuntimeException("Unable to create service due to serviceCombo. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
   }
 
   //------------------------
@@ -115,11 +109,6 @@ public class Service
   {
     int index = appointments.indexOf(aAppointment);
     return index;
-  }
-  /* Code from template association_GetOne */
-  public Combo getServiceCombo()
-  {
-    return serviceCombo;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfAppointments()
@@ -204,25 +193,6 @@ public class Service
     }
     return wasAdded;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setServiceCombo(Combo aServiceCombo)
-  {
-    boolean wasSet = false;
-    if (aServiceCombo == null)
-    {
-      return wasSet;
-    }
-
-    Combo existingServiceCombo = serviceCombo;
-    serviceCombo = aServiceCombo;
-    if (existingServiceCombo != null && !existingServiceCombo.equals(aServiceCombo))
-    {
-      existingServiceCombo.removeService(this);
-    }
-    serviceCombo.addService(this);
-    wasSet = true;
-    return wasSet;
-  }
 
   public void delete()
   {
@@ -232,12 +202,6 @@ public class Service
     {
       aAppointment.removeService(this);
     }
-    Combo placeholderServiceCombo = serviceCombo;
-    this.serviceCombo = null;
-    if(placeholderServiceCombo != null)
-    {
-      placeholderServiceCombo.removeService(this);
-    }
   }
 
 
@@ -246,7 +210,6 @@ public class Service
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
             "duration" + ":" + getDuration()+ "," +
-            "hasDowntime" + ":" + getHasDowntime()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "serviceCombo = "+(getServiceCombo()!=null?Integer.toHexString(System.identityHashCode(getServiceCombo())):"null");
+            "hasDowntime" + ":" + getHasDowntime()+ "]";
   }
 }

@@ -15,7 +15,7 @@ class Appointment
 {
   1 appointment -- 1 TimeSlot timeSlot;
   * -> * Service currentService;
-  * appointments -- * Service Services;
+  * appointments -- * Service services;
 }
 
 class TimeSlot
@@ -38,10 +38,9 @@ class Service
   Boolean hasDowntime;
 }
 
-class Combo
+class ServiceCombo
 {
-  
-    1 serviceCombo -- * Service services;
+      isA Service;
 }
 
 class Business
@@ -76,10 +75,15 @@ class CustomerAccount
 
 class MainService
 {
-  isA Service;
+  isA ServiceCombo;
 }
 
 class SubService
+{
+  isA ServiceCombo;
+}
+
+class RegularService
 {
   isA Service;
 }
@@ -91,17 +95,17 @@ namespace -;
 
 class Account
 {
-  position 327 141 141 75;
+  position 328 75 141 75;
 }
 
 class OwnerAccount
 {
-  position 410 328 109 40;
+  position 408 258 109 40;
 }
 
 class Appointment
 {
-  position 129 228 109 40;
+  position 112 290 109 40;
   position.association Appointment__TimeSlot 32,40 95,0;
   position.association Appointment__Service 77,40 0,43;
   position.association Appointment__Service 109,32 93,0;
@@ -124,8 +128,8 @@ class Calendar
 
 class Service
 {
-  position 252 396 139 75;
-  position.association Combo__Service 139,27 0,19;
+  position 354 301 178 92;
+  position.association ServiceCombo__Service 139,27 0,19;
     position.association Combo:subservice__Service 140,10 0,10;
 }
 
@@ -149,25 +153,30 @@ class DailyHour
   position.association DailyHour:availability__Day:day 0,10 143,10;
 }
 
-class Combo
+class ServiceCombo
 {
-  position 555 441 109 41;
-  position.association Combo__Service 0,13 139,37;
-  position.association Combo__Service 0,20 140,11;
+  position 545 389 130 75;
+  position.association ServiceCombo__Service 0,13 139,37;
+  position.association ServiceCombo__Service 0,20 140,11;
   position.association Combo:serviceCombo__Service:services 0,10 166,17;
-}
+  }
 
 class CustomerAccount
 {
-  position 277 328 109 41;
+  position 270 258 128 40;
 }
 
 class MainService
 {
-  position 195 486 109 41;
+  position 486 466 109 40;
 }
 
 class SubService
 {
-  position 340 490 109 41;
+  position 630 463 109 40;
+}
+
+class RegularService
+{
+  position 278 406 109 41;
 }

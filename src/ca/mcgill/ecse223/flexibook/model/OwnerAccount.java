@@ -5,7 +5,7 @@ package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
 // line 9 "../../../../../DomainModel.ump"
-// line 97 "../../../../../DomainModel.ump"
+// line 101 "../../../../../DomainModel.ump"
 public class OwnerAccount extends Account
 {
 

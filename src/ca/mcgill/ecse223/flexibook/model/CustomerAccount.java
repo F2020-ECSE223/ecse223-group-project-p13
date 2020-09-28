@@ -4,8 +4,8 @@
 package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
-// line 70 "../../../../../DomainModel.ump"
-// line 160 "../../../../../DomainModel.ump"
+// line 69 "../../../../../DomainModel.ump"
+// line 164 "../../../../../DomainModel.ump"
 public class CustomerAccount extends Account
 {
 

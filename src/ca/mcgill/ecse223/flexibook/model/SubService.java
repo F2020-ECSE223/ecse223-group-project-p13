@@ -4,9 +4,9 @@
 package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
-// line 82 "../../../../../DomainModel.ump"
-// line 170 "../../../../../DomainModel.ump"
-public class SubService extends Service
+// line 81 "../../../../../DomainModel.ump"
+// line 174 "../../../../../DomainModel.ump"
+public class SubService extends ServiceCombo
 {
 
   //------------------------
@@ -17,9 +17,9 @@ public class SubService extends Service
   // CONSTRUCTOR
   //------------------------
 
-  public SubService(String aName, int aDuration, boolean aHasDowntime, Combo aServiceCombo)
+  public SubService(String aName, int aDuration, boolean aHasDowntime)
   {
-    super(aName, aDuration, aHasDowntime, aServiceCombo);
+    super(aName, aDuration, aHasDowntime);
   }
 
   //------------------------

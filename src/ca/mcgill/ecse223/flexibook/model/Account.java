@@ -5,7 +5,7 @@ package ca.mcgill.ecse223.flexibook.model;
 import java.util.*;
 
 // line 3 "../../../../../DomainModel.ump"
-// line 92 "../../../../../DomainModel.ump"
+// line 96 "../../../../../DomainModel.ump"
 public class Account
 {
 

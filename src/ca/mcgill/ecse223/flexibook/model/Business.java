@@ -5,8 +5,8 @@ package ca.mcgill.ecse223.flexibook.model;
 import java.sql.Time;
 import java.util.*;
 
-// line 47 "../../../../../DomainModel.ump"
-// line 132 "../../../../../DomainModel.ump"
+// line 46 "../../../../../DomainModel.ump"
+// line 136 "../../../../../DomainModel.ump"
 public class Business
 {
 

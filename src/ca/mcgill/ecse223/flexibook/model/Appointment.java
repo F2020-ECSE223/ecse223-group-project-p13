@@ -6,7 +6,7 @@ import java.util.*;
 import java.sql.Time;
 
 // line 14 "../../../../../DomainModel.ump"
-// line 102 "../../../../../DomainModel.ump"
+// line 106 "../../../../../DomainModel.ump"
 public class Appointment
 {
 
@@ -17,7 +17,7 @@ public class Appointment
   //Appointment Associations
   private TimeSlot timeSlot;
   private List<Service> currentService;
-  private List<Service> Services;
+  private List<Service> services;
   private CustomerAccount customerAccount;
 
   //------------------------
@@ -32,7 +32,7 @@ public class Appointment
     }
     timeSlot = aTimeSlot;
     currentService = new ArrayList<Service>();
-    Services = new ArrayList<Service>();
+    services = new ArrayList<Service>();
     boolean didAddCustomerAccount = setCustomerAccount(aCustomerAccount);
     if (!didAddCustomerAccount)
     {
@@ -44,7 +44,7 @@ public class Appointment
   {
     timeSlot = new TimeSlot(aStartTimeForTimeSlot, aEndTimeForTimeSlot, this);
     currentService = new ArrayList<Service>();
-    Services = new ArrayList<Service>();
+    services = new ArrayList<Service>();
     boolean didAddCustomerAccount = setCustomerAccount(aCustomerAccount);
     if (!didAddCustomerAccount)
     {
@@ -93,31 +93,31 @@ public class Appointment
   /* Code from template association_GetMany */
   public Service getService(int index)
   {
-    Service aService = Services.get(index);
+    Service aService = services.get(index);
     return aService;
   }
 
   public List<Service> getServices()
   {
-    List<Service> newServices = Collections.unmodifiableList(Services);
+    List<Service> newServices = Collections.unmodifiableList(services);
     return newServices;
   }
 
   public int numberOfServices()
   {
-    int number = Services.size();
+    int number = services.size();
     return number;
   }
 
   public boolean hasServices()
   {
-    boolean has = Services.size() > 0;
+    boolean has = services.size() > 0;
     return has;
   }
 
   public int indexOfService(Service aService)
   {
-    int index = Services.indexOf(aService);
+    int index = services.indexOf(aService);
     return index;
   }
   /* Code from template association_GetOne */
@@ -191,8 +191,8 @@ public class Appointment
   public boolean addService(Service aService)
   {
     boolean wasAdded = false;
-    if (Services.contains(aService)) { return false; }
-    Services.add(aService);
+    if (services.contains(aService)) { return false; }
+    services.add(aService);
     if (aService.indexOfAppointment(this) != -1)
     {
       wasAdded = true;
@@ -202,7 +202,7 @@ public class Appointment
       wasAdded = aService.addAppointment(this);
       if (!wasAdded)
       {
-        Services.remove(aService);
+        services.remove(aService);
       }
     }
     return wasAdded;
@@ -211,13 +211,13 @@ public class Appointment
   public boolean removeService(Service aService)
   {
     boolean wasRemoved = false;
-    if (!Services.contains(aService))
+    if (!services.contains(aService))
     {
       return wasRemoved;
     }
 
-    int oldIndex = Services.indexOf(aService);
-    Services.remove(oldIndex);
+    int oldIndex = services.indexOf(aService);
+    services.remove(oldIndex);
     if (aService.indexOfAppointment(this) == -1)
     {
       wasRemoved = true;
@@ -227,7 +227,7 @@ public class Appointment
       wasRemoved = aService.removeAppointment(this);
       if (!wasRemoved)
       {
-        Services.add(oldIndex,aService);
+        services.add(oldIndex,aService);
       }
     }
     return wasRemoved;
@@ -240,8 +240,8 @@ public class Appointment
     {
       if(index < 0 ) { index = 0; }
       if(index > numberOfServices()) { index = numberOfServices() - 1; }
-      Services.remove(aService);
-      Services.add(index, aService);
+      services.remove(aService);
+      services.add(index, aService);
       wasAdded = true;
     }
     return wasAdded;
@@ -250,12 +250,12 @@ public class Appointment
   public boolean addOrMoveServiceAt(Service aService, int index)
   {
     boolean wasAdded = false;
-    if(Services.contains(aService))
+    if(services.contains(aService))
     {
       if(index < 0 ) { index = 0; }
       if(index > numberOfServices()) { index = numberOfServices() - 1; }
-      Services.remove(aService);
-      Services.add(index, aService);
+      services.remove(aService);
+      services.add(index, aService);
       wasAdded = true;
     } 
     else 
@@ -293,8 +293,8 @@ public class Appointment
       existingTimeSlot.delete();
     }
     currentService.clear();
-    ArrayList<Service> copyOfServices = new ArrayList<Service>(Services);
-    Services.clear();
+    ArrayList<Service> copyOfServices = new ArrayList<Service>(services);
+    services.clear();
     for(Service aService : copyOfServices)
     {
       aService.removeAppointment(this);

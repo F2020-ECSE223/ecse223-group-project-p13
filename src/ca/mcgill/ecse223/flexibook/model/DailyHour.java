@@ -5,8 +5,8 @@ package ca.mcgill.ecse223.flexibook.model;
 import java.sql.Time;
 import java.util.*;
 
-// line 62 "../../../../../DomainModel.ump"
-// line 145 "../../../../../DomainModel.ump"
+// line 61 "../../../../../DomainModel.ump"
+// line 149 "../../../../../DomainModel.ump"
 public class DailyHour
 {
 

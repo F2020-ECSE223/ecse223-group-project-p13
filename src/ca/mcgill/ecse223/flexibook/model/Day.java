@@ -3,8 +3,8 @@
 
 package ca.mcgill.ecse223.flexibook.model;
 
-// line 57 "../../../../../DomainModel.ump"
-// line 140 "../../../../../DomainModel.ump"
+// line 56 "../../../../../DomainModel.ump"
+// line 144 "../../../../../DomainModel.ump"
 public class Day
 {
 
