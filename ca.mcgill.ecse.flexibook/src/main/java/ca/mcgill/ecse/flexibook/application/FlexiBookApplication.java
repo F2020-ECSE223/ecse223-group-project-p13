@@ -7,16 +7,19 @@ import ca.mcgill.ecse.flexibook.model.FlexiBook;
 
 public class FlexiBookApplication {
 	private static FlexiBook flexibook ;
+    public String getGreeting() {
+        return "Hello world.";
+    }
 	
     public static void main(String[] args) {
         System.out.println(new FlexiBookApplication().getGreeting());
     }
     	
-    	
+
     public static FlexiBook getFlexiBook() {
     	if (flexibook == null) {
     		// for now, we are just creating an empty BTMS
-    		flexibook = new flexibook();
+    		flexibook = new FlexiBook();
     	}
      	return flexibook;
     }
