@@ -1,9 +1,11 @@
 package ca.mcgill.ecse.flexibook.controller;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.model.Appointment;
@@ -35,7 +37,7 @@ public class FlexiBookController {
 			if(customer.equals(flexibook.getOwner())){
 				throw new InvalidInputException("An owner cannot cancel an appointment");
 			}
-			if(appointment.getTimeSlot().getStartDate().compareTo(getCurrentDate()) >= 0){
+			if(cleanDate(appointment.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
 				throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
 			}
 			else{
@@ -47,6 +49,15 @@ public class FlexiBookController {
 		}
 	}
 	public static void updateAppointment(){}
+
+	/**
+	 * @author Tomasz Mroz
+	 * @param name
+	 * @param mainService
+	 * @param servicesList
+	 * @param isMandatory
+	 * @throws InvalidInputException
+	 */
 	public static void defineServiceCombo(String name, Service mainService, ArrayList<Service> servicesList, ArrayList<Boolean> isMandatory) throws InvalidInputException {
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 		if(!(FlexiBookApplication.getUser() instanceof Owner)){
@@ -81,7 +92,16 @@ public class FlexiBookController {
 		}
 
 	}
-	public static void updateServiceCombo(){}
+	public static void updateServiceCombo(){
+		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+
+	}
+
+	/**
+	 * @author Tomasz Mroz
+	 * @param combo
+	 * @throws InvalidInputException
+	 */
 	public static void deleteServiceCombo(ServiceCombo combo) throws InvalidInputException{
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 		if(!(FlexiBookApplication.getUser() instanceof Owner)){
@@ -91,7 +111,7 @@ public class FlexiBookController {
 			List<Appointment> appointments = flexiBook.getAppointments();
 			for(Appointment a:appointments){
 				if(a.getBookableService().equals(combo)){
-					if(a.getTimeSlot().getStartDate().compareTo(SystemTime.getDate()) >= 0){
+					if(cleanDate(a.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
 						throw new InvalidInputException("Service combo "+ combo.getName()+" has future appointments");
 					}
 				}
@@ -101,24 +121,11 @@ public class FlexiBookController {
 		}
 	}
 
-	private static Date cleanDate(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(date.getTime());
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		java.util.Date tempCleanedDate = cal.getTime();
-		java.sql.Date cleanedDate = new java.sql.Date(tempCleanedDate.getTime());
-		return cleanedDate;
-	}
-	private static java.util.Date getCurrentDate(){
-		java.util.Calendar cal = java.util.Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		java.util.Date date = cal.getTime();
-		return date;
+	/**
+	 * @author Tomasz Mroz
+	 * Turns an java.sql.date object to a java.time.localdatetime object set at midnight
+	 */
+	private static LocalDateTime cleanDate(Date date) {
+		return LocalDate.parse(date.toString()).atStartOfDay();
 	}
 }

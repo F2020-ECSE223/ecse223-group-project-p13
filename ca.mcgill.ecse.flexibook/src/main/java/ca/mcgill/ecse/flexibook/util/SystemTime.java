@@ -1,11 +1,12 @@
 package ca.mcgill.ecse.flexibook.util;
 
-import java.util.Date;
+//import java.util.Date;
+import java.time.LocalDateTime;
 
 public class SystemTime {
     //Idk yet but useful in the future
-    private static Date date =  new Date();
-    public static Date getDate(){
+    private static LocalDateTime date =  LocalDateTime.now();
+    public static LocalDateTime getDate(){
         return date;
     }
 }
