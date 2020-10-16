@@ -18,6 +18,7 @@ import ca.mcgill.ecse.flexibook.model.Service;
 import ca.mcgill.ecse.flexibook.model.ServiceCombo;
 import ca.mcgill.ecse.flexibook.model.TimeSlot;
 import ca.mcgill.ecse.flexibook.model.User;
+import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 
 public class FlexiBookController {
@@ -46,6 +47,59 @@ public class FlexiBookController {
 		}
 	}
 	public static void updateAppointment(){}
+	public static void defineServiceCombo(String name, Service mainService, ArrayList<Service> servicesList, ArrayList<Boolean> isMandatory) throws InvalidInputException {
+		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+		if(!(FlexiBookApplication.getUser() instanceof Owner)){
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+		//Valid service combo
+		if(!(servicesList.contains(mainService))){
+			throw new InvalidInputException("Main service must be included in the services");
+		}
+		if(servicesList.size() < 2){
+			throw new InvalidInputException("A Service Combo must contain at least 2 services");
+		}
+		for(Service s:servicesList){
+			if(!(flexiBook.getBookableServices().contains(s))){
+				throw new InvalidInputException("Service "+ s.getName()+ " does not exist");
+			}
+		}
+		//Testing for unique service combos
+		for(BookableService s: flexiBook.getBookableServices()){
+			if(s instanceof ServiceCombo){
+				if((((ServiceCombo) s).getMainService().getService().equals(mainService))){
+					if(s.getName().equals(name)){
+						throw new InvalidInputException("Service combo"+s.getName()+" already exists");
+					}
+				}
+			}
+		}
+
+		ServiceCombo serv = new ServiceCombo(name,flexiBook);
+		for(int i = 0;i < servicesList.size(); i++){
+			serv.addService(isMandatory.get(i),servicesList.get(i));
+		}
+
+	}
+	public static void updateServiceCombo(){}
+	public static void deleteServiceCombo(ServiceCombo combo) throws InvalidInputException{
+		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+		if(!(FlexiBookApplication.getUser() instanceof Owner)){
+			throw new InvalidInputException("You are not authorized to perform this operation");
+		}
+		else {
+			List<Appointment> appointments = flexiBook.getAppointments();
+			for(Appointment a:appointments){
+				if(a.getBookableService().equals(combo)){
+					if(a.getTimeSlot().getStartDate().compareTo(SystemTime.getDate()) >= 0){
+						throw new InvalidInputException("Service combo "+ combo.getName()+" has future appointments");
+					}
+				}
+
+			}
+			combo.delete();
+		}
+	}
 
 	private static Date cleanDate(Date date) {
 		Calendar cal = Calendar.getInstance();

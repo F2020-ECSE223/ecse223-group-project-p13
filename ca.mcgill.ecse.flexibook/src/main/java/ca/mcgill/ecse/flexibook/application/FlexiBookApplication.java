@@ -4,9 +4,11 @@
 package ca.mcgill.ecse.flexibook.application;
 
 import ca.mcgill.ecse.flexibook.model.FlexiBook;
+import ca.mcgill.ecse.flexibook.model.User;
 
 public class FlexiBookApplication {
 	private static FlexiBook flexibook ;
+	private static User currentUser;
     public String getGreeting() {
         return "Hello world.";
     }
@@ -22,6 +24,9 @@ public class FlexiBookApplication {
     		flexibook = new FlexiBook();
     	}
      	return flexibook;
+    }
+    public static User getUser(){
+        return currentUser;
     }
     	
 }
