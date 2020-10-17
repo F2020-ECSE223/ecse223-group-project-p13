@@ -25,9 +25,7 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 public class FlexiBookController {
 
-	public static void makeAppointment(){
-		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-	}
+	public static void makeAppointment(){ }
 	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		try{
@@ -92,6 +90,10 @@ public class FlexiBookController {
 		}
 
 	}
+
+	/**
+	 * @author Tomasz Mroz
+	 */
 	public static void updateServiceCombo(){
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 
