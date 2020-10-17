@@ -56,39 +56,54 @@ public class FlexiBookController {
 	 * @param isMandatory
 	 * @throws InvalidInputException
 	 */
-	public static void defineServiceCombo(String name, Service mainService, ArrayList<Service> servicesList, ArrayList<Boolean> isMandatory) throws InvalidInputException {
+	public static void defineServiceCombo(String username,String name, String mainService, String servicesList, String isMandatory) throws InvalidInputException {
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-		if(!(FlexiBookApplication.getUser() instanceof Owner)){
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
-		//Valid service combo
-		if(!(servicesList.contains(mainService))){
-			throw new InvalidInputException("Main service must be included in the services");
-		}
-		if(servicesList.size() < 2){
-			throw new InvalidInputException("A Service Combo must contain at least 2 services");
-		}
-		for(Service s:servicesList){
-			if(!(flexiBook.getBookableServices().contains(s))){
-				throw new InvalidInputException("Service "+ s.getName()+ " does not exist");
+		try{
+			if(!(flexiBook.getOwner().getUsername().equals(username))){
+				throw new InvalidInputException("You are not authorized to perform this operation");
 			}
-		}
-		//Testing for unique service combos
-		for(BookableService s: flexiBook.getBookableServices()){
-			if(s instanceof ServiceCombo){
-				if((((ServiceCombo) s).getMainService().getService().equals(mainService))){
-					if(s.getName().equals(name)){
-						throw new InvalidInputException("Service combo"+s.getName()+" already exists");
+			//Valid service combo
+			if(!(BookableService.hasWithName(mainService))){
+				throw new InvalidInputException("Main service must be included in the services");
+			}
+			String[] services = servicesList.split(",");
+			String[] mandatory = isMandatory.split(",");
+			if(services.length < 2){
+				throw new InvalidInputException("A Service Combo must contain at least 2 services");
+			}
+			for(int i = 0; i < services.length;i++){
+				if(services[i].equals(mainService)){
+					if(!Boolean.getBoolean(mandatory[i])){
+						throw new InvalidInputException("Main service must be mandatory");
 					}
 				}
 			}
-		}
+			for(String s:services){
+				if(!(BookableService.hasWithName(s))){
+					throw new InvalidInputException("Service "+ s + " does not exist");
+				}
+			}
+			//Testing for unique service combos
+			for(BookableService s: flexiBook.getBookableServices()){
+				if(s instanceof ServiceCombo){
+					if((((ServiceCombo) s).getMainService().getService().equals(mainService))){
+						if(s.getName().equals(name)){
+							throw new InvalidInputException("Service combo"+s.getName()+" already exists");
+						}
+					}
+				}
+			}
 
-		ServiceCombo serv = new ServiceCombo(name,flexiBook);
-		for(int i = 0;i < servicesList.size(); i++){
-			serv.addService(isMandatory.get(i),servicesList.get(i));
+			ServiceCombo serv = new ServiceCombo(name,flexiBook);
+			serv.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),serv));
+			for(int i = 0;i < services.length; i++){
+				serv.addService(Boolean.getBoolean( mandatory[i]), (Service) BookableService.getWithName(services[i]));
+			}
+			flexiBook.addBookableService(serv);
 		}
-
+		catch (RuntimeException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
