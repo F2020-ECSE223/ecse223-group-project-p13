@@ -33,7 +33,7 @@ public class FlexiBookController {
 	/*public static void login(String username, String password) throws InvalidInputException {
 		FlexiBook flexibook =FlexiBookApplication.getFlexiBook();
 
-		if(username.length()==0 || password.length()==0) {
+		try{ if(username.length()==0 || password.length()==0) {
 			throw new InvalidInputException("invalid entry");
 		}
 		if(flexibook.getOwner()==null) {
@@ -66,9 +66,13 @@ public class FlexiBookController {
 			if(!found) {
 				throw new InvalidInputException("username/password not found");
 		
-				}
-			} 
+					}
+				} 
+			}
+		} catch (RuntimeException e){
+			e.printStackTrace();
 		}
+		
 		
 	}*/
 	/**
@@ -77,10 +81,14 @@ public class FlexiBookController {
 	 * @throws InvalidInputException
 	 */
 	/*public static void logout() throws Exception {
+		try{
 		if(FlexiBookApplication.getUser()==null) {
 			throw new Exception("the user has already been logged out");
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
+		}
+		} catch(RuntimeException e){
+			e.printStackTrace();
 		}
 		
 	}*/
@@ -94,6 +102,7 @@ public class FlexiBookController {
 	
 	/*public static List<TOAppointment> getAppointmentCalendar(int day,int month, int year, Boolean isWeek) throws InvalidInputException {
 		Date date = null;
+		try{
 		if(month>0&&month<=12) {
 			switch (month) {
 			case 1, 3, 5, 7,9,11:
@@ -133,6 +142,9 @@ public class FlexiBookController {
 			}
 		}
 		return appointments;
+		} catch(RuntimeException e){
+		e.printStackTrace();
+		}
 	}*/
 	
 
