@@ -308,4 +308,76 @@ public class CucumberStepDefinitions {
     @Then("the service combo {string} shall be updated to name {string}")
     public void theServiceComboShallBeUpdatedToName(String combo, String name) {
     }
+
+    @Given("{string} is logged in to their account")
+    public void isLoggedInToTheirAccount(String arg0) {
+    }
+
+    @When("{string} attempts to cancel their {string} appointment on {string} at {string}")
+    public void attemptsToCancelTheirAppointmentOnAt(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    @Then("{string}'s {string} appointment on {string} at {string} shall be removed from the system")
+    public void sAppointmentOnAtShallBeRemovedFromTheSystem(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    @Then("there shall be {int} less appointment in the system")
+    public void thereShallBeLessAppointmentInTheSystem(int arg0) {
+    }
+
+    @Then("the system shall report {string}")
+    public void theSystemShallReport(String arg0) {
+    }
+
+    @Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
+    public void shallHaveAAppointmentOnFromTo(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    }
+
+    @Then("there shall be {int} more appointment in the system")
+    public void thereShallBeMoreAppointmentInTheSystem(int arg0) {
+    }
+
+    @When("{string} attempts to cancel {string}'s {string} appointment on {string} at {string}")
+    public void attemptsToCancelSAppointmentOnAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    }
+
+    @Given("the business has the following opening hours")
+    public void theBusinessHasTheFollowingOpeningHours() {
+    }
+
+    @Given("the business has the following holidays")
+    public void theBusinessHasTheFollowingHolidays() {
+    }
+
+    @When("{string} schedules an appointment on {string} for {string} at {string}")
+    public void schedulesAnAppointmentOnForAt(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    @When("{string} selects {string} for the service combo")
+    public void selectsForTheServiceCombo(String arg0, String arg1) {
+    }
+
+    @When("{string} schedules an appointment on on {string} for {string} at {string}")
+    public void schedulesAnAppointmentOnOnForAt(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    @When("{string} attempts to update their {string} appointment on {string} at {string} to {string} at {string}")
+    public void attemptsToUpdateTheirAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    }
+
+    @Then("the system shall report that the update was {string}")
+    public void theSystemShallReportThatTheUpdateWas(String arg0) {
+    }
+
+    @Given("{string} has a {string} appointment with optional sevices {string} on {string} at {string}")
+    public void hasAAppointmentWithOptionalSevicesOnAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    }
+
+    @When("{string} attempts to {string} {string} from their {string} appointment on {string} at {string}")
+    public void attemptsToFromTheirAppointmentOnAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    }
+
+    @When("{string} attempts to update {string}'s {string} appointment on {string} at {string} to {string} at {string}")
+    public void attemptsToUpdateSAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
+    }
 }
