@@ -37,12 +37,13 @@ Feature: Update Service Combo
       | wash       |      100 |             0 |                0 |
       | extensions |       50 |             0 |                0 |
       | color      |       75 |            45 |               30 |
+      | highlights |       90 |            50 |               40 |
       | cut        |       20 |             0 |                0 |
       | dry        |       10 |             0 |                0 |
     Given the following service combos exist in the system:
       | name       | mainService | services     | mandatory        |
       | Cut-Normal | cut         | wash,cut,dry | false,true,false |
-      | Wash-Dry   | wash        | wash,dry     | trye,false       |
+      | Wash-Dry   | wash        | wash,dry     | true,false       |
     Given the Owner with username "owner" is logged in
     When "owner" initiates the update of service combo "Cut-Normal" to name "<name>", main service "<mainService>" and services "<services>" and mandatory setting "<mandatory>"
     Then an error message with content "<error>" shall be raised

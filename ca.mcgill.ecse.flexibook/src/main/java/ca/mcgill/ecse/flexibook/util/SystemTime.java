@@ -1,6 +1,5 @@
 package ca.mcgill.ecse.flexibook.util;
 
-//import java.util.Date;
 import java.time.LocalDateTime;
 
 public class SystemTime {

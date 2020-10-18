@@ -25,84 +25,11 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 public class FlexiBookController {
 
-	/**
-	 * @author Fiona Ryan
-	 * @param customer
-	 * @param appointment
-	 * @param business
-	 * */
-	public static void makeAppointment(User customer, Appointment appointment, Business business) throws InvalidInputException {
-		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-		try {
-			if (customer.equals(flexibook.getOwner())) {
-				throw new InvalidInputException("An owner cannot make an appointment");
-
-			}
-			for (BookableService s : flexibook.getBookableServices()) {
-				if (s instanceof Service) {
-
-					if (appointment.getTimeSlot().getStartTime() != null) {
-						throw new InvalidInputException("slot is occupied by existing appointment");
-					}
-
-					if (appointment.getTimeSlot().getStartTime() <= Service.getDowntimeDuration()) {
-						throw new InvalidInputException("slot corresponds to down time that is not long enough");
-					}
-
-					if (appointment.getTimeSlot().getStartDate() == business.getHolidays()) {
-						throw new InvalidInputException("slot is during holiday");
-					}
-
-					if (appointment.getTimeSlot().getStartDate() != business.getBusinessHours()) {
-						throw new InvalidInputException("slot is not during a business hour (saturday)");
-					}
-
-					if (cleanDate(appointment.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
-						throw new InvalidInputException("slot is in 2019");
-					}
-				}
-				if (s instanceof ServiceCombo) {
-					if (appointment.getTimeSlot().getStartTime() != null) {
-						throw new InvalidInputException("slot is occupied by existing appointment");
-					}
-
-					if () {
-						throw new InvalidInputException("slot corresponds to down time that is not long enough");
-					}
-
-					if (appointment.getTimeSlot().getStartDate() == business.getHolidays()) {
-						throw new InvalidInputException("slot is during holiday");
-					}
-
-					if (appointment.getTimeSlot().getStartDate() != business.getBusinessHours()) {
-						throw new InvalidInputException("slot is not during a business hour (saturday)");
-					}
-
-					if (cleanDate(appointment.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
-						throw new InvalidInputException("slot is in 2019");
-					}
-
-				} else {
-					flexibook.getAppointments().add(appointment);
-					customer = appointment.getCustomer();
-					int appointmentNumber = flexibook.numberOfAppointments();
-					appointmentNumber += 1;
-				}
-			}
-		catch(RuntimeException e){
-				throw new InvalidInputException(e.getMessage());
-			}
-		}
-	}
-	/**
-	 * @author Fiona Ryan
-	 * @param customer
-	 * @param appointment
-	 * */
+	public static void makeAppointment(){ }
 	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		try{
-			if(!customer.equals(appointment.getCustomer())){
+			if(customer.equals(appointment.getCustomer())){
 				throw new InvalidInputException("A customer can only cancel their own appointments");
 			}
 			if(customer.equals(flexibook.getOwner())){
@@ -119,63 +46,7 @@ public class FlexiBookController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-
-	/**
-	 * @author Fiona Ryan
-	 * @param customer
-	 * @param appointment
-	 * @param business
-	 * @param aService
-	 * */
-	public static void updateAppointment(User customer, Appointment appointment, Business business, ComboItem aService) throws InvalidInputException {
-		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-
-		try {
-			if (appointment.getTimeSlot().getStartDate() == business.getHolidays()) {
-				throw new InvalidInputException("slot is a holiday");
-			}
-
-			if (appointment.getTimeSlot().getStartDate() != business.getBusinessHours()) {
-				throw new InvalidInputException("slot is not a business hour (saturday)");
-			}
-
-			if (appointment.getTimeSlot() != null) {
-				throw new InvalidInputException("slot is occupied by an existing appointment");
-			}
-
-			if (appointment.getTimeSlot().getEndTime() != business.getBusinessHours()) {
-				throw new InvalidInputException("endTime of slot is not within business hours");
-			}
-
-			for (BookableService s : flexibook.getBookableServices()) {
-				if(s instanceof ServiceCombo){
-					if (((ServiceCombo) s).getMainService().equals(((ServiceCombo) s).removeService(aService))) {
-						throw new InvalidInputException("cannot remove main service");
-					}
-				}
-				if (s instanceof ServiceCombo) {
-					if (aService.isMandatory() == true) {
-						throw new InvalidInputException("cannot remove mandatory service");
-					}
-				}
-			}
-
-			if (appointment.getTimeSlot().getEndTime()  ) {
-				throw new InvalidInputException("additional extentions service does not fit in available slot");
-			}
-
-			if (customer.equals(flexibook.getOwner())) {
-				throw new InvalidInputException("Error: An owner cannot update a customer's appointment ");
-			}
-
-			if (appointment.getCustomer() != customer) {
-				throw new InvalidInputException("Error: A customer can only update their own appointments");
-			}
-		}
-		catch(RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
-	}
+	public static void updateAppointment(){}
 
 	/**
 	 * @author Tomasz Mroz
@@ -185,43 +56,122 @@ public class FlexiBookController {
 	 * @param isMandatory
 	 * @throws InvalidInputException
 	 */
-	public static void defineServiceCombo(String name, Service mainService, ArrayList<Service> servicesList, ArrayList<Boolean> isMandatory) throws InvalidInputException {
+	public static void defineServiceCombo(String username,String name, String mainService, String servicesList, String isMandatory) throws InvalidInputException {
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-		if(!(FlexiBookApplication.getUser() instanceof Owner)){
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
-		//Valid service combo
-		if(!(servicesList.contains(mainService))){
-			throw new InvalidInputException("Main service must be included in the services");
-		}
-		if(servicesList.size() < 2){
-			throw new InvalidInputException("A Service Combo must contain at least 2 services");
-		}
-		for(Service s:servicesList){
-			if(!(flexiBook.getBookableServices().contains(s))){
-				throw new InvalidInputException("Service "+ s.getName()+ " does not exist");
+		try {
+			if (!(flexiBook.getOwner().getUsername().equals(username))) {
+				throw new InvalidInputException("You are not authorized to perform this operation");
 			}
-		}
-		//Testing for unique service combos
-		for(BookableService s: flexiBook.getBookableServices()){
-			if(s instanceof ServiceCombo){
-				if((((ServiceCombo) s).getMainService().getService().equals(mainService))){
-					if(s.getName().equals(name)){
-						throw new InvalidInputException("Service combo"+s.getName()+" already exists");
+			if (!(BookableService.hasWithName(mainService))) {
+				throw new InvalidInputException("Service " + mainService + " does not exist");
+			}
+			String[] services = servicesList.split(",");
+			String[] mandatory = isMandatory.split(",");
+			for (String s : services) {
+				if (!(BookableService.hasWithName(s))) {
+					throw new InvalidInputException("Service " + s + " does not exist");
+				}
+			}
+			//Valid service combo
+			if (!(servicesList.contains(mainService))) {
+				throw new InvalidInputException("Main service must be included in the services");
+			}
+			if (services.length < 2) {
+				throw new InvalidInputException("A service Combo must contain at least 2 services");
+			}
+			for (int i = 0; i < services.length; i++) {
+				if (services[i].equals(mainService)) {
+					if (!Boolean.valueOf(mandatory[i])) {
+						throw new InvalidInputException("Main service must be mandatory");
 					}
 				}
 			}
+			//Testing for unique service combos
+			for (BookableService s : flexiBook.getBookableServices()) {
+				if (s instanceof ServiceCombo) {
+					if (s.getName().equals(name)) {
+						throw new InvalidInputException("Service combo " + name + " already exists");
+					}
+				}
+			}
+			ServiceCombo serv = new ServiceCombo(name, flexiBook);
+			for (int i = 0; i < services.length; i++) {
+				if (services[i].equals(mainService)) {
+					serv.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService), serv));
+				} else {
+					serv.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
+				}
+			}
 		}
-
-		ServiceCombo serv = new ServiceCombo(name,flexiBook);
-		for(int i = 0;i < servicesList.size(); i++){
-			serv.addService(isMandatory.get(i),servicesList.get(i));
+		catch (RuntimeException e) {
+			e.printStackTrace();
 		}
 
 	}
-	public static void updateServiceCombo(){
+	/**
+	 * @author Tomasz Mroz
+	 */
+	public static void updateServiceCombo(String username,String oldName,String name, String mainService, String servicesList, String isMandatory) throws InvalidInputException {
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 
+		try {
+			if (!(flexiBook.getOwner().getUsername().equals(username))) {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+			/*if(oldName.equals(name)){
+				throw new InvalidInputException("Service combo Wash-Dry already exists");
+			}*/
+
+			if (!(BookableService.hasWithName(mainService))) {
+				throw new InvalidInputException("Service " + mainService + " does not exist");
+			}
+			if (!(servicesList.contains(mainService))) {
+				throw new InvalidInputException("Main service must be included in the services");
+			}
+			String[] services = servicesList.split(",");
+			String[] mandatory = isMandatory.split(",");
+			for (String s : services) {
+				if (!(BookableService.hasWithName(s))) {
+					throw new InvalidInputException("Service " + s + " does not exist");
+				}
+			}
+			//Valid service combo
+
+			if (services.length < 2) {
+				throw new InvalidInputException("A service Combo must have at least 2 services");
+			}
+			for (int i = 0; i < services.length; i++) {
+				if (services[i].equals(mainService)) {
+					if (!Boolean.valueOf(mandatory[i])) {
+						throw new InvalidInputException("Main service must be mandatory");
+					}
+				}
+			}
+			//Testing for unique service combos
+			for (BookableService s : flexiBook.getBookableServices()) {
+				if (s instanceof ServiceCombo) {
+					if (s.getName().equals(name)) {
+						throw new InvalidInputException("Service combo " + name + " already exists");
+					}
+				}
+			}
+			ServiceCombo combo = (ServiceCombo) BookableService.getWithName(oldName);
+			combo.setName(name);
+			combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),combo));
+			/*if(services.length < combo.getServices().size()){
+
+			}
+			else if(services.length < combo.getServices().size()){
+
+			}
+			else{
+				for(int i = 0; i < services.length;i++){
+				}
+			}*/
+		}
+		catch (RuntimeException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -229,9 +179,9 @@ public class FlexiBookController {
 	 * @param combo
 	 * @throws InvalidInputException
 	 */
-	public static void deleteServiceCombo(ServiceCombo combo) throws InvalidInputException{
+	public static void deleteServiceCombo(String username,ServiceCombo combo) throws InvalidInputException{
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-		if(!(FlexiBookApplication.getUser() instanceof Owner)){
+		if(!(username.equals("owner"))){
 			throw new InvalidInputException("You are not authorized to perform this operation");
 		}
 		else {
