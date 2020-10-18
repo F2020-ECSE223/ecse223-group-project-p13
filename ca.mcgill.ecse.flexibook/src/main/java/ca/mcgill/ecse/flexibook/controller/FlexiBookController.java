@@ -30,7 +30,7 @@ public class FlexiBookController {
 	 * @param password
 	 * @throws InvalidInputException
 	 */
-	public static void login(String username, String password) throws InvalidInputException {
+	/*public static void login(String username, String password) throws InvalidInputException {
 		FlexiBook flexibook =FlexiBookApplication.getFlexiBook();
 
 		if(username.length()==0 || password.length()==0) {
@@ -70,28 +70,29 @@ public class FlexiBookController {
 			} 
 		}
 		
-	}
+	}*/
 	/**
 	 * @author Victoria Sanchez
 	 * @return boolean
 	 * @throws InvalidInputException
 	 */
-	public static void logout() throws Exception {
+	/*public static void logout() throws Exception {
 		if(FlexiBookApplication.getUser()==null) {
 			throw new Exception("the user has already been logged out");
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
 		}
 		
-	}
+	}*/
 	/**
 	 * @author Victoria Sanchez
-	 * @param date
-	 * @param isWeek
+	 //* @param date
+	 * //@param isWeek
 	 * @return appointments 
 	 */
+
 	
-	public static List<TOAppointment> getAppointmentCalendar(int day,int month, int year, Boolean isWeek) throws InvalidInputException {
+	/*public static List<TOAppointment> getAppointmentCalendar(int day,int month, int year, Boolean isWeek) throws InvalidInputException {
 		Date date = null;
 		if(month>0&&month<=12) {
 			switch (month) {
@@ -132,7 +133,7 @@ public class FlexiBookController {
 			}
 		}
 		return appointments;
-	}
+	}*/
 	
 
 	public static void makeAppointment(){ }
@@ -265,19 +266,19 @@ public class FlexiBookController {
 					}
 				}
 			}
-			ServiceCombo combo = (ServiceCombo) BookableService.getWithName(oldName);
+			ServiceCombo oldCombo = (ServiceCombo) BookableService.getWithName(oldName);
+			ServiceCombo combo = new ServiceCombo(name,flexiBook);
 			combo.setName(name);
-			combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),combo));
-			/*if(services.length < combo.getServices().size()){
-
-			}
-			else if(services.length < combo.getServices().size()){
-
-			}
-			else{
-				for(int i = 0; i < services.length;i++){
+			//combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),combo));
+			for(int i= 0; i < services.length; i++){
+				if(services[i].equals(mainService)) {
+					combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),combo));
 				}
-			}*/
+				else {
+					combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
+				}
+			}
+			flexiBook.removeBookableService(oldCombo);
 		}
 		catch (RuntimeException e) {
 			e.printStackTrace();
@@ -291,21 +292,27 @@ public class FlexiBookController {
 	 */
 	public static void deleteServiceCombo(String username,ServiceCombo combo) throws InvalidInputException{
 		FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-		if(!(username.equals("owner"))){
-			throw new InvalidInputException("You are not authorized to perform this operation");
-		}
-		else {
-			List<Appointment> appointments = flexiBook.getAppointments();
-			for(Appointment a:appointments){
-				if(a.getBookableService().equals(combo)){
-					if(cleanDate(a.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
-						throw new InvalidInputException("Service combo "+ combo.getName()+" has future appointments");
-					}
-				}
-
+		try{
+			if(!(username.equals("owner"))){
+				throw new InvalidInputException("You are not authorized to perform this operation");
 			}
-			combo.delete();
+			else {
+				List<Appointment> appointments = flexiBook.getAppointments();
+				for(Appointment a:appointments){
+					if(a.getBookableService().equals(combo)){
+						if(cleanDate(a.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
+							throw new InvalidInputException("Service combo "+ combo.getName()+" has future appointments");
+						}
+					}
+
+				}
+				combo.delete();
+			}
 		}
+		catch(RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}
+
 	}
 
 	/**

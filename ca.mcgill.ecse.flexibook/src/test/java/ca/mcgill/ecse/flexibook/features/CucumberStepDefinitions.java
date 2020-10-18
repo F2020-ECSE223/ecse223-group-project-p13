@@ -2,12 +2,18 @@ package ca.mcgill.ecse.flexibook.features;
 
 import java.io.File;
 import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.model.*;
+import ca.mcgill.ecse.flexibook.util.SystemTime;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -242,7 +248,8 @@ public class CucumberStepDefinitions {
      * @author Tomasz Mroz
      */
     @Given("the system's time and date is {string}")
-    public void theSystemSTimeAndDateIs(String arg0) {
+    public void theSystemSTimeAndDateIs(String dateTime) {
+        SystemTime.setTime(dateTime);
     }
 
     /**
@@ -254,8 +261,13 @@ public class CucumberStepDefinitions {
             if(row.get(0).equals("customer")){
                 continue;
             }
-            //flexiBook.addAppointment(new Appointment(Customer.getWithUsername(row.get(0)),BookableService.getWithName(row.get(1)),
-              //      new TimeSlot(new Date(row.get(3)),),flexiBook) row.get(0),row.get(1));
+            Date date =  Date.valueOf(LocalDate.parse(row.get(3), DateTimeFormatter.ofPattern("uuuu-MM-dd"))) ;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm");
+            Time sTime = Time.valueOf(LocalTime.parse(row.get(4),formatter));
+            Time eTime = Time.valueOf(LocalTime.parse(row.get(5),formatter));
+            TimeSlot slot = new TimeSlot(date,sTime,date,eTime,flexiBook);
+            flexiBook.addAppointment(new Appointment((Customer) Customer.getWithUsername(row.get(0)),
+                    BookableService.getWithName(row.get(1)),slot,flexiBook));
         }
     }
 
@@ -278,7 +290,10 @@ public class CucumberStepDefinitions {
      */
     @Then("the number of appointments in the system with service {string} shall be {string}")
     public void theNumberOfAppointmentsInTheSystemWithServiceShallBe(String name, String num) {
-        assertEquals(BookableService.getWithName(name).getAppointments().size(), Integer.parseInt(num));
+        if(BookableService.hasWithName(name)){
+            assertEquals(BookableService.getWithName(name).getAppointments().size(), Integer.parseInt(num));
+        }
+
     }
 
     /**
@@ -304,9 +319,11 @@ public class CucumberStepDefinitions {
 
     /**
      * @author Tomasz Mroz
+     * hmmm
      */
     @Then("the service combo {string} shall be updated to name {string}")
     public void theServiceComboShallBeUpdatedToName(String combo, String name) {
+        assertEquals(BookableService.getWithName(name).getName(),name);
     }
 
     @Given("{string} is logged in to their account")
