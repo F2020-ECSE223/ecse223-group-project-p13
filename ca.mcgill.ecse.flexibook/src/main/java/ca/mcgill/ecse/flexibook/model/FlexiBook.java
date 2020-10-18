@@ -675,5 +675,17 @@ public class FlexiBook
     }
     
   }
+  
+   /**
+   * @author Hana Gustyn
+   * @param name
+   * @param duration
+   * @param downtimeDuration
+   * @param downtimeStart
+   * @return Service
+   */
+  public Service addService(String name, int duration, int downtimeDuration, int downtimeStart) {
+	  return new Service(name, this, duration, downtimeDuration, downtimeStart);
+  }
 
 }
