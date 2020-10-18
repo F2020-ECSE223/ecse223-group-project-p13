@@ -650,4 +650,9 @@ public class CucumberStepDefinitions {
     @When("{string} requests the appointment calendar for the day of {string}")
     public void requestsTheAppointmentCalendarForTheDayOf(String arg0, String arg1) {
     }
+    
+    @After
+    public void tearDown() {
+    	flexiBook.delete();
+    }
 }
