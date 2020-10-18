@@ -337,6 +337,7 @@ public class FlexiBookController {
 	
 	/**
 	 * @author Hana Gustyn
+	 * @param username
 	 * @param name
 	 * @param duration
 	 * @param downtimeDuration
@@ -368,20 +369,21 @@ public class FlexiBookController {
 	
 	/**
 	 * @author Hana Gustyn
-	 * @param service
+	 * @param username
+	 * @param currentName
 	 * @param name
 	 * @param duration
 	 * @param downtimeDuration
 	 * @param downtimeStart
 	 * @throws InvalidInputException
 	 */
-	public static void updateService(String username, Service service, String name, int duration, int downtimeDuration, int downtimeStart) throws InvalidInputException {
+	public static void updateService(String username, String currentName, String name, int duration, int downtimeDuration, int downtimeStart) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		
 		try {
 			checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 			
-			if (service.getName().equals(name)) {
+			if (currentName.equals(name)) {
 				throw new InvalidInputException("Service " + name + " already exists");
 			}
 			
@@ -389,11 +391,17 @@ public class FlexiBookController {
 				throw new InvalidInputException("You are not authorized to perform this operation");
 			}
 			
-			service.setName(name);
-			service.setDuration(duration);
-			service.setDowntimeDuration(downtimeDuration);
-			service.setDowntimeStart(downtimeStart);
-			
+			List<BookableService> services = flexibook.getBookableServices();
+			for(BookableService b:services) {
+				if ((b instanceof Service) && b.getName().equals(currentName)) {
+					Service s = (Service) b;
+					
+					s.setName(name);
+					s.setDuration(duration);
+					s.setDowntimeDuration(downtimeDuration);
+					s.setDowntimeStart(downtimeStart);
+				}
+			}	
 		} catch (RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
@@ -401,6 +409,7 @@ public class FlexiBookController {
 	
 	/**
 	 * @author Hana Gustyn
+	 * @param username
 	 * @param service
 	 * @throws InvalidInputException
 	 */
@@ -422,14 +431,14 @@ public class FlexiBookController {
 					ServiceCombo combo = (ServiceCombo) b;
 					
 					if (combo.getMainService().getService().equals(service)) {
-						combo.delete();
+						deleteServiceCombo(username, combo);
 						continue;
 					}
 					
 					List<ComboItem> items = combo.getServices();
 					for (ComboItem i:items) {
 						if (i.getService().equals(service)) {
-							/*combo.getService(j).delete();*/ //need delete service combo method
+							i.getService().delete();
 						}
 					}
 				}
