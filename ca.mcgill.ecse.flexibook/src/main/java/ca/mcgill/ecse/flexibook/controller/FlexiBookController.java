@@ -24,6 +24,116 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 
 public class FlexiBookController {
+	/**
+	 * @author Victoria Sanchez
+	 * @param username
+	 * @param password
+	 * @throws InvalidInputException
+	 */
+	public static void login(String username, String password) throws InvalidInputException {
+		FlexiBook flexibook =FlexiBookApplication.getFlexiBook();
+
+		if(username.length()==0 || password.length()==0) {
+			throw new InvalidInputException("invalid entry");
+		}
+		if(flexibook.getOwner()==null) {
+			if(username.equals("owner")&& password.equals("owner")){
+				//create account
+				FlexiBookApplication.setCurrentUser(flexibook.getOwner());
+			}
+			
+		}
+		if(username==flexibook.getOwner().getUsername()) {
+			if(password!=flexibook.getOwner().getPassword()) {
+				throw new InvalidInputException("username/password not found");
+			}
+			else {
+				FlexiBookApplication.setCurrentUser(flexibook.getOwner());
+				
+			}
+		}else {
+			boolean found=false;
+			for(User user: flexibook.getCustomers()) {
+			if(username==user.getUsername()) {
+				found=true;
+				if(password!=user.getPassword()) {
+					throw new InvalidInputException("username/password not found");
+				
+				} else {
+					FlexiBookApplication.setCurrentUser(user);
+					}
+				}
+			if(!found) {
+				throw new InvalidInputException("username/password not found");
+		
+				}
+			} 
+		}
+		
+	}
+	/**
+	 * @author Victoria Sanchez
+	 * @return boolean
+	 * @throws InvalidInputException
+	 */
+	public static void logout() throws Exception {
+		if(FlexiBookApplication.getUser()==null) {
+			throw new Exception("the user has already been logged out");
+		} else {
+			FlexiBookApplication.setCurrentUser(null);
+		}
+		
+	}
+	/**
+	 * @author Victoria Sanchez
+	 * @param date
+	 * @param isWeek
+	 * @return appointments 
+	 */
+	
+	public static List<TOAppointment> getAppointmentCalendar(int day,int month, int year, Boolean isWeek) throws InvalidInputException {
+		Date date = null;
+		if(month>0&&month<=12) {
+			switch (month) {
+			case 1, 3, 5, 7,9,11:
+				if(day>=0 && day<=31) {
+					date= new Date(year,month,day);
+				} else {
+					throw new InvalidInputException("invalid day");
+				}
+				break;
+			case 4,6,8,10:
+				if(day>=0 && day<=30) {
+					date= new Date(year,month,day);
+				} else {
+					throw new InvalidInputException("invalid day");
+				}
+				break;
+			}
+		} else {
+			throw new InvalidInputException("invalid month");
+		}
+		FlexiBook flexibook= FlexiBookApplication.getFlexiBook();
+		ArrayList<TOAppointment> appointments= new ArrayList<TOAppointment>();
+		if(!isWeek) {
+		for(Appointment appointment: flexibook.getAppointments()) {
+				if(appointment.getTimeSlot().getStartDate().equals(date)) {
+				TOAppointment toAppointment=  new TOAppointment(appointment.getTimeSlot().getStartDate(),appointment.getTimeSlot().getStartTime(),appointment.getTimeSlot().getEndTime());
+				appointments.add(toAppointment);
+				}	
+			}
+		
+		} else {
+			for(Appointment appointment: flexibook.getAppointments()) {
+				if(appointment.getTimeSlot().getStartDate().compareTo(date)<=7) {
+					TOAppointment toAppointment= new TOAppointment(appointment.getTimeSlot().getStartDate(),appointment.getTimeSlot().getStartTime(),appointment.getTimeSlot().getEndTime());
+					appointments.add(toAppointment);
+				}
+			}
+		}
+		return appointments;
+	}
+	
 
 	public static void makeAppointment(){ }
 	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
