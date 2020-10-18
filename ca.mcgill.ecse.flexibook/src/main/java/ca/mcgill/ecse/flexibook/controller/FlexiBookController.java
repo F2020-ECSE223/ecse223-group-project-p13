@@ -25,6 +25,110 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 public class FlexiBookController {
 
+	/**
+	 * @author cesar
+	 * @param aUsername
+	 * @param aPassword
+	 */
+	
+	public static void customerSignUp(String aUsername, String aPassword/**, FlexiBook aFlexiBook**/) throws InvalidInputException {
+		
+		User user = FlexiBookApplication.getUser();
+		
+		try {
+			
+			user.setUsername(aUsername);
+			user.setPassword(aPassword);
+			
+			
+		}
+				
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}	
+		
+	}
+	
+	/**
+	 * @author cesar
+	 * @param oldUsername
+	 * @param oldPassword
+	 * @param newUsername
+	 * @param newPassword
+	 * @param index
+	 */
+	
+	public static void updateAccount(String oldUsername, String oldPassword, int index, String newUsername, String newPassword) throws InvalidInputException {
+		
+		try {
+			
+			Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
+			Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+			
+			if (customer.getUsername().equals(oldUsername)) {
+				
+				customer.setUsername(newUsername);
+				customer.setPassword(newPassword);
+				
+			}
+			
+			else if (oldUsername.equals(owner.getUsername())) {
+				
+				owner.setUsername(newUsername);
+				owner.setPassword(newPassword);
+				
+			}
+			
+			else {
+				throw new InvalidInputException("No user found");
+			}
+		
+		}
+				
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}	 
+		
+	}
+	
+	/**public static void updateOwnerAccount(String aUsername, String aPassword) throws InvalidInputException {
+		
+		try {
+			
+		Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+		
+		owner.setUsername(aUsername);
+		owner.setPassword(aPassword);
+		
+		}
+				
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}	
+		
+	}**/
+	
+	/**
+	 * @author cesar
+	 * @param index
+	 */
+	
+	public static void deleteCustomerAccount(int index) throws InvalidInputException {
+		
+		Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
+		
+		try {
+			if(customer != null) {
+				customer.delete();
+			}
+		}
+		
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+	
+	
 	public static void makeAppointment(){ }
 	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
