@@ -1,6 +1,7 @@
 package ca.mcgill.ecse.flexibook.features;
 
 import java.io.File;
+import java.sql.Date;
 import java.util.List;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
@@ -68,12 +69,6 @@ public class CucumberStepDefinitions {
             }
             flexiBook.addBookableService(new Service(row.get(0),flexiBook,Integer.parseInt(row.get(1)),Integer.parseInt(row.get(2)),Integer.parseInt(row.get(3))));
         }
-        /*flexiBook.addBookableService(new Service("wash",flexiBook,100,0,0));
-        flexiBook.addBookableService(new Service("extensions",flexiBook,50,0,0));
-        flexiBook.addBookableService(new Service("color",flexiBook,75,45,30));
-        flexiBook.addBookableService(new Service("highlights",flexiBook,90,50,40));
-        flexiBook.addBookableService(new Service("cut",flexiBook,20,0,0));
-        flexiBook.addBookableService(new Service("dry",flexiBook,10,0,0));*/
     }
 
     /**
@@ -114,14 +109,20 @@ public class CucumberStepDefinitions {
             }
             ServiceCombo combo = new ServiceCombo(row.get(0),flexiBook);
             flexiBook.addBookableService(combo);
-            combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(row.get(1)),combo));
+
             String[] services = row.get(2).split(",");
             String[] mandatory = row.get(3).split(",");
             for(int i= 0; i < services.length; i++){
-                combo.addService(Boolean.getBoolean(mandatory[i]) ,(Service) BookableService.getWithName(row.get(1)));
+                if(services[i].equals(row.get(1))) {
+                    combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(row.get(1)),combo));
+                }
+                else {
+                    combo.addService(Boolean.getBoolean(mandatory[i]), (Service) BookableService.getWithName(services[i]));
+                }
             }
         }
     }
+
 
     /**
      * @author Tomasz Mroz
@@ -156,6 +157,15 @@ public class CucumberStepDefinitions {
      */
     @Then("the service combo {string} shall contain the services {string} with mandatory setting {string}")
     public void theServiceComboShallContainTheServicesWithMandatorySetting(String serviceCombo, String services, String mandatory) {
+        ServiceCombo combo = (ServiceCombo) BookableService.getWithName(serviceCombo);
+        String mands = "";
+        String servs = "";
+        for(ComboItem i:combo.getServices()){
+            servs += i.getService().getName()+",";
+            mands += i.getMandatory() + ",";
+        }
+        assertEquals(services,servs.substring(0,servs.length()-1));
+        assertEquals(mandatory,mands.substring(0,mands.length()-1));
     }
 
     /**
@@ -171,6 +181,8 @@ public class CucumberStepDefinitions {
      */
     @Then("the service {string} in service combo {string} shall be mandatory")
     public void theServiceInServiceComboShallBeMandatory(String service, String combo) {
+         ServiceCombo combo1 = (ServiceCombo) BookableService.getWithName(combo);
+         assertEquals(combo1.getMainService().getService().getName(),service);
     }
 
     /**
@@ -215,6 +227,14 @@ public class CucumberStepDefinitions {
             assertEquals(combo,row.get(0));
             ServiceCombo serviceCombo = (ServiceCombo) BookableService.getWithName(combo);
             assertEquals(serviceCombo.getMainService().getService().getName(),row.get(1));
+            String mands = "";
+            String servs = "";
+            for(ComboItem i:serviceCombo.getServices()){
+                servs += i.getService().getName()+",";
+                mands += i.getMandatory() + ",";
+            }
+            assertEquals(row.get(2),servs.substring(0,servs.length()-1));
+            assertEquals(row.get(3),mands.substring(0,mands.length()-1));
         }
     }
 
@@ -229,21 +249,36 @@ public class CucumberStepDefinitions {
      * @author Tomasz Mroz
      */
     @Given("the following appointments exist in the system:")
-    public void theFollowingAppointmentsExistInTheSystem() {
+    public void theFollowingAppointmentsExistInTheSystem(List<List<String>> list) {
+        for(List<String> row :list){
+            if(row.get(0).equals("customer")){
+                continue;
+            }
+            //flexiBook.addAppointment(new Appointment(Customer.getWithUsername(row.get(0)),BookableService.getWithName(row.get(1)),
+              //      new TimeSlot(new Date(row.get(3)),),flexiBook) row.get(0),row.get(1));
+        }
     }
 
     /**
      * @author Tomasz Mroz
      */
     @When("{string} initiates the deletion of service combo {string}")
-    public void initiatesTheDeletionOfServiceCombo(String arg0, String arg1) {
+    public void initiatesTheDeletionOfServiceCombo(String username, String service) {
+        try{
+            FlexiBookController.deleteServiceCombo(username, (ServiceCombo) BookableService.getWithName(service));
+        }
+        catch (InvalidInputException e){
+            error += e.getMessage();
+            errorCounter++;
+        }
     }
 
     /**
      * @author Tomasz Mroz
      */
     @Then("the number of appointments in the system with service {string} shall be {string}")
-    public void theNumberOfAppointmentsInTheSystemWithServiceShallBe(String arg0, String arg1) {
+    public void theNumberOfAppointmentsInTheSystemWithServiceShallBe(String name, String num) {
+        assertEquals(BookableService.getWithName(name).getAppointments().size(), Integer.parseInt(num));
     }
 
     /**
@@ -251,19 +286,26 @@ public class CucumberStepDefinitions {
      */
     @Then("the number of appointments in the system shall be {string}")
     public void theNumberOfAppointmentsInTheSystemShallBe(String arg0) {
+        assertEquals(flexiBook.getAppointments().size(), Integer.parseInt(arg0));
     }
 
     /**
      * @author Tomasz Mroz
      */
     @When("{string} initiates the update of service combo {string} to name {string}, main service {string} and services {string} and mandatory setting {string}")
-    public void initiatesTheUpdateOfServiceComboToNameMainServiceAndServicesAndMandatorySetting(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    public void initiatesTheUpdateOfServiceComboToNameMainService(String username, String oldName, String newName, String mainService, String services, String mandatory) {
+        try{
+            FlexiBookController.updateServiceCombo(username, oldName, newName, mainService, services, mandatory);
+        } catch (InvalidInputException e) {
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
     /**
      * @author Tomasz Mroz
      */
     @Then("the service combo {string} shall be updated to name {string}")
-    public void theServiceComboShallBeUpdatedToName(String arg0, String arg1) {
+    public void theServiceComboShallBeUpdatedToName(String combo, String name) {
     }
 }
