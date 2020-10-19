@@ -73,7 +73,7 @@ public class CucumberStepDefinitions {
             if(row.get(0).equals("name")){
                 continue;
             }
-            flexiBook.addBookableService(new Service(row.get(0),flexiBook,Integer.parseInt(row.get(1)),Integer.parseInt(row.get(2)),Integer.parseInt(row.get(3))));
+            flexiBook.addBookableService(new Service(row.get(0),flexiBook,Integer.parseInt(row.get(1)),Integer.parseInt(row.get(3)),Integer.parseInt(row.get(2))));
         }
     }
 
