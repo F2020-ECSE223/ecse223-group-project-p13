@@ -391,17 +391,14 @@ public class FlexiBookController {
 				throw new InvalidInputException("You are not authorized to perform this operation");
 			}
 			
-			List<BookableService> services = flexibook.getBookableServices();
-			for(BookableService b:services) {
-				if ((b instanceof Service) && b.getName().equals(currentName)) {
-					Service s = (Service) b;
-					
-					s.setName(name);
-					s.setDuration(duration);
-					s.setDowntimeDuration(downtimeDuration);
-					s.setDowntimeStart(downtimeStart);
-				}
-			}	
+			else {
+				Service s = (Service) BookableService.getWithName(currentName);
+				
+				s.setName(name);
+				s.setDuration(duration);
+				s.setDowntimeDuration(downtimeDuration);
+				s.setDowntimeStart(downtimeStart);
+			}
 		} catch (RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
