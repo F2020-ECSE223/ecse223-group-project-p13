@@ -2,6 +2,10 @@ package ca.mcgill.ecse.flexibook.features;
 
 import java.io.File;
 import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
@@ -181,8 +185,8 @@ public class CucumberStepDefinitions {
      */
     @Then("the service {string} in service combo {string} shall be mandatory")
     public void theServiceInServiceComboShallBeMandatory(String service, String combo) {
-         ServiceCombo combo1 = (ServiceCombo) BookableService.getWithName(combo);
-         assertEquals(combo1.getMainService().getService().getName(),service);
+        ServiceCombo combo1 = (ServiceCombo) BookableService.getWithName(combo);
+        assertEquals(combo1.getMainService().getService().getName(),service);
     }
 
     /**
@@ -250,12 +254,17 @@ public class CucumberStepDefinitions {
      */
     @Given("the following appointments exist in the system:")
     public void theFollowingAppointmentsExistInTheSystem(List<List<String>> list) {
-        for(List<String> row :list){
-            if(row.get(0).equals("customer")){
+        for (List<String> row : list) {
+            if (row.get(0).equals("customer")) {
                 continue;
             }
-            //flexiBook.addAppointment(new Appointment(Customer.getWithUsername(row.get(0)),BookableService.getWithName(row.get(1)),
-              //      new TimeSlot(new Date(row.get(3)),),flexiBook) row.get(0),row.get(1));
+            Date date = Date.valueOf(LocalDate.parse(row.get(3), DateTimeFormatter.ofPattern("uuuu-MM-dd")));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm");
+            Time sTime = Time.valueOf(LocalTime.parse(row.get(4), formatter));
+            Time eTime = Time.valueOf(LocalTime.parse(row.get(5), formatter));
+            TimeSlot slot = new TimeSlot(date, sTime, date, eTime, flexiBook);
+            flexiBook.addAppointment(new Appointment((Customer) Customer.getWithUsername(row.get(0)),
+                    BookableService.getWithName(row.get(1)), slot, flexiBook));
         }
     }
 
@@ -304,8 +313,93 @@ public class CucumberStepDefinitions {
 
     /**
      * @author Tomasz Mroz
+     * hmmm
      */
     @Then("the service combo {string} shall be updated to name {string}")
     public void theServiceComboShallBeUpdatedToName(String combo, String name) {
+        assertEquals(BookableService.getWithName(name).getName(),name);
+    }
+
+    @Given("{string} is logged in to their account")
+    public void isLoggedInToTheirAccount(String arg0) {
+    }
+
+    @When("{string} attempts to cancel their {string} appointment on {string} at {string}")
+    public void attemptsToCancelTheirAppointmentOnAt(String arg0, String arg1, String arg2, String arg3) {
+
+    }
+
+    @Then("{string}'s {string} appointment on {string} at {string} shall be removed from the system")
+    public void sAppointmentOnAtShallBeRemovedFromTheSystem(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    /**
+     * @author Fiona Ryan
+     * @param arg0
+     */
+    @Then("there shall be {int} less appointment in the system")
+    public void thereShallBeLessAppointmentInTheSystem(int arg0) {
+        int appointmentNumber = flexiBook.numberOfAppointments(); //make global variable in when statement
+        assertEquals(appointmentNumber-arg0,1);
+    }
+
+    @Then("the system shall report {string}")
+    public void theSystemShallReport(String arg0) {
+    }
+
+    @Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
+    public void shallHaveAAppointmentOnFromTo(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    }
+
+    @Then("there shall be {int} more appointment in the system")
+    public void thereShallBeMoreAppointmentInTheSystem(int arg0) {
+    }
+
+    @When("{string} attempts to cancel {string}'s {string} appointment on {string} at {string}")
+    public void attemptsToCancelSAppointmentOnAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    }
+
+
+    @Given("the business has the following opening hours")
+    public void theBusinessHasTheFollowingOpeningHours() {
+        //victoria
+    }
+
+
+    @Given("the business has the following holidays")
+    public void theBusinessHasTheFollowingHolidays() {
+        //victoria
+    }
+
+    @When("{string} schedules an appointment on {string} for {string} at {string}")
+    public void schedulesAnAppointmentOnForAt(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    @When("{string} selects {string} for the service combo")
+    public void selectsForTheServiceCombo(String arg0, String arg1) {
+    }
+
+    @When("{string} schedules an appointment on on {string} for {string} at {string}")
+    public void schedulesAnAppointmentOnOnForAt(String arg0, String arg1, String arg2, String arg3) {
+    }
+
+    @When("{string} attempts to update their {string} appointment on {string} at {string} to {string} at {string}")
+    public void attemptsToUpdateTheirAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    }
+
+    @Then("the system shall report that the update was {string}")
+    public void theSystemShallReportThatTheUpdateWas(String arg0) {
+    }
+
+    @Given("{string} has a {string} appointment with optional sevices {string} on {string} at {string}")
+    public void hasAAppointmentWithOptionalSevicesOnAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    }
+
+    @When("{string} attempts to {string} {string} from their {string} appointment on {string} at {string}")
+    public void attemptsToFromTheirAppointmentOnAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    }
+
+    @When("{string} attempts to update {string}'s {string} appointment on {string} at {string} to {string} at {string}")
+    public void attemptsToUpdateSAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
     }
 }

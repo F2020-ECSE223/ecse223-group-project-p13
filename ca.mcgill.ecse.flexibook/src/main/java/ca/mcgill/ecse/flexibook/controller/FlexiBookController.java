@@ -1,7 +1,10 @@
 package ca.mcgill.ecse.flexibook.controller;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,7 +28,101 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 public class FlexiBookController {
 
-	public static void makeAppointment(){ }
+	/**
+	 * @author Fiona Ryan
+	 * @param customer
+	 * @param date
+	 * @param serviceName
+	 * @param newTime
+	 * @throws InvalidInputException
+	 * */
+	public static void makeAppointment(User customer, String date, String newTime, String serviceName) throws InvalidInputException {
+		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
+		try {
+			Appointment appt = null;
+			for (Appointment a : flexibook.getAppointments()) {
+				if (a.getCustomer().getUsername().equals(customer)) {
+					if (a.getBookableService().getName().equals(serviceName)) {
+						appt = a;
+					}
+				}
+			}
+
+			if (customer.equals(flexibook.getOwner())) {
+				throw new InvalidInputException("An owner cannot make an appointment");
+
+			}
+
+			for (BookableService s : flexibook.getBookableServices()) {
+				if (s instanceof Service) {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm");
+					Time sTime = Time.valueOf(LocalTime.parse(newTime, formatter));
+					if (appt.getTimeSlot(). != null) {
+						throw new InvalidInputException("slot is occupied by existing appointment");
+
+					}
+
+					if (((Service) s).getDowntimeDuration() < ((Service) BookableService.getWithName(serviceName)).getDuration()) {
+						throw new InvalidInputException("slot corresponds to down time that is not long enough");
+
+					} else if (appt.getTimeSlot().getStartDate() != null) {
+						if (flexibook.getBusiness().hasHolidays()) {
+							throw new InvalidInputException("slot is during holiday");
+						}
+						if (flexibook.getBusiness().hasBusinessHours()) {
+							throw new InvalidInputException("slot is not during a business hour (saturday)");
+						}
+
+					} else if (cleanDate(appt.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
+						throw new InvalidInputException("slot is in 2019");
+
+					} else if (flexibook.getAppointment(newTime) == null) {
+						flexibook.addAppointment(appt);
+
+					} else if (((Service) s).getDowntimeDuration() > ((Service) BookableService.getWithName(serviceName)).getDuration()) {
+						flexibook.addAppointment(appt);
+					}
+				}
+					if (s instanceof ServiceCombo) {
+						if (appt.getTimeSlot().getStartTime() != null) {
+							throw new InvalidInputException("slot is occupied by existing appointment");
+
+						} else if (((Service) s).getDowntimeDuration() < ((Service) BookableService.getWithName(serviceName)).getDuration()) {
+							throw new InvalidInputException("slot corresponds to down time that is not long enough");
+
+						} else if (appt.getTimeSlot().getStartDate() != null) {
+							if (flexibook.getBusiness().hasHolidays()) {
+								throw new InvalidInputException("slot is during holiday");
+							}
+							if (flexibook.getBusiness().hasBusinessHours()) {
+								throw new InvalidInputException("slot is not during a business hour (saturday)");
+							}
+
+						} else if (cleanDate(appt.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
+							throw new InvalidInputException("slot is in 2019");
+
+						} else if (flexibook.getAppointment(newTime) == null) {
+							flexibook.addAppointment(appt);
+
+						} else if (((Service) s).getDowntimeDuration() > ((Service) BookableService.getWithName(serviceName)).getDuration()) {
+							flexibook.getAppointments().add(appt);
+						}
+					}
+				}
+
+		}
+ 		catch(RuntimeException e){
+				throw new InvalidInputException(e.getMessage());
+		}
+
+	}
+
+	/**
+	 * @autho Fiona Ryan
+	 * @param customer
+	 * @param appointment
+	 * @throws InvalidInputException
+	 */
 	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		try{
@@ -46,7 +143,105 @@ public class FlexiBookController {
 			throw new InvalidInputException(e.getMessage());
 		}
 	}
-	public static void updateAppointment(){}
+	/**
+	 * @author Fiona Ryan
+	 * @param customer
+	 * @param aService
+	 * @param date
+	 * @param newAction
+	 * @param newComboItem
+	 * @param newTime
+	 * @param newDate
+	 * @param serviceType
+	 * @param time
+	 * @throws InvalidInputException
+	 * */
+	public static void updateAppointment(String customer, String date, String time, String serviceType, String aService,
+										 String newTime, String newDate, String newAction, String newComboItem ) throws InvalidInputException {
+		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
+
+		try {
+			Appointment appt = null;
+			for (Appointment a : flexibook.getAppointments()) {
+				if (a.getCustomer().getUsername().equals(customer)) {
+					if (a.getBookableService().getName().equals(serviceType)) {
+						appt = a;
+					}
+				}
+			}
+
+			if(newAction == null && newComboItem == null) {
+				if (flexibook.getBusiness().getHolidays().contains(appt.getTimeSlot().getStartDate())) {
+					throw new InvalidInputException("slot is a holiday");
+				}
+				if (appt.getTimeSlot().getStartDate() != null) {
+					if((flexibook.getBusiness().hasHolidays())){
+						throw new InvalidInputException("slot is not a business hour (saturday)");
+					}
+				}
+				if (appt.getTimeSlot() != null) {
+					throw new InvalidInputException("slot is occupied by an existing appointment");
+				}
+				if (appt.getTimeSlot().getEndTime() != null) {
+					if((flexibook.getBusiness().hasBusinessHours())) {
+						throw new InvalidInputException("endTime of slot is not within business hours");
+					}
+				}
+
+			}
+			else if(newTime == null && newDate == null){
+				if(newAction.equals("add")) {
+					ServiceCombo name = (ServiceCombo) appt.getBookableService();
+					int counter = 0;
+					for (ComboItem c : name.getServices()) {
+						counter += c.getService().getDowntimeDuration();
+					}
+					if (counter < ((Service) BookableService.getWithName(newComboItem)).getDuration()) {
+						throw new InvalidInputException("additional extentions service does not fit in available slot");
+					}
+
+					for (int i = 0; i < name.getServices().size();i++) {
+						counter += name.getServices().get(i).getService().getDowntimeDuration();
+						if(((Service) BookableService.getWithName(newComboItem)).getDuration() < counter){
+							((ServiceCombo) BookableService.getWithName(serviceType)).addServiceAt(new ComboItem(false,
+									((Service)BookableService.getWithName(newComboItem)),(ServiceCombo) BookableService.getWithName(serviceType)),i);
+						}
+					}
+
+				}
+			}
+				if(newAction.equals("remove")){
+					for (BookableService s : flexibook.getBookableServices()) {
+						if (s instanceof ServiceCombo) {
+							if (((ServiceCombo) s).getMainService().equals(((Service) BookableService.getWithName(newComboItem)))){
+								throw new InvalidInputException("cannot remove main service");
+							}
+						}
+						if (s instanceof ServiceCombo) {
+							if (((new ComboItem(false, ((Service) BookableService.getWithName(newComboItem)),
+									(ServiceCombo) BookableService.getWithName(serviceType)))).isMandatory()) {
+								throw new InvalidInputException("cannot remove mandatory service");
+							}
+						}
+						if (s instanceof ServiceCombo) {
+							((ServiceCombo) s).removeService((( new ComboItem(false,((Service) BookableService.getWithName(newComboItem)),
+									(ServiceCombo) BookableService.getWithName(serviceType)))));
+						}
+						}
+					}
+
+			if (customer.equals(flexibook.getOwner().getUsername())) {
+				throw new InvalidInputException("Error: An owner cannot update a customer's appointment ");
+			}
+
+			if (!appt.getCustomer().getUsername().equals(customer)) {
+				throw new InvalidInputException("Error: A customer can only update their own appointments");
+			}
+		}
+		catch(RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
 
 	/**
 	 * @author Tomasz Mroz
