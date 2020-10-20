@@ -29,6 +29,7 @@ public class FlexiBookController {
 	 * @author cesar
 	 * @param aUsername
 	 * @param aPassword
+	 * @throw InvalidInputException
 	 */
 	
 	public static void customerSignUp(String aUsername, String aPassword/**, FlexiBook aFlexiBook**/) throws InvalidInputException {
@@ -36,6 +37,14 @@ public class FlexiBookController {
 		User user = FlexiBookApplication.getUser();
 		
 		try {
+			
+			if (findUser(aUsername)!=null) {
+				throw new InvalidInputException ("An account with this username already exists");
+			}
+			
+			if(aUsername == null || aPassword == null) {
+				throw new InvalidInputException ("The username/password cannot be empty");
+			}
 			
 			user.setUsername(aUsername);
 			user.setPassword(aPassword);
@@ -52,27 +61,31 @@ public class FlexiBookController {
 	/**
 	 * @author cesar
 	 * @param oldUsername
-	 * @param oldPassword
 	 * @param newUsername
 	 * @param newPassword
-	 * @param index
+	 * @throw InvalidInputException
 	 */
 	
-	public static void updateAccount(String oldUsername, String oldPassword, int index, String newUsername, String newPassword) throws InvalidInputException {
+	public static void updateAccount(String oldUsername, String newUsername, String newPassword) throws InvalidInputException {
 		
 		try {
 			
-			Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
-			Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+			User user = findUser(oldUsername);
+			//Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
 			
-			if (customer.getUsername().equals(oldUsername)) {
+			if(user == null) {
+				throw new InvalidInputException ("No account with this username can be found");
+			}
+			
+			if (user.getUsername() == oldUsername) {
 				
-				customer.setUsername(newUsername);
-				customer.setPassword(newPassword);
+				user.setUsername(newUsername);
+				user.setPassword(newPassword);
 				
 			}
 			
-			else if (oldUsername.equals(owner.getUsername())) {
+			
+		/*	if (owner.getUsername().equals(oldUsername)) {
 				
 				owner.setUsername(newUsername);
 				owner.setPassword(newPassword);
@@ -81,9 +94,9 @@ public class FlexiBookController {
 			
 			else {
 				throw new InvalidInputException("No user found");
-			}
+			} */
 		
-		}
+		} 
 				
 		catch (RuntimeException e){
 			throw new InvalidInputException(e.getMessage());
@@ -91,35 +104,54 @@ public class FlexiBookController {
 		
 	}
 	
-	/**public static void updateOwnerAccount(String aUsername, String aPassword) throws InvalidInputException {
-		
-		try {
-			
-		Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
-		
-		owner.setUsername(aUsername);
-		owner.setPassword(aPassword);
-		
-		}
-				
-		catch (RuntimeException e){
-			throw new InvalidInputException(e.getMessage());
-		}	
-		
-	}**/
 	
 	/**
 	 * @author cesar
-	 * @param index
+	 * @param aUsername
 	 */
 	
-	public static void deleteCustomerAccount(int index) throws InvalidInputException {
+	private static User findUser(String aUsername) {
 		
-		Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
+		User user = null;
+		
+		if (FlexiBookApplication.getFlexiBook().getOwner()!=null) {
+			if (FlexiBookApplication.getFlexiBook().getOwner().getUsername().equals(aUsername)) {
+				user = (Owner) FlexiBookApplication.getFlexiBook().getOwner();
+				return user;
+			}
+		}
+		
+		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+			if(customer.getUsername() == aUsername) {
+				user = customer;
+				return user;
+			}
+		
+		}
+		return user;
+	}
+	
+	/**
+	 * @author cesar
+	 * @param aUsername
+	 * @throw InvalidInputException
+	 */
+	
+	public static void deleteCustomerAccount(String aUsername) throws InvalidInputException {
+		
+		//Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
+		User user = findUser(aUsername);
+		Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
 		
 		try {
-			if(customer != null) {
-				customer.delete();
+			
+			if(user.equals(owner) ) {
+				throw new InvalidInputException ("Cannot delete owner account");
+				
+			}
+			
+			if(user != null) {
+				user.delete();
 			}
 		}
 		
