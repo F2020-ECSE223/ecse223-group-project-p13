@@ -146,30 +146,7 @@ public class FlexiBookController {
 		e.printStackTrace();
 		}
 	}*/
-	
 
-	public static void makeAppointment(){ }
-	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
-		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-		try{
-			if(customer.equals(appointment.getCustomer())){
-				throw new InvalidInputException("A customer can only cancel their own appointments");
-			}
-			if(customer.equals(flexibook.getOwner())){
-				throw new InvalidInputException("An owner cannot cancel an appointment");
-			}
-			if(cleanDate(appointment.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
-				throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
-			}
-			else{
-				appointment.delete();
-			}
-		}
-		catch (RuntimeException e){
-			throw new InvalidInputException(e.getMessage());
-		}
-	}
-	public static void updateAppointment(){}
 
 	/**
 	 * @author Tomasz Mroz

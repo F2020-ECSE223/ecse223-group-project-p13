@@ -374,10 +374,6 @@ public class CucumberStepDefinitions {
     public void selectsForTheServiceCombo(String arg0, String arg1) {
     }
 
-    @When("{string} schedules an appointment on on {string} for {string} at {string}")
-    public void schedulesAnAppointmentOnOnForAt(String arg0, String arg1, String arg2, String arg3) {
-    }
-
     @When("{string} attempts to update their {string} appointment on {string} at {string} to {string} at {string}")
     public void attemptsToUpdateTheirAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
     }

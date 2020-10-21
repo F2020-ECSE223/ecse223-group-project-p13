@@ -36,7 +36,6 @@ Feature: Update Service Combo
       | name       | duration | downtimeStart | downtimeDuration |
       | wash       |      100 |             0 |                0 |
       | extensions |       50 |             0 |                0 |
-      | highlights |       90 |            50 |               40 |
       | color      |       75 |            45 |               30 |
       | highlights |       90 |            50 |               40 |
       | cut        |       20 |             0 |                0 |
