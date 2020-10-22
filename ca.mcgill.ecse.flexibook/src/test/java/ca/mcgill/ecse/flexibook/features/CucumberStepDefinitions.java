@@ -27,6 +27,7 @@ public class CucumberStepDefinitions {
     private FlexiBook flexiBook;
     private String error;
     private int errorCounter;
+    private int numAppt;
 
 
     /**
@@ -257,14 +258,25 @@ public class CucumberStepDefinitions {
      */
     @Given("the following appointments exist in the system:")
     public void theFollowingAppointmentsExistInTheSystem(List<List<String>> list) {
+        int off = 0;
         for(List<String> row :list){
+            if(row.get(2).equals("optServices") || row.get(2).equals("selectedComboItems")){
+                off = 1;
+            }
             if(row.get(0).equals("customer")){
                 continue;
             }
-            Date date =  Date.valueOf(LocalDate.parse(row.get(3), DateTimeFormatter.ofPattern("uuuu-MM-dd"))) ;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm");
-            Time sTime = Time.valueOf(LocalTime.parse(row.get(4),formatter));
-            Time eTime = Time.valueOf(LocalTime.parse(row.get(5),formatter));
+
+            Date date =  Date.valueOf(LocalDate.parse(row.get(2+off), DateTimeFormatter.ofPattern("uuuu-MM-dd"))) ;
+            DateTimeFormatter formatter;
+            if(row.get(3+off).length() == 4){
+                formatter = DateTimeFormatter.ofPattern("k:mm");
+            }
+            else{
+                 formatter = DateTimeFormatter.ofPattern("kk:mm");
+            }
+            Time sTime = Time.valueOf(LocalTime.parse(row.get(3+off),formatter));
+            Time eTime = Time.valueOf(LocalTime.parse(row.get(4+off),formatter));
             TimeSlot slot = new TimeSlot(date,sTime,date,eTime,flexiBook);
             flexiBook.addAppointment(new Appointment((Customer) Customer.getWithUsername(row.get(0)),
                     BookableService.getWithName(row.get(1)),slot,flexiBook));
@@ -339,6 +351,7 @@ public class CucumberStepDefinitions {
      */
     @When("{string} attempts to cancel their {string} appointment on {string} at {string}")
     public void attemptsToCancelTheirAppointmentOnAt(String customer, String type, String date, String time) {
+        numAppt = flexiBook.numberOfAppointments();
         try{
             FlexiBookController.cancelAppointment(customer,type,date,time);
         }
@@ -378,7 +391,7 @@ public class CucumberStepDefinitions {
      */
     @Then("there shall be {int} less appointment in the system")
     public void thereShallBeLessAppointmentInTheSystem(int arg0) {
-        assertEquals(flexiBook.numberOfAppointments() - arg0, flexiBook.getAppointments().size());
+        assertEquals(numAppt-arg0, flexiBook.getAppointments().size());
     }
 
     /**
@@ -387,7 +400,7 @@ public class CucumberStepDefinitions {
      */
     @Then("the system shall report {string}")
     public void theSystemShallReport(String arg0) {
-        assertTrue(error.contains(arg0));
+        assertTrue(error.contains(arg0),error);
     }
 
     /**
@@ -403,14 +416,16 @@ public class CucumberStepDefinitions {
         boolean test = false;
         for (Appointment appt : flexiBook.getAppointments()) {
             if (appt.getCustomer().getUsername().equals(customer)) {
-                if (appt.getBookableService().equals(type)) {
-                    if(appt.getTimeSlot().getStartTime().equals(startTime)){
-                        if(appt.getTimeSlot().getEndTime().equals(endTime)){
-                            if(appt.getTimeSlot().getStartDate().equals(date)) {
-                                test = true;
-                            }
-                        }
+                if (appt.getBookableService().getName().equals(type)) {
+                    if(appt.getTimeSlot().getStartDate().equals(Date.valueOf(LocalDate.parse(date, DateTimeFormatter.ofPattern("uuuu-MM-dd"))))) {
+                        test = true;
+                        break;
                     }
+                    /*if(appt.getTimeSlot().getStartTime().getHours()){
+                        if(appt.getTimeSlot().getEndTime().equals(endTime)){
+
+                        }
+                    }*/
                 }
             }
         }
@@ -437,7 +452,7 @@ public class CucumberStepDefinitions {
     @When("{string} attempts to cancel {string}'s {string} appointment on {string} at {string}")
     public void attemptsToCancelSAppointmentOnAt(String customer1, String customer2, String type, String date, String time) {
         try{
-            FlexiBookController.cancelAppointment(customer2,type,date,time);
+            FlexiBookController.cancelAppointment(customer1,type,date,time);
         }
         catch(InvalidInputException e){
             error+=e.getMessage();
@@ -446,12 +461,12 @@ public class CucumberStepDefinitions {
     }
 
     @Given("the business has the following opening hours")
-    public void theBusinessHasTheFollowingOpeningHours() {
+    public void theBusinessHasTheFollowingOpeningHours(List<List<String>> list) {
         //VICTORIA
     }
 
     @Given("the business has the following holidays")
-    public void theBusinessHasTheFollowingHolidays() {
+    public void theBusinessHasTheFollowingHolidays(List<List<String>> list) {
         //VICTORIA
     }
 
@@ -462,10 +477,20 @@ public class CucumberStepDefinitions {
      * @param service
      * @param time
      */
+    @When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
+    public void schedulesAnAppointmentOnForAt(String customer, String date, String service,String optionalServices, String time) {
+        try{
+            FlexiBookController.makeAppointment(customer,date,time,service);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
+    }
     @When("{string} schedules an appointment on {string} for {string} at {string}")
     public void schedulesAnAppointmentOnForAt(String customer, String date, String service, String time) {
         try{
-            FlexiBookController.makeAppointment(customer,date,service,time);
+            FlexiBookController.makeAppointment(customer,date,time,service);
         }
         catch(InvalidInputException e){
             error+=e.getMessage();
