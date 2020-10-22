@@ -28,14 +28,8 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 
 public class FlexiBookController {
-	/**
-	 * @author Victoria Sanchez
-	 * @param username
-	 * @param password
-	 * @throws InvalidInputException
-	 */
 	public static void login(String username, String password) throws InvalidInputException {
-		FlexiBook flexibook =FlexiBookApplication.getFlexiBook();
+		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 		if(username.length()==0 || password.length()==0) {
 			throw new InvalidInputException("invalid entry");
@@ -48,32 +42,35 @@ public class FlexiBookController {
 			}
 			
 		}
-		if(username==flexibook.getOwner().getUsername()) {
-			if(password!=flexibook.getOwner().getPassword()) {
-				throw new InvalidInputException("username/password not found");
-			}
-			else {
-				FlexiBookApplication.setCurrentUser(flexibook.getOwner());
-				
-			}
-		}else {
-			boolean found=false;
-			for(User user: flexibook.getCustomers()) {
-			if(username==user.getUsername()) {
-				found=true;
-				if(password!=user.getPassword()) {
-					throw new InvalidInputException("username/password not found");
-				
-				} else {
-					FlexiBookApplication.setCurrentUser(user);
-					}
-				}
-			if(!found) {
-				throw new InvalidInputException("username/password not found");
 		
+		if (flexibook.getOwner()!=null) {
+			if(username==flexibook.getOwner().getUsername()) {
+				if(!(password.equals(flexibook.getOwner().getPassword()))) {
+					throw new InvalidInputException("username/password not found");
+				}
+				else {
+					FlexiBookApplication.setCurrentUser(flexibook.getOwner());
+					
 				}
 			}
 		}
+		
+		boolean found=false;
+		for(User user: flexibook.getCustomers()) {
+		if(username.equals(user.getUsername())) {
+			found=true;
+			if(!(password.equals(user.getPassword()))) {
+				throw new InvalidInputException("username/password not found");
+			
+			} else {
+				FlexiBookApplication.setCurrentUser(user);
+				}
+			}
+		if(!found) {
+			throw new InvalidInputException("username/password not found");
+	
+			}
+		} 
 		
 	}
 	/**
@@ -82,7 +79,7 @@ public class FlexiBookController {
 	 */
 	public static void logout() throws Exception {
 		if(FlexiBookApplication.getUser()==null) {
-			throw new Exception("the user has already been logged out");
+			throw new Exception("The user is already logged out");
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
 		}
