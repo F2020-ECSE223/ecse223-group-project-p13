@@ -465,12 +465,12 @@ public class CucumberStepDefinitions {
 
     @Given("the business has the following opening hours")
     public void theBusinessHasTheFollowingOpeningHours(List<List<String>> list) {
-        //VICTORIA
+
     }
 
     @Given("the business has the following holidays")
     public void theBusinessHasTheFollowingHolidays(List<List<String>> list) {
-        //VICTORIA
+
     }
 
     /**
@@ -490,6 +490,13 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param date
+     * @param service
+     * @param time
+     */
     @When("{string} schedules an appointment on {string} for {string} at {string}")
     public void schedulesAnAppointmentOnForAt(String customer, String date, String service, String time) {
         try{
@@ -1287,6 +1294,7 @@ public class CucumberStepDefinitions {
 /*
 *@author Victoria Sanchez
 */
+
     @When("{string} requests the appointment calendar for the week starting on {string}")
     public void requestsTheAppointmentCalendarForTheWeekStartingOn(String arg0, String arg1) {
      try {
@@ -1326,6 +1334,7 @@ public class CucumberStepDefinitions {
         errorCounter++;
 	}
     }
+
     
     @After
     public void tearDown() {
