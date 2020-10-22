@@ -150,7 +150,6 @@ public class FlexiBookController {
 		e.printStackTrace();
 		}
 	}*/
-	
 
 	/**
 	 * @author Fiona Ryan
@@ -577,7 +576,7 @@ public class FlexiBookController {
 			}
 			
 			else {
-				//flexibook.addService(name, duration, downtimeDuration, downtimeStart);
+				flexibook.addService(name, duration, downtimeDuration, downtimeStart);
 			}
 			
 		} catch (RuntimeException e) {
