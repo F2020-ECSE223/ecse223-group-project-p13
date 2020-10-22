@@ -28,5 +28,9 @@ public class FlexiBookApplication {
     public static User getUser(){
         return currentUser;
     }
+	public static void setCurrentUser(User user) {
+    	currentUser=user;
+	}
+    
     	
 }
