@@ -27,6 +27,9 @@ public class CucumberStepDefinitions {
     private FlexiBook flexiBook;
     private String error;
     private int errorCounter;
+    
+    private List<TOAppointmentCalendarItem> output1;
+    private List<TOAppointmentCalendarItem> output2;
 
 
     /**
@@ -465,37 +468,74 @@ public class CucumberStepDefinitions {
     @Then("the service combos {string} shall not contain service {string}")
     public void theServiceCombosShallNotContainService(String arg0, String arg1) {
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @When("the user tries to log in with username {string} and password {string}")
     public void theUserTriesToLogInWithUsernameAndPassword(String arg0, String arg1) {
+        try {
+		FlexiBookController.login(arg0, arg1); 
+	}
+	catch(InvalidInputException e){
+		error+=e.getMessage();
+		errorCounter++;
+	    }
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @Then("the user should be successfully logged in")
     public void theUserShouldBeSuccessfullyLoggedIn() {
+        assertTrue(FlexiBookApplication.getUser()!=null);
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @Then("the user should not be logged in")
     public void theUserShouldNotBeLoggedIn() {
+      assertTrue(FlexiBookApplication.getUser()==null);
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @Then("a new account shall be created")
     public void aNewAccountShallBeCreated() {
+      assertEquals(FlexiBookApplication.getUser(),FlexiBookApplication.getFlexiBook().getOwner());
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @Then("the account shall have username {string} and password {string}")
     public void theAccountShallHaveUsernameAndPassword(String arg0, String arg1) {
+    assertEquals(FlexiBookApplication.getUser().getUsername(), arg0);
+	assertEquals(FlexiBookApplication.getUser().getPassword(), arg1);
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @Then("the user shall be successfully logged in")
     public void theUserShallBeSuccessfullyLoggedIn() {
+        assertTrue(FlexiBookApplication.getUser()!=null);
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @Given("the user is logged out")
     public void theUserIsLoggedOut() {
+        FlexiBookApplication.setCurrentUser(null);
     }
-
+/**
+*@author Victoria Sanchez
+*/
     @When("the user tries to log out")
     public void theUserTriesToLogOut() {
+        try {
+		FlexiBookController.logout();
+	}
+	catch(Exception e) {
+		error += e.getMessage();
+        errorCounter++;
+	}
     }
 
     @Given("no business exists")
@@ -630,21 +670,47 @@ public class CucumberStepDefinitions {
     public void theServiceShallBeUpdatedToNameDurationStartOfDownTimeAndDownTimeDuration(String arg0, String arg1, String arg2, String arg3, String arg4) {
     }
 
-
+/*
+*@author Victoria Sanchez
+*/
     @When("{string} requests the appointment calendar for the week starting on {string}")
     public void requestsTheAppointmentCalendarForTheWeekStartingOn(String arg0, String arg1) {
+     try {
+	output1=FlexiBookController.getAvailableAppointmentCalendarWeek(arg1);
+	output2=FlexiBookController.getUnavailableAppointmentCalendarWeek(arg1);
+		
+	}catch(Exception e) {
+		error += e.getMessage();
+        errorCounter++;
+	    }
     }
-
+/*
+*@author Victoria Sanchez
+*/
     @Then("the following slots shall be unavailable:")
-    public void theFollowingSlotsShallBeUnavailable() {
+    public void theFollowingSlotsShallBeUnavailable(List<List<String>> list) {
+        assertEquals(output2,list);
     }
-
+/*
+*@author Victoria Sanchez
+*/
     @Then("the following slots shall be available:")
-    public void theFollowingSlotsShallBeAvailable() {
+    public void theFollowingSlotsShallBeAvailable(List<List<String>> list) {
+        assertEquals(output1,list);
     }
-
+/*
+*@author Victoria Sanchez
+*/
     @When("{string} requests the appointment calendar for the day of {string}")
     public void requestsTheAppointmentCalendarForTheDayOf(String arg0, String arg1) {
+        try {
+		output1=FlexiBookController.getAvailableAppointmentCalendarDay(arg1);
+		output2=FlexiBookController.getUnavailableAppointmentCalendar(arg1);
+
+	}catch(Exception e) {
+		error += e.getMessage();
+        errorCounter++;
+	}
     }
     
     @After
