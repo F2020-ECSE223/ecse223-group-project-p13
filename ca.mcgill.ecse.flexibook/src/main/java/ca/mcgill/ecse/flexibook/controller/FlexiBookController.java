@@ -231,7 +231,148 @@ public class FlexiBookController {
 		t1.addAll(t5);
 		t1.addAll(t6);
 		t1.addAll(t7);
-
+    
+	/**
+	 * @author cesar
+	 * @param aUsername
+	 * @param aPassword
+	 * @throw InvalidInputException
+	 */
+	
+	public static void customerSignUp(String aUsername, String aPassword/**, FlexiBook aFlexiBook**/) throws InvalidInputException {
+		
+		FlexiBook flexibook = 	FlexiBookApplication.getFlexiBook();
+		//String message = null;
+		
+		try {
+			
+			if (findUser(aUsername)!=null) {
+			//	message = "An account with this username already exists";
+				throw new InvalidInputException ("An account with this username already exists");
+			}
+			
+			if(aUsername == null || aPassword == null) {
+				//message = "The username/password cannot be empty";
+				throw new InvalidInputException ("The username/password cannot be empty");
+			}
+			if(findUser(aUsername)!=null && FlexiBookApplication.getUser() == findUser(aUsername)) {
+				
+				throw new InvalidInputException("You must log out of owner account before creating a new account");
+			
+			}
+			
+			flexibook.addCustomer(aUsername, aPassword);
+			
+			
+		}
+				
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}	
+		
+	}
+	
+	/**
+	 * @author cesar
+	 * @param oldUsername
+	 * @param newUsername
+	 * @param newPassword
+	 * @throw InvalidInputException
+	 */
+	
+	public static void updateAccount(String oldUsername, String newUsername, String newPassword) throws InvalidInputException {
+		
+		try {
+			
+			if(newUsername == null || newPassword == null) {
+				throw new InvalidInputException ("The username/password cannot be empty");
+			}
+			
+			User user = findUser(oldUsername);
+			//Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+			
+			if(user == null) {
+				throw new InvalidInputException ("No account with this username can be found");
+			}
+			
+			if (user.getUsername() == oldUsername) {
+				
+				user.setUsername(newUsername);
+				user.setPassword(newPassword);
+				
+			}
+		
+		} 
+				
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}	 
+		
+	}
+	
+	
+	/**
+	 * @author cesar
+	 * @param aUsername
+	 */
+	
+	private static User findUser(String aUsername) {
+		
+		User user = null;
+		
+		if (FlexiBookApplication.getFlexiBook().getOwner()!=null) {
+			if (FlexiBookApplication.getFlexiBook().getOwner().getUsername().equals(aUsername)) {
+				user = (Owner) FlexiBookApplication.getFlexiBook().getOwner();
+				return user;
+			}
+		}
+		
+		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+			if(customer.getUsername() == aUsername) {
+				user = customer;
+				return user;
+			}
+		
+		}
+		return user;
+	}
+	
+	/**
+	 * @author cesar
+	 * @param aUsername
+	 * @throw InvalidInputException
+	 */
+	
+	public static void deleteCustomerAccount(String aUsername) throws InvalidInputException {
+		
+		//Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
+		User user = findUser(aUsername);
+		Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+		FlexiBook flexibook = 	FlexiBookApplication.getFlexiBook();
+		
+		
+		try {
+			
+			if(user.equals(owner) ) {
+				throw new InvalidInputException ("Cannot delete owner account");
+				
+			}
+			
+			if(user != null) {
+				flexibook.getCustomers().remove(user);
+				user.delete();
+			}
+		}
+		
+		catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+		}
+	}
+	
+	
+	public static void makeAppointment(){ }
+	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
+=======
 		return t1;
 
 	}
