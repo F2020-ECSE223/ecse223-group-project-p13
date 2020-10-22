@@ -19,6 +19,7 @@ import ca.mcgill.ecse.flexibook.model.ComboItem;
 import ca.mcgill.ecse.flexibook.model.Customer;
 import ca.mcgill.ecse.flexibook.model.FlexiBook;
 import ca.mcgill.ecse.flexibook.model.Owner;
+import ca.mcgill.ecse.flexibook.model.*;
 import ca.mcgill.ecse.flexibook.model.Service;
 import ca.mcgill.ecse.flexibook.model.ServiceCombo;
 import ca.mcgill.ecse.flexibook.model.TimeSlot;
@@ -159,7 +160,7 @@ public class FlexiBookController {
 	 * @param newTime
 	 * @throws InvalidInputException
 	 * */
-	public static void makeAppointment(User customer, String date, String newTime, String serviceName) throws InvalidInputException {
+	public static void makeAppointment(String customer, String date, String newTime, String serviceName) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		try {
 			Appointment appt = null;
@@ -175,14 +176,16 @@ public class FlexiBookController {
 				throw new InvalidInputException("An owner cannot make an appointment");
 
 			}
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm");
+			Time sTime = Time.valueOf(LocalTime.parse(newTime, formatter));
 
 			for (BookableService s : flexibook.getBookableServices()) {
 				if (s instanceof Service) {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm");
-					Time sTime = Time.valueOf(LocalTime.parse(newTime, formatter));
-					if (appt.getTimeSlot(). != null) {
-						throw new InvalidInputException("slot is occupied by existing appointment");
 
+					for (Appointment a : flexibook.getAppointments()) {
+						if (a.getTimeSlot().equals(sTime)) {
+							throw new InvalidInputException("slot is occupied by existing appointment");
+						}
 					}
 
 					if (((Service) s).getDowntimeDuration() < ((Service) BookableService.getWithName(serviceName)).getDuration()) {
@@ -199,39 +202,48 @@ public class FlexiBookController {
 					} else if (cleanDate(appt.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
 						throw new InvalidInputException("slot is in 2019");
 
-					} else if (flexibook.getAppointment(newTime) == null) {
-						flexibook.addAppointment(appt);
-
 					} else if (((Service) s).getDowntimeDuration() > ((Service) BookableService.getWithName(serviceName)).getDuration()) {
 						flexibook.addAppointment(appt);
 					}
-				}
-					if (s instanceof ServiceCombo) {
-						if (appt.getTimeSlot().getStartTime() != null) {
-							throw new InvalidInputException("slot is occupied by existing appointment");
-
-						} else if (((Service) s).getDowntimeDuration() < ((Service) BookableService.getWithName(serviceName)).getDuration()) {
-							throw new InvalidInputException("slot corresponds to down time that is not long enough");
-
-						} else if (appt.getTimeSlot().getStartDate() != null) {
-							if (flexibook.getBusiness().hasHolidays()) {
-								throw new InvalidInputException("slot is during holiday");
+					else {
+						for (TimeSlot t : flexibook.getTimeSlots()) {
+							if (t.getStartTime().equals(sTime)) {
+								flexibook.addAppointment(appt);
 							}
-							if (flexibook.getBusiness().hasBusinessHours()) {
-								throw new InvalidInputException("slot is not during a business hour (saturday)");
-							}
-
-						} else if (cleanDate(appt.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
-							throw new InvalidInputException("slot is in 2019");
-
-						} else if (flexibook.getAppointment(newTime) == null) {
-							flexibook.addAppointment(appt);
-
-						} else if (((Service) s).getDowntimeDuration() > ((Service) BookableService.getWithName(serviceName)).getDuration()) {
-							flexibook.getAppointments().add(appt);
 						}
 					}
 				}
+				if (s instanceof ServiceCombo) {
+					for (Appointment a : flexibook.getAppointments()) {
+						if (a.getTimeSlot().equals(sTime)) {
+							throw new InvalidInputException("slot is occupied by existing appointment");
+						}
+					} if (((Service) s).getDowntimeDuration() < ((Service) BookableService.getWithName(serviceName)).getDuration()) {
+						throw new InvalidInputException("slot corresponds to down time that is not long enough");
+
+					} else if (appt.getTimeSlot().getStartDate() != null) {
+						if (flexibook.getBusiness().hasHolidays()) {
+							throw new InvalidInputException("slot is during holiday");
+						}
+						if (flexibook.getBusiness().hasBusinessHours()) {
+							throw new InvalidInputException("slot is not during a business hour (saturday)");
+						}
+
+					} else if (cleanDate(appt.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) <= 0) {
+						throw new InvalidInputException("slot is in 2019");
+
+					} else if (((Service) s).getDowntimeDuration() > ((Service) BookableService.getWithName(serviceName)).getDuration()) {
+						flexibook.getAppointments().add(appt);
+					}
+					else {
+						for (TimeSlot t : flexibook.getTimeSlots()) {
+							if (t.getStartTime().equals(sTime)) {
+								flexibook.addAppointment(appt);
+							}
+						}
+					}
+				}
+			}
 
 		}
  		catch(RuntimeException e){
@@ -243,23 +255,33 @@ public class FlexiBookController {
 	/**
 	 * @autho Fiona Ryan
 	 * @param customer
-	 * @param appointment
+	 * @param apptType
+	 * @param time
+	 * @param date
 	 * @throws InvalidInputException
 	 */
-	public static void cancelAppointment(User customer, Appointment appointment) throws InvalidInputException {
+	public static void cancelAppointment(String customer, String apptType, String date, String time) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-		try{
-			if(customer.equals(appointment.getCustomer())){
-				throw new InvalidInputException("A customer can only cancel their own appointments");
+		try {
+			Date sDate =  Date.valueOf(LocalDate.parse(date, DateTimeFormatter.ofPattern("uuuu-MM-dd")));
+
+			for (Appointment a : flexibook.getAppointments()) {
+				if (!a.getCustomer().getUsername().equals(customer)) {
+					throw new InvalidInputException("A customer can only cancel their own appointments");
+
+				}if (a.getTimeSlot().getStartDate().equals((sDate))) {
+					throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
+				}
 			}
-			if(customer.equals(flexibook.getOwner())){
+			if (customer.equals(flexibook.getOwner())) {
 				throw new InvalidInputException("An owner cannot cancel an appointment");
-			}
-			if(cleanDate(appointment.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
-				throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
-			}
-			else{
-				appointment.delete();
+
+			} else {
+				for (Appointment a : flexibook.getAppointments()) {
+					if (a.getCustomer().getUsername().equals(customer)) {
+						a.delete();
+					}
+				}
 			}
 		}
 		catch (RuntimeException e){
@@ -279,8 +301,9 @@ public class FlexiBookController {
 	 * @param time
 	 * @throws InvalidInputException
 	 * */
-	public static void updateAppointment(String customer, String date, String time, String serviceType, String aService,
+	public static void updateAppointment(String customer, String serviceType, String date, String time, String aService,
 										 String newTime, String newDate, String newAction, String newComboItem ) throws InvalidInputException {
+
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 		try {
@@ -554,7 +577,7 @@ public class FlexiBookController {
 			}
 			
 			else {
-				flexibook.addService(name, duration, downtimeDuration, downtimeStart);
+				//flexibook.addService(name, duration, downtimeDuration, downtimeStart);
 			}
 			
 		} catch (RuntimeException e) {

@@ -330,72 +330,281 @@ public class CucumberStepDefinitions {
     public void isLoggedInToTheirAccount(String arg0) {
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param type
+     * @param date
+     * @param time
+     */
     @When("{string} attempts to cancel their {string} appointment on {string} at {string}")
-    public void attemptsToCancelTheirAppointmentOnAt(String arg0, String arg1, String arg2, String arg3) {
+    public void attemptsToCancelTheirAppointmentOnAt(String customer, String type, String date, String time) {
+        try{
+            FlexiBookController.cancelAppointment(customer,type,date,time);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param type
+     * @param date
+     * @param time
+     */
     @Then("{string}'s {string} appointment on {string} at {string} shall be removed from the system")
-    public void sAppointmentOnAtShallBeRemovedFromTheSystem(String arg0, String arg1, String arg2, String arg3) {
+    public void sAppointmentOnAtShallBeRemovedFromTheSystem(String customer, String type, String date, String time) {
+
+        for (Appointment appt : flexiBook.getAppointments()) {
+            if (appt.getCustomer().getUsername().equals(customer)) {
+                if (appt.getBookableService().equals(type)) {
+                    if(appt.getTimeSlot().getStartTime().equals(time)){
+                        if(appt.getTimeSlot().getStartDate().equals(date)){
+                            fail();
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param arg0
+     */
     @Then("there shall be {int} less appointment in the system")
     public void thereShallBeLessAppointmentInTheSystem(int arg0) {
+        assertEquals(flexiBook.numberOfAppointments() - arg0, flexiBook.getAppointments().size());
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param arg0
+     */
     @Then("the system shall report {string}")
     public void theSystemShallReport(String arg0) {
+        assertTrue(error.contains(arg0));
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param type
+     * @param date
+     * @param startTime
+     * @param endTime
+     */
     @Then("{string} shall have a {string} appointment on {string} from {string} to {string}")
-    public void shallHaveAAppointmentOnFromTo(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void shallHaveAAppointmentOnFromTo(String customer, String type, String date, String startTime, String endTime) {
+        boolean test = false;
+        for (Appointment appt : flexiBook.getAppointments()) {
+            if (appt.getCustomer().getUsername().equals(customer)) {
+                if (appt.getBookableService().equals(type)) {
+                    if(appt.getTimeSlot().getStartTime().equals(startTime)){
+                        if(appt.getTimeSlot().getEndTime().equals(endTime)){
+                            if(appt.getTimeSlot().getStartDate().equals(date)) {
+                                test = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        assertTrue(test);
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param arg0
+     */
     @Then("there shall be {int} more appointment in the system")
     public void thereShallBeMoreAppointmentInTheSystem(int arg0) {
+        assertEquals(flexiBook.numberOfAppointments() + arg0, flexiBook.getAppointments().size());
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer1
+     * @param customer2
+     * @param type
+     * @param date
+     * @param time
+     */
     @When("{string} attempts to cancel {string}'s {string} appointment on {string} at {string}")
-    public void attemptsToCancelSAppointmentOnAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void attemptsToCancelSAppointmentOnAt(String customer1, String customer2, String type, String date, String time) {
+        try{
+            FlexiBookController.cancelAppointment(customer2,type,date,time);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
     @Given("the business has the following opening hours")
     public void theBusinessHasTheFollowingOpeningHours() {
+        //VICTORIA
     }
 
     @Given("the business has the following holidays")
     public void theBusinessHasTheFollowingHolidays() {
+        //VICTORIA
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param date
+     * @param service
+     * @param time
+     */
     @When("{string} schedules an appointment on {string} for {string} at {string}")
-    public void schedulesAnAppointmentOnForAt(String arg0, String arg1, String arg2, String arg3) {
+    public void schedulesAnAppointmentOnForAt(String customer, String date, String service, String time) {
+        try{
+            FlexiBookController.makeAppointment(customer,date,service,time);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param optionalService
+     */
     @When("{string} selects {string} for the service combo")
-    public void selectsForTheServiceCombo(String arg0, String arg1) {
+    public void selectsForTheServiceCombo(String customer, String optionalService) {
+        boolean test = false;
+        for (BookableService s : flexiBook.getBookableServices()) {
+            if(s.getName().equals(optionalService)){
+               test = true;
+            }
+        }
+        assertTrue(test);
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param date
+     * @param service
+     * @param time
+     */
     @When("{string} schedules an appointment on on {string} for {string} at {string}")
-    public void schedulesAnAppointmentOnOnForAt(String arg0, String arg1, String arg2, String arg3) {
+    public void schedulesAnAppointmentOnOnForAt(String customer, String date, String service, String time) {
+        try{
+            FlexiBookController.makeAppointment(customer,date,time,service);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param type
+     * @param date
+     * @param startTime
+     * @param newDate
+     * @param newStartTime
+     */
     @When("{string} attempts to update their {string} appointment on {string} at {string} to {string} at {string}")
-    public void attemptsToUpdateTheirAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    public void attemptsToUpdateTheirAppointmentOnAtToAt(String customer, String type, String date, String startTime, String newDate, String newStartTime) {
+        try{
+            FlexiBookController.updateAppointment(customer,type,date,startTime,null,newStartTime,newDate,null,null);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param arg0
+     */
     @Then("the system shall report that the update was {string}")
     public void theSystemShallReportThatTheUpdateWas(String arg0) {
+        assertTrue(error.contains(arg0));
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param type
+     * @param service
+     * @param date
+     * @param time
+     */
     @Given("{string} has a {string} appointment with optional sevices {string} on {string} at {string}")
-    public void hasAAppointmentWithOptionalSevicesOnAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void hasAAppointmentWithOptionalSevicesOnAt(String customer, String type, String service, String date, String time) {
+        boolean test = false;
+        for (Appointment appt : flexiBook.getAppointments()) {
+            if (appt.getCustomer().getUsername().equals(customer)) {
+                if (appt.getBookableService().equals(type)) {
+                    if(appt.getTimeSlot().getStartTime().equals(time)){
+                        if(appt.getTimeSlot().getStartDate().equals(date)) {
+                            for(ComboItem c: appt.getChosenItems()){
+                                if (c.getService().getName().equals(service)) {
+                                    test = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        assertTrue(test);
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer
+     * @param action
+     * @param comboItem
+     * @param type
+     * @param date
+     * @param time
+     */
     @When("{string} attempts to {string} {string} from their {string} appointment on {string} at {string}")
-    public void attemptsToFromTheirAppointmentOnAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    public void attemptsToFromTheirAppointmentOnAt(String customer, String action, String comboItem, String type, String date, String time) {
+        try{
+            FlexiBookController.updateAppointment(customer,type,date,time,null,null,null,action,comboItem);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
+    /**
+     * @author Fiona Ryan
+     * @param customer1
+     * @param customer2
+     * @param type
+     * @param date
+     * @param time
+     * @param newDate
+     * @param newTime
+     */
     @When("{string} attempts to update {string}'s {string} appointment on {string} at {string} to {string} at {string}")
-    public void attemptsToUpdateSAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
+    public void attemptsToUpdateSAppointmentOnAtToAt(String customer1, String customer2, String type, String date, String time, String newDate, String newTime) {
+        try{
+            FlexiBookController.updateAppointment(customer1,type,date,time,type,newTime,newDate,null,null);
+        }
+        catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
     @When("{string} initiates the addition of the service {string} with duration {string}, start of down time {string} and down time duration {string}")
@@ -404,6 +613,7 @@ public class CucumberStepDefinitions {
 
     @Then("the service {string} shall exist in the system")
     public void theServiceShallExistInTheSystem(String arg0) {
+
     }
 
     @Then("the service {string} shall have duration {string}, start of down time {string} and down time duration {string}")
