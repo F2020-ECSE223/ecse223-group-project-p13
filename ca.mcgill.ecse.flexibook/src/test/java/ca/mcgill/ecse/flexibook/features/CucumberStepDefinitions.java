@@ -13,6 +13,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -20,51 +21,109 @@ public class CucumberStepDefinitions {
     private FlexiBook flexiBook;
     private String error;
     private int errorCounter;
+    private User user;
     	
-   
-     /**   @Given("there is no existing username {string}")
-    	public void there_is_no_existing_username(String string) {
-    	    // Write code here that turns the phrase above into concrete actions
-    	    throw new io.cucumber.java.PendingException();
-    	}
+    
+    	/**
+    	 * @author cesar
+    	 */
 
+        @Given("there is no existing username {string}")
+    	public void there_is_no_existing_username(String string) {
+    	    
+    		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+    			assertTrue(customer.getUsername() != string);
+    		
+    		}
+        	
+        	
+    	    //throw new io.cucumber.java.PendingException();
+    	}
+        
+    	/**
+    	 * @author cesar
+    	 */
+        
     	@When("the user provides a new username {string} and a password {string}")
     	public void the_user_provides_a_new_username_and_a_password(String string, String string2) {
-    	    // Write code here that turns the phrase above into concrete actions
-    	    throw new io.cucumber.java.PendingException();
+    		
+            try{
+                FlexiBookController.customerSignUp(string, string2);
+            }
+            catch (InvalidInputException e){
+                error += e.getMessage();
+                errorCounter++;
+            }
+    		
     	}
+    
+    	/**
+    	 * @author cesar
+    	 */
+    	
     	@Then("a new customer account shall be created")
     	public void a_new_customer_account_shall_be_created() {
-    	    // Write code here that turns the phrase above into concrete actions
-    	    throw new io.cucumber.java.PendingException();
+    			
     	}
+    	
+    	/**
+    	 * @author cesar
+    	 */
+    	
     	@Then("the account shall have username {string} and password {string}")
     	public void the_account_shall_have_username_and_password(String string, String string2) {
-    	    // Write code here that turns the phrase above into concrete actions
-    	    throw new io.cucumber.java.PendingException();
+    		
+    		boolean test = false;
+    		
+    		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+    			if(customer.getUsername().equals(string)) {
+    				if(customer.getPassword().equals(string2)) {
+    					test=true;
+    				}
+    			}
+    		}
+    		assertTrue(test);
     	}
 
-
-    	@When("the user provides a new username {string} and a password {string}")
+    	/**
+    	 * @author cesar
+    	 */
+    	
+    	/*@When("the user provides a new username {string} and a password {string}")
     	public void the_user_provides_a_new_username_and_a_password1(String string, String string2) {
-    	    // Write code here that turns the phrase above into concrete actions
-    		throw new io.cucumber.java.PendingException();
-   		}
+   		
+    			boolean test = false;
+    		
+                if(string == null || string2 == null) {
+                	test = true;
+                }
+            
+                assertTrue(test);
 
+    		
+    	}*/
+    	
+    	/**
+    	 * @author cesar
+    	 */
+    	
     	@Then("no new account shall be created")
     	public void no_new_account_shall_be_created() {
    		    // Write code here that turns the phrase above into concrete actions
-   		    throw new io.cucumber.java.PendingException();
+   		 //   throw new io.cucumber.java.PendingException();
    		}
+    	
+    	/**
+    	 * @author cesar
+    	 */
+    	
     	@Then("an error message {string} shall be raised")
     	public void an_error_message_shall_be_raised(String string) {
-   		    // Write code here that turns the phrase above into concrete actions
-   		    throw new io.cucumber.java.PendingException();
+   		   	
+    		assertTrue(string, false);
+    		
    		}
 
-**/
-
-    
 
     /**
      * @author Tomasz Mroz

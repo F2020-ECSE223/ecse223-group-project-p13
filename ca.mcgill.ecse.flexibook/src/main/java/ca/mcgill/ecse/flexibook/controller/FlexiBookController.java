@@ -34,20 +34,27 @@ public class FlexiBookController {
 	
 	public static void customerSignUp(String aUsername, String aPassword/**, FlexiBook aFlexiBook**/) throws InvalidInputException {
 		
-		User user = FlexiBookApplication.getUser();
+		FlexiBook flexibook = 	FlexiBookApplication.getFlexiBook();
+		//String message = null;
 		
 		try {
 			
 			if (findUser(aUsername)!=null) {
+			//	message = "An account with this username already exists";
 				throw new InvalidInputException ("An account with this username already exists");
 			}
 			
 			if(aUsername == null || aPassword == null) {
+				//message = "The username/password cannot be empty";
 				throw new InvalidInputException ("The username/password cannot be empty");
 			}
+			if(findUser(aUsername)!=null && FlexiBookApplication.getUser() == findUser(aUsername)) {
+				
+				throw new InvalidInputException("You must log out of owner account before creating a new account");
 			
-			user.setUsername(aUsername);
-			user.setPassword(aPassword);
+			}
+			
+			flexibook.addCustomer(aUsername, aPassword);
 			
 			
 		}
@@ -70,6 +77,10 @@ public class FlexiBookController {
 		
 		try {
 			
+			if(newUsername == null || newPassword == null) {
+				throw new InvalidInputException ("The username/password cannot be empty");
+			}
+			
 			User user = findUser(oldUsername);
 			//Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
 			
@@ -83,18 +94,6 @@ public class FlexiBookController {
 				user.setPassword(newPassword);
 				
 			}
-			
-			
-		/*	if (owner.getUsername().equals(oldUsername)) {
-				
-				owner.setUsername(newUsername);
-				owner.setPassword(newPassword);
-				
-			}
-			
-			else {
-				throw new InvalidInputException("No user found");
-			} */
 		
 		} 
 				
@@ -142,6 +141,8 @@ public class FlexiBookController {
 		//Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
 		User user = findUser(aUsername);
 		Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+		FlexiBook flexibook = 	FlexiBookApplication.getFlexiBook();
+		
 		
 		try {
 			
@@ -151,6 +152,7 @@ public class FlexiBookController {
 			}
 			
 			if(user != null) {
+				flexibook.getCustomers().remove(user);
 				user.delete();
 			}
 		}
