@@ -397,28 +397,93 @@ public class CucumberStepDefinitions {
     public void attemptsToUpdateSAppointmentOnAtToAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
     }
 
+    /**
+     * 
+     * @author Hana Gustyn
+     */
     @When("{string} initiates the addition of the service {string} with duration {string}, start of down time {string} and down time duration {string}")
-    public void initiatesTheAdditionOfTheServiceWithDurationStartOfDownTimeAndDownTimeDuration(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void initiatesTheAdditionOfTheServiceWithDurationStartOfDownTimeAndDownTimeDuration(String username, String name, String duration, String downtimeStart, String downtimeDuration) {
+    	try{
+            FlexiBookController.addService(username, name, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
+        }
+        catch (InvalidInputException e){
+            error += e.getMessage();
+            errorCounter++;
+        }
     }
-
+    
+    /**
+     * @author Hana Gustyn
+     */
     @Then("the service {string} shall exist in the system")
-    public void theServiceShallExistInTheSystem(String arg0) {
+    public void theServiceShallExistInTheSystem(String name) {
+    	boolean test = false;
+        for(BookableService b: flexiBook.getBookableServices()){
+            if(b.getName().equals(name)){
+                test = true;
+            }
+        }
+        assertTrue(test);
     }
 
+    /**
+     * @author Hana Gustyn
+     */
     @Then("the service {string} shall have duration {string}, start of down time {string} and down time duration {string}")
-    public void theServiceShallHaveDurationStartOfDownTimeAndDownTimeDuration(String arg0, String arg1, String arg2, String arg3) {
+    public void theServiceShallHaveDurationStartOfDownTimeAndDownTimeDuration(String name, String duration, String downtimeStart, String downtimeDuration) {
+    	boolean test = false;
+        for(BookableService b: flexiBook.getBookableServices()){
+        	if (b instanceof Service) {
+        		Service s = (Service) b;
+        		
+        		if(s.getName().equals(name) && (s.getDuration() == Integer.parseInt(duration)) && (s.getDowntimeStart() == Integer.parseInt(downtimeStart)) && (s.getDowntimeDuration() == Integer.parseInt(downtimeDuration))){
+                    test = true;
+                }
+        	}
+        }
+        assertTrue(test);
     }
 
+    /**
+     * @author Hana Gustyn
+     */
     @Then("the number of services in the system shall be {string}")
-    public void theNumberOfServicesInTheSystemShallBe(String arg0) {
+    public void theNumberOfServicesInTheSystemShallBe(String number) {
+    	int services = 0;
+    	
+    	for(BookableService b: flexiBook.getBookableServices()) {
+    		if (b instanceof Service) {
+    			services++;
+    		}
+    	}
+    	assertEquals(services, Integer.parseInt(number));
     }
 
+    /**
+     * @author Hana Gustyn
+     */
     @Then("the service {string} shall not exist in the system")
-    public void theServiceShallNotExistInTheSystem(String arg0) {
+    public void theServiceShallNotExistInTheSystem(String name) {
+    	assertFalse(BookableService.hasWithName(name));
     }
 
+    /**
+     *@author Hana Gustyn
+     */
     @Then("the service {string} shall still preserve the following properties:")
-    public void theServiceShallStillPreserveTheFollowingProperties(String arg0) {
+    public void theServiceShallStillPreserveTheFollowingProperties(String name, List<List<String>> list) {
+    	Service service = (Service) BookableService.getWithName(name);
+    	
+    	for (List<String> row:list) {
+    		if(row.get(0).equals("name")) {
+    			continue;
+    		}
+    		
+    		assertEquals(name, row.get(0));
+    		assertEquals(service.getDuration(), Integer.parseInt(row.get(1)));
+    		assertEquals(service.getDowntimeStart(), Integer.parseInt(row.get(2)));
+    		assertEquals(service.getDowntimeDuration(), Integer.parseInt(row.get(3)));
+    	}
     }
 
     @Given("an owner account exists in the system with username {string} and password {string}")
@@ -453,20 +518,68 @@ public class CucumberStepDefinitions {
     public void theAccountWithTheUsernameExists(String arg0) {
     }
 
+    /**
+     *@author Hana Gustyn
+     */
     @Then("an error message {string} shall be raised")
-    public void anErrorMessageShallBeRaised(String arg0) {
+    public void anErrorMessageShallBeRaised(String errorMsg) {
+    	assertTrue(error.contains(errorMsg));
+    	
     }
 
+    /**
+     *@author Hana Gustyn
+     */
     @When("{string} initiates the deletion of service {string}")
-    public void initiatesTheDeletionOfService(String arg0, String arg1) {
+    public void initiatesTheDeletionOfService(String username, String name) {
+    	try{
+            FlexiBookController.deleteService(username, name);
+        }
+        catch (InvalidInputException e){
+            error += e.getMessage();
+            errorCounter++;
+        }
     }
 
+    /**
+     * @author Hana Gustyn
+     */
     @Then("the service combos {string} shall not exist in the system")
-    public void theServiceCombosShallNotExistInTheSystem(String arg0) {
+    public void theServiceCombosShallNotExistInTheSystem(String serviceCombos) {
+    	String[] combos = serviceCombos.split(",");
+    	Boolean test = false;
+    	
+    	for (int i = 0; i < combos.length; i++) {
+    		if(BookableService.hasWithName(combos[i])) {
+    			test = true;
+    		}
+    	}
+    	assertFalse(test);
     }
 
+    /**
+     * @author Hana Gustyn
+     */
     @Then("the service combos {string} shall not contain service {string}")
-    public void theServiceCombosShallNotContainService(String arg0, String arg1) {
+    public void theServiceCombosShallNotContainService(String serviceCombos, String name) {
+    	String[] combos = serviceCombos.split(",");
+    	
+    	for (int i = 0; i < combos.length; i++) {
+    		ServiceCombo servCombo = (ServiceCombo) BookableService.getWithName(combos[i]);
+    		Boolean test = false;
+    		
+    		if(servCombo.getMainService().getService().getName().equals(name)) {
+    			test = true;
+    			
+    			for (ComboItem c: servCombo.getServices()) {
+    				if(c.getService().getName().equals(name)) {
+    					test = true;
+    				}
+    			}
+    		}
+    		assertFalse(test);
+    	}
+    	
     }
 /**
 *@author Victoria Sanchez
