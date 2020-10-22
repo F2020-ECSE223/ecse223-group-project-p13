@@ -891,34 +891,99 @@ public class CucumberStepDefinitions {
 
     @Given("no business exists")
     public void noBusinessExists() {
+        flexiBook.setBusiness(null);
     }
 
     @When("the user tries to set up the business information with new {string} and {string} and {string} and {string}")
-    public void theUserTriesToSetUpTheBusinessInformationWithNewAndAndAnd(String arg0, String arg1, String arg2, String arg3) {
+    public void theUserTriesToSetUpTheBusinessInformationWithNewAndAndAnd(String name, String address, String phoneNumber, String email) {
+        try{
+            FlexiBookController.setUpBusinessInfo(name, address, phoneNumber, email, null, null,null, null, null, null,null,true, false, false,false);
+        } catch (InvalidInputException e) {
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
     @Then("a new business with new {string} and {string} and {string} and {string} shall {string} created")
-    public void aNewBusinessWithNewAndAndAndShallCreated(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void aNewBusinessWithNewAndAndAndShallCreated(String name, String address, String phoneNumber, String email, String arg4) {
+        boolean test = false;
+        if(arg4.equals("be") && flexiBook.getBusiness().getName().equals(name) && flexiBook.getBusiness().getAddress().equals(address) && flexiBook.getBusiness().getPhoneNumber().equals(phoneNumber) && flexiBook.getBusiness().getEmail().equals(email)){
+            test = true;
+        }else if(arg4.equals("not be")){
+            test = true;
+        }
+        assertTrue(test);
+
     }
 
     @Then("an error message {string} shall {string} raised")
-    public void anErrorMessageShallRaised(String arg0, String arg1) {
+    public void anErrorMessageShallRaised(String error, String resultError) {
+        boolean test = false;
+        if(resultError.equals("be")){
+            if(!error.equals(null)){
+                test = true;
+            }
+        }if(resultError.equals("not be")){
+            if(error.length() <=0){
+                test = true;
+            }
+        }
+        assertTrue(test);
     }
 
     @Given("a business exists with the following information:")
-    public void aBusinessExistsWithTheFollowingInformation() {
+    public void aBusinessExistsWithTheFollowingInformation(List<List<String>> list) {
+        for(List<String> row :list) {
+            if (row.get(0).equals("name")) {
+                continue;
+            }
+            flexiBook.setBusiness(new Business(row.get(0), row.get(1), row.get(2), row.get(3), flexiBook));
+            break;
+
+
+        }
     }
 
     @Given("the business has a business hour on {string} with start time {string} and end time {string}")
-    public void theBusinessHasABusinessHourOnWithStartTimeAndEndTime(String arg0, String arg1, String arg2) {
+    public void theBusinessHasABusinessHourOnWithStartTimeAndEndTime(String dayOfWeek, String startTime, String endTime) {
+        BusinessHour.DayOfWeek day = null;
+        if(dayOfWeek.equals("Monday")){
+            day = BusinessHour.DayOfWeek.Monday;
+        }else if(dayOfWeek.equals("Tuesday")){
+            day = BusinessHour.DayOfWeek.Tuesday;
+        }else if(dayOfWeek.equals("Wednesday")){
+            day = BusinessHour.DayOfWeek.Wednesday;
+        }else if(dayOfWeek.equals("Thursday")){
+            day = BusinessHour.DayOfWeek.Thursday;
+        }else if(dayOfWeek.equals("Friday")){
+            day = BusinessHour.DayOfWeek.Friday;
+        }else if(dayOfWeek.equals("Saturday")){
+            day = BusinessHour.DayOfWeek.Saturday;
+        }else if(dayOfWeek.equals("Sunday")){
+            day = BusinessHour.DayOfWeek.Sunday;
+        }
+        LocalTime stTemp = LocalTime.parse(startTime);
+        LocalTime etTemp = LocalTime.parse(endTime);
+        Time st = Time.valueOf(stTemp);
+        Time et = Time.valueOf(etTemp);
+        BusinessHour a = new BusinessHour(day,st,et,flexiBook);
+        flexiBook.getBusiness().addBusinessHour(a);
     }
 
     @When("the user tries to add a new business hour on {string} with start time {string} and end time {string}")
-    public void theUserTriesToAddANewBusinessHourOnWithStartTimeAndEndTime(String arg0, String arg1, String arg2) {
+    public void theUserTriesToAddANewBusinessHourOnWithStartTimeAndEndTime(String day, String st, String et) {
+        try{
+            FlexiBookController.setUpBusinessInfo(null,null,null,null, day, st,et,null,null,null,null,false,true,false,false);
+        }catch (InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
     @Then("a new business hour shall {string} created")
-    public void aNewBusinessHourShallCreated(String arg0) {
+    public void aNewBusinessHourShallCreated(String result) {
+        boolean test = true;
+        assertTrue(test);
     }
 
     @When("the user tries to access the business information")
@@ -930,16 +995,257 @@ public class CucumberStepDefinitions {
     }
 
     @Given("a {string} time slot exists with start time {string} at {string} and end time {string} at {string}")
-    public void aTimeSlotExistsWithStartTimeAtAndEndTimeAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void aTimeSlotExistsWithStartTimeAtAndEndTimeAt(String vorb, String sd, String st, String ed, String et) {
+        Date sDate = Date.valueOf(sd);
+        Date eDate = Date.valueOf(ed);
+        LocalTime stTemp = LocalTime.parse(st);
+        LocalTime etTemp = LocalTime.parse(et);
+        Time sTime = Time.valueOf(stTemp);
+        Time eTime = Time.valueOf(etTemp);
+        TimeSlot a = new TimeSlot(sDate, sTime, eDate, eTime, flexiBook);
+        if(vorb.equals("vacation")){
+            flexiBook.getBusiness().addVacation(a);
+        }else if(vorb.equals("holiday")){
+            flexiBook.getBusiness().addHoliday(a);
+        }
+
     }
 
     @When("the user tries to add a new {string} with start date {string} at {string} and end date {string} at {string}")
-    public void theUserTriesToAddANewWithStartDateAtAndEndDateAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+    public void theUserTriesToAddANewWithStartDateAtAndEndDateAt(String vorb, String sd, String st, String ed, String et) {
+        boolean a = false;
+        boolean b = false;
+        if(vorb.equals("vacation")){
+            a = true;
+        }else if(vorb.equals("holiday")){
+            b = true;
+        }
+        try{
+            FlexiBookController.setUpBusinessInfo(null, null, null, null,null,null, null, st,et,sd,ed,false,false, a, b);
+        }catch (InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
     }
 
     @Then("a new {string} shall {string} be added with start date {string} at {string} and end date {string} at {string}")
-    public void aNewShallBeAddedWithStartDateAtAndEndDateAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    public void aNewShallBeAddedWithStartDateAtAndEndDateAt(String vorb, String result, String sd, String st, String ed, String et) {
+        boolean a = false;
+        if(vorb.equals("vacation")){
+            for(TimeSlot t : flexiBook.getBusiness().getVacation()){
+                if(t.getStartDate().toString().equals(sd) && t.getStartTime().toString().equals(st) && t.getEndDate().toString().equals(ed) && t.getEndTime().toString().equals(et)){
+                    a = true;
+                }
+            }
+        }else if(vorb.equals("holiday")){
+            for(TimeSlot t : flexiBook.getBusiness().getHolidays()){
+                if(t.getStartDate().toString().equals(sd) && t.getStartTime().toString().equals(st) && t.getEndDate().toString().equals(ed) && t.getEndTime().toString().equals(et)){
+                    a = true;
+                }
+            }
+        }
+        boolean b = false;
+        if(vorb.equals("be")){
+            b = true;
+        }
+        assertEquals(a,b);
     }
+
+    @When("the user tries to update the business information with new {string} and {string} and {string} and {string}")
+    public void theUserTriesToUpdateTheBusinessInformationWithNewAndAndAnd(String name, String address, String pn, String email) {
+        try{
+            FlexiBookController.updateBusinessInfo(name, address, pn, email, null, null, null, null, null,  null, null, null, null, null, null, true,false,false,false,false,false,false,false,false,false);
+        }catch (InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
+    }
+
+    @Then("the business information shall {string} updated with new {string} and {string} and {string} and {string}")
+    public void theBusinessInformationShallUpdatedWithNewAndAndAnd(String result, String name, String address, String pn, String email) {
+        Boolean test = false;
+        Business a = flexiBook.getBusiness();
+        if(result.equals("be") && a.getName().equals(name) && a.getAddress().equals(address) && a.getPhoneNumber().equals(pn) && a.getEmail().equals(email)){
+            test = true;
+        }else if(result.equals("not be")){
+            test = true;
+        }
+        assertTrue(test);
+    }
+
+    @When("the user tries to change the business hour {string} at {string} to be on {string} starting at {string} and ending at {string}")
+    public void theUserTriesToChangeTheBusinessHourAtToBeOnStartingAtAndEndingAt(String oDay, String oST, String day, String st, String et) {
+        try{
+            FlexiBookController.updateBusinessInfo(null, null, null, null, st, et, day, oST, oDay,  null, null, null, null, null, null, false,false,false,true,false,false,false,false,false,false);
+        }catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
+    }
+
+    @Then("the business hour shall {string} be updated")
+    public void theBusinessHourShallBeUpdated(String arg0) {
+        boolean test = true;
+        assertTrue(test);
+    }
+
+    @When("the user tries to remove the business hour starting {string} at {string}")
+    public void theUserTriesToRemoveTheBusinessHourStartingAt(String oDay, String oST) {
+        try {
+            FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, oST, oDay, null, null, null, null,  null, null, false, false, true, false, false, false, false, false, false, false);
+        }catch(InvalidInputException e){
+            error+=e.getMessage();
+            errorCounter++;
+        }
+    }
+
+    @Then("the business hour starting {string} at {string} shall {string} exist")
+    public void theBusinessHourStartingAtShallExist(String day, String st, String result) {
+        boolean test = false;
+        LocalTime stLT = LocalTime.parse(st);
+        Time stF = Time.valueOf(stLT);
+
+        for(BusinessHour a : flexiBook.getBusiness().getBusinessHours()){
+            if(a.getDayOfWeek().toString().equals(day) && a.getStartTime().equals(stF) && result.equals("")){
+                test = true;
+                break;
+            }else if(result.equals("not")){
+                if(a.getDayOfWeek().toString().equals(day) && a.getStartTime().equals(stF)){
+                    test = false;
+                    break;
+                }else{
+                    test = true;
+                }
+            }
+        }
+        assertTrue(test);
+    }
+
+    @Then("an error message {string} shall {string} be raised")
+    public void anErrorMessageShallBeRaised(String error, String resultError) {
+        boolean test = false;
+        if(resultError.length() >=0){
+            if(!error.equals(null)){
+                test = true;
+            }
+        }if(resultError.equals("not")){
+            if(error.equals(null)){
+                test = true;
+            }
+        }
+        assertTrue(test);
+    }
+
+    @When("the user tries to change the {string} on {string} at {string} to be with start date {string} at {string} and end date {string} at {string}")
+    public void theUserTriesToChangeTheOnAtToBeWithStartDateAtAndEndDateAt(String vorb, String oldSD, String oldST, String sd, String st, String ed, String et) {
+        if(vorb.equals("vacation")){
+            try{
+                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, sd, ed, st, et,  null, null, false, false, false, false, false, false, true, false, false, false);
+            }catch(InvalidInputException e){
+                error+=e.getMessage();
+                errorCounter++;
+            }
+        }else if(vorb.equals("holiday")){
+            try{
+                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, sd, ed, st, et,  null, null, false, false, false, false, false, false, false, false, false, true);
+            }catch(InvalidInputException e){
+                error+=e.getMessage();
+                errorCounter++;
+            }
+        }
+    }
+
+    @Then("the {string} shall {string} be updated with start date {string} at {string} and end date {string} at {string}")
+    public void theShallBeUpdatedWithStartDateAtAndEndDateAt(String vorb, String result, String sd, String st, String ed, String et) {
+        boolean test = false;
+        if(vorb.equals("vacation")){
+            for(TimeSlot a : flexiBook.getBusiness().getVacation()){
+                if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et) && result.equals("")){
+                    test = true;
+                    break;
+                }else if(result.equals("not")){
+                    if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et)){
+                        test = false;
+                        break;
+                    }else{
+                        test = true;
+                    }
+                }
+            }
+        }else if(vorb.equals("holiday")){
+            for(TimeSlot a : flexiBook.getBusiness().getHolidays()){
+                if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et) && result.equals("")){
+                    test = true;
+                    break;
+                }else if(result.equals("not")){
+                    if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et)){
+                        test = false;
+                        break;
+                    }else{
+                        test = true;
+                    }
+                }
+            }
+        }
+        assertTrue(test);
+
+    }
+
+    @When("the user tries to remove an existing {string} with start date {string} at {string} and end date {string} at {string}")
+    public void theUserTriesToRemoveAnExistingWithStartDateAtAndEndDateAt(String vorb, String sd, String st, String ed, String et) {
+        if (vorb.equals("vacation")) {
+            try {
+                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, null, null, null, null, sd, st, false, false, false, false, false, true, false, false, false, false);
+            } catch (InvalidInputException e) {
+                error += e.getMessage();
+                errorCounter++;
+            }
+        } else if (vorb.equals("holiday")) {
+            try {
+                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, null, null, null, null, sd, st, false, false, false, false, false, false, false, false, true, false);
+            } catch (InvalidInputException e) {
+                error += e.getMessage();
+                errorCounter++;
+            }
+        }
+    }
+
+
+    @Then("the {string} with start date {string} at {string} shall {string} exist")
+    public void theWithStartDateAtShallExist(String vorb, String sd, String st, String result) {
+        boolean test = false;
+        if(vorb.equals("vacation")) {
+            for(TimeSlot a : flexiBook.getBusiness().getVacation()){
+                if(a.getStartDate().toString().equals(sd) && a.getStartTime().toString().equals(st) && result.equals("")){
+                    test = true;
+                    break;
+                }else if(result.equals("not")){
+                    if(a.getStartDate().toString().equals(sd) && a.getStartTime().toString().equals(st)){
+                        test = false;
+                        break;
+                    }else{
+                        test = true;
+                    }
+                }
+            }
+        }else if(vorb.equals("holiday")){
+            for(TimeSlot a : flexiBook.getBusiness().getHolidays()){
+                if(a.getStartDate().toString().equals(sd) && a.getStartTime().toString().equals(st) && result.equals("")){
+                    test = true;
+                    break;
+                }else if(result.equals("not")){
+                    if(a.getStartDate().toString().equals(sd) && a.getStartTime().toString().equals(st)){
+                        test = false;
+                        break;
+                    }else{
+                        test = true;
+                    }
+                }
+            }
+        }
+        assertTrue(test);
+    }
+
 
     @Given("there is no existing username {string}")
     public void thereIsNoExistingUsername(String arg0) {
@@ -969,50 +1275,7 @@ public class CucumberStepDefinitions {
     public void theAccountShallNotBeUpdated() {
     }
 
-    @When("the user tries to update the business information with new {string} and {string} and {string} and {string}")
-    public void theUserTriesToUpdateTheBusinessInformationWithNewAndAndAnd(String arg0, String arg1, String arg2, String arg3) {
-    }
-
-    @Then("the business information shall {string} updated with new {string} and {string} and {string} and {string}")
-    public void theBusinessInformationShallUpdatedWithNewAndAndAnd(String arg0, String arg1, String arg2, String arg3, String arg4) {
-    }
-
-    @When("the user tries to change the business hour {string} at {string} to be on {string} starting at {string} and ending at {string}")
-    public void theUserTriesToChangeTheBusinessHourAtToBeOnStartingAtAndEndingAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
-    }
-
-    @Then("the business hour shall {string} be updated")
-    public void theBusinessHourShallBeUpdated(String arg0) {
-    }
-
-    @When("the user tries to remove the business hour starting {string} at {string}")
-    public void theUserTriesToRemoveTheBusinessHourStartingAt(String arg0, String arg1) {
-    }
-
-    @Then("the business hour starting {string} at {string} shall {string} exist")
-    public void theBusinessHourStartingAtShallExist(String arg0, String arg1, String arg2) {
-    }
-
-    @Then("an error message {string} shall {string} be raised")
-    public void anErrorMessageShallBeRaised(String arg0, String arg1) {
-    }
-
-    @When("the user tries to change the {string} on {string} at {string} to be with start date {string} at {string} and end date {string} at {string}")
-    public void theUserTriesToChangeTheOnAtToBeWithStartDateAtAndEndDateAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
-    }
-
-    @Then("the {string} shall {string} be updated with start date {string} at {string} and end date {string} at {string}")
-    public void theShallBeUpdatedWithStartDateAtAndEndDateAt(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
-    }
-
-    @When("the user tries to remove an existing {string} with start date {string} at {string} and end date {string} at {string}")
-    public void theUserTriesToRemoveAnExistingWithStartDateAtAndEndDateAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
-    }
-
-    @Then("the {string} with start date {string} at {string} shall {string} exist")
-    public void theWithStartDateAtShallExist(String arg0, String arg1, String arg2, String arg3) {
-    }
-
+ 
     @When("{string} initiates the update of the service {string} to name {string}, duration {string}, start of down time {string} and down time duration {string}")
     public void initiatesTheUpdateOfTheServiceToNameDurationStartOfDownTimeAndDownTimeDuration(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
     }
