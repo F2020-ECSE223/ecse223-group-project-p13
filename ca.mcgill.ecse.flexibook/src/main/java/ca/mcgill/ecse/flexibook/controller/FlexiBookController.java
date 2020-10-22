@@ -615,7 +615,11 @@ public class FlexiBookController {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		
 		try {
-			if (checkIfServiceExists(name, duration, downtimeDuration, downtimeStart, flexibook)) {
+			/*if (checkIfServiceExists(name, flexibook)) {
+				throw new InvalidInputException("Service " + name + " already exists");
+			}*/
+			
+			if (BookableService.hasWithName(name)) {
 				throw new InvalidInputException("Service " + name + " already exists");
 			}
 			
@@ -650,12 +654,12 @@ public class FlexiBookController {
 		try {
 			checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 			
-			if (currentName.equals(name)) {
-				throw new InvalidInputException("Service " + name + " already exists");
-			}
-			
 			if (!(username.equals("owner"))) {
 				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+			
+			if(BookableService.hasWithName(name) && (!(currentName.equals(name)))) {
+			throw new InvalidInputException("Service " + name + " already exists");
 			}
 			
 			else {
@@ -677,16 +681,27 @@ public class FlexiBookController {
 	 * @param service
 	 * @throws InvalidInputException
 	 */
-	public static void deleteService(String username, Service service) throws InvalidInputException {
+	public static void deleteService(String username, String name) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		
 		try {
+			Service service = (Service) BookableService.getWithName(name);
+			
 			List<Appointment> appointments = flexibook.getAppointments();
-			for (Appointment a:appointments) {
-				if(cleanDate(a.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0) {
-					throw new InvalidInputException("The service contains future appointments");
+			for(Appointment a:appointments){
+				if(a.getBookableService().equals(service)){
+					if(cleanDate(a.getTimeSlot().getStartDate()).compareTo(SystemTime.getDate()) >= 0){
+						throw new InvalidInputException("The service contains future appointments");
+					}
 				}
+
 			}
+			
+			if (!(username.equals("owner"))) {
+				throw new InvalidInputException("You are not authorized to perform this operation");
+			}
+			
+			service.delete();
 			
 			List<BookableService> bookableServices = flexibook.getBookableServices();
 			for (BookableService b:bookableServices) {
@@ -694,53 +709,24 @@ public class FlexiBookController {
 					
 					ServiceCombo combo = (ServiceCombo) b;
 					
-					if (combo.getMainService().getService().equals(service)) {
-						deleteServiceCombo(username, combo);
-						continue;
+					if (combo.getMainService().getService().getName().equals(name)) {
+						combo.delete();
+						//deleteServiceCombo(username, combo);
 					}
 					
-					List<ComboItem> items = combo.getServices();
-					for (ComboItem i:items) {
-						if (i.getService().equals(service)) {
-							i.getService().delete();
+					else {
+						List<ComboItem> items = combo.getServices();
+						for (ComboItem i:items) {
+							if (i.getService().getName().equals(name)) {
+								i.delete();
+							}
 						}
 					}
 				}
 			}
-			
-			if (!(username.equals("owner"))) {
-				throw new InvalidInputException("You are not authorized to perform this operation");
-			}
-			
-			
-			service.delete();
-			
 		} catch (RuntimeException e) {
 			throw new InvalidInputException(e.getMessage());
 		}
-	}
-	
-	/**
-	 * @author Hana Gustyn
-	 * @param name
-	 * @param duration
-	 * @param downtimeDuration
-	 * @param downtimeStart
-	 * @param flexibook
-	 * @return boolean
-	 */
-	private static boolean checkIfServiceExists(String name, int duration, int downtimeDuration, int downtimeStart, FlexiBook flexibook) {
-		List<BookableService> services = flexibook.getBookableServices();
-		for (BookableService b:services) {
-			if (b instanceof Service) {
-				Service service = (Service) b;
-				
-				if ((service.getName() == name) && (service.getDuration() == duration) && (service.getDowntimeDuration() == downtimeDuration) && (service.getDowntimeStart() == downtimeStart)) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 	
 	
@@ -758,7 +744,7 @@ public class FlexiBookController {
 			throw new InvalidInputException("Duration must be positive");
 		}
 		
-		if ((downtimeDuration < 0) && (downtimeStart != 0)) {
+		if ((downtimeDuration <= 0) && (downtimeStart != 0)) {
 			throw new InvalidInputException("Downtime duration must be positive");
 		}
 		
@@ -778,12 +764,12 @@ public class FlexiBookController {
 			throw new InvalidInputException("Downtime must not start before the beginning of the service");
 		}
 		
-		if (downtimeStart > duration) {
-			throw new InvalidInputException("Downtime must not start after the end of the service");
+		if (((downtimeStart + downtimeDuration) > duration) && (downtimeStart < duration)) {
+			throw new InvalidInputException("Downtime must not end after the service");
 		}
 		
-		if ((downtimeStart + downtimeDuration) <= duration) {
-			throw new InvalidInputException("Downtime must not end after the service");
+		if (downtimeStart > duration) {
+			throw new InvalidInputException("Downtime must not start after the end of the service");
 		}
 	}
 }
