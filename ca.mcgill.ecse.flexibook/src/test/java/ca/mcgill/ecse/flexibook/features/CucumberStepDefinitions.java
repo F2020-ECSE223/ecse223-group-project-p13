@@ -240,7 +240,8 @@ public class CucumberStepDefinitions {
     /**
      * @author Tomasz Mroz
      */
-    @When("{string} initiates the definition of a service combo {string} with main service {string}, services {string} and mandatory setting {string}")
+    @When("{string} 
+	  the definition of a service combo {string} with main service {string}, services {string} and mandatory setting {string}")
     public void initiatesTheDefinitionOfAServiceCombo(String user, String combo, String mainService, String services, String mandatory ) {
         try{
             FlexiBookController.defineServiceCombo(user,combo,mainService,services,mandatory);
@@ -1360,8 +1361,18 @@ public class CucumberStepDefinitions {
     }
 
  
+    /**
+     * @author Hana Gustyn
+     */
     @When("{string} initiates the update of the service {string} to name {string}, duration {string}, start of down time {string} and down time duration {string}")
-    public void initiatesTheUpdateOfTheServiceToNameDurationStartOfDownTimeAndDownTimeDuration(String arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
+    public void initiatesTheUpdateOfTheServiceToNameDurationStartOfDownTimeAndDownTimeDuration(String username, String currentName, String newName, String duration, String downtimeStart, String downtimeDuration) {
+    	try{
+            FlexiBookController.updateService(username, currentName, newName, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
+        }
+        catch (InvalidInputException e){
+            error += e.getMessage();
+            errorCounter++;
+        }
     }
 
 
