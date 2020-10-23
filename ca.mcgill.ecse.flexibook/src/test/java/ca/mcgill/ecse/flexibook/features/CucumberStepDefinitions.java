@@ -160,7 +160,7 @@ public class CucumberStepDefinitions {
      */
     @Given("an owner account exists in the system")
     public void anOwnerAccountExistsInTheSystem() {
-        flexiBook.setOwner(new Owner("owner","ownerPass",flexiBook));
+        flexiBook.setOwner(new Owner("owner","ownerP ass",flexiBook));
     }
 
     /**
