@@ -240,8 +240,7 @@ public class CucumberStepDefinitions {
     /**
      * @author Tomasz Mroz
      */
-    @When("{string} 
-	  the definition of a service combo {string} with main service {string}, services {string} and mandatory setting {string}")
+    @When("{string} the definition of a service combo {string} with main service {string}, services {string} and mandatory setting {string}")
     public void initiatesTheDefinitionOfAServiceCombo(String user, String combo, String mainService, String services, String mandatory ) {
         try{
             FlexiBookController.defineServiceCombo(user,combo,mainService,services,mandatory);
