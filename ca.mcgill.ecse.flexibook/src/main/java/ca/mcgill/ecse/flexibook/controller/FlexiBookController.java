@@ -44,7 +44,7 @@ public class FlexiBookController {
 				throw new InvalidInputException ("An account with this username already exists");
 			}
 			
-			if(aUsername == null || aPassword == null) {
+			if(aUsername == null ||aUsername.equals("")|| aPassword.equals("") || aPassword == null) {
 				//message = "The username/password cannot be empty";
 				throw new InvalidInputException ("The username/password cannot be empty");
 			}
