@@ -1094,27 +1094,37 @@ public class FlexiBookController {
 					throw new InvalidInputException("You are not authorized to perform this operation");
 				}
 
-				service.delete();
-
 				List<BookableService> bookableServices = flexibook.getBookableServices();
-				for (BookableService b : bookableServices) {
-					if (b instanceof ServiceCombo) {
+				List<BookableService> servicesToDelete = new ArrayList();
+				
+				for (int i = 0; i < bookableServices.size(); i++) {
+					if (bookableServices.get(i) instanceof ServiceCombo) {
 
-						ServiceCombo combo = (ServiceCombo) b;
+						ServiceCombo combo = (ServiceCombo) bookableServices.get(i);
 
-						if (combo.getMainService().getService().getName().equals(name)) {
-							combo.delete();
-							//deleteServiceCombo(username, combo);
+						if (combo.getMainService().getService().equals(service)) {
+							servicesToDelete.add(combo);
+							
 						} else {
 							List<ComboItem> items = combo.getServices();
-							for (ComboItem i : items) {
-								if (i.getService().getName().equals(name)) {
-									i.delete();
+							for (ComboItem item : items) {
+								if (item.getService().equals(service)) {
+									item.delete();
+									break;
 								}
 							}
 						}
 					}
 				}
+				
+				int size = servicesToDelete.size();
+				for (int i = 0; i < size; i++) {
+					ServiceCombo serviceCombo = (ServiceCombo) servicesToDelete.get(i);
+					deleteServiceCombo(username, serviceCombo);
+				}
+				
+				service.delete();
+				
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
