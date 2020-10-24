@@ -114,16 +114,30 @@ public class CucumberStepDefinitions {
         
     	@When("the user provides a new username {string} and a password {string}")
     	public void the_user_provides_a_new_username_and_a_password(String string, String string2) {
+    		flexiBook = FlexiBookApplication.getFlexiBook();
+    		nbrOfCustomers= flexiBook.getCustomers().size();
     		
             try{
-                FlexiBookController.customerSignUp(string, string2);
-            }
+
+
+			FlexiBookController.customerSignUp(string, string2);
+		
+			}
             catch (InvalidInputException e){
                 error += e.getMessage();
                 errorCounter++;
             }
     		
     	}
+    	
+    	   /**
+         *@author Hana Gustyn
+         */
+        @Then("an error message {string} shall be raised")
+        public void anErrorMessageShallBeRaised(String errorMsg) {
+        	assertTrue(error.contains(errorMsg));
+
+        }
     
     	/**
     	 * @author cesar
@@ -131,45 +145,34 @@ public class CucumberStepDefinitions {
     	
     	@Then("a new customer account shall be created")
     	public void a_new_customer_account_shall_be_created() {
-    			
-    	}
-    	
-    	/**
-    	 * @author cesar
-    	 */
-    	/*
-    	@Then("the account shall have username {string} and password {string}")
-    	public void the_account_shall_have_username_and_password(String string, String string2) {
-
-    		boolean test = false;
     		
-    		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
-    			if(customer.getUsername().equals(string)) {
-    				if(customer.getPassword().equals(string2)) {
-    					test=true;
-    				}
-    			}
+    		boolean test=false;
+    		
+    		if(flexiBook.getCustomers().size()==nbrOfCustomers+1) {
+    			test = true;
     		}
     		assertTrue(test);
-    	}*/
-
+    		
+    	}
+    	
+    	
+    	
     	/**
     	 * @author cesar
+    	 * @param string
     	 */
-    	
-    	/*@When("the user provides a new username {string} and a password {string}")
-    	public void the_user_provides_a_new_username_and_a_password1(String string, String string2) {
-   		
-    			boolean test = false;
-    		
-                if(string == null || string2 == null) {
-                	test = true;
-                }
-            
-                assertTrue(test);
-
-    		
-    	}*/
+    		@Given("there is an existing username {string}")
+    		public void there_is_an_existing_username(String string) {
+    			flexiBook = FlexiBookApplication.getFlexiBook();
+    			
+    			if(string.equals("owner")){
+    				Owner owner = new Owner("owner", "owner", flexiBook);
+    				flexiBook.setOwner(owner);
+    			}
+    			else {
+    				flexiBook.addCustomer(string, "password");
+    			}
+    		}
     	
     	/**
     	 * @author cesar
@@ -177,22 +180,13 @@ public class CucumberStepDefinitions {
     	
     	@Then("no new account shall be created")
     	public void no_new_account_shall_be_created() {
-   		    // Write code here that turns the phrase above into concrete actions
-   		 //   throw new io.cucumber.java.PendingException();
-   		}
-    	
-    	/**
-    	 * @author cesar
-    	 */
-    	
-    	/*@Then("an error message {string} shall be raised")
-    	public void an_error_message_shall_be_raised(String string) {
-   		   	
-    		assertTrue(string, false);
+    		boolean test=false;
     		
-   		}*/
-
-
+    		if(flexiBook.getCustomers().size()==nbrOfCustomers) {
+    			test = true;
+    		}
+    		assertTrue(test);
+   		}
     /**
      * @author Tomasz Mroz
      */
@@ -886,17 +880,92 @@ public class CucumberStepDefinitions {
     public void theAccountWithUsernameHasPendingAppointments(String arg0) {
     }
 
+ /**
+     * @author cesar
+     * @param arg0
+     */
     @Given("the user is logged in to an account with username {string}")
     public void theUserIsLoggedInToAnAccountWithUsername(String arg0) {
+
+		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
+		User user = null;
+		
+
+		if (arg0.equals("owner")) {
+			//Owner newOwner = new Owner(aUsername, "owner", flexibook);
+			//flexibook.setOwner(newOwner);
+			Owner newOwner = FlexiBookApplication.getFlexiBook().getOwner();
+			user = newOwner;
+			FlexiBookApplication.setCurrentUser(user);
+			
+		}
+
+		else {
+			for (User customer : flexibook.getCustomers()) {
+				if (customer.getUsername().equals(arg0)) {
+					user = customer;
+					FlexiBookApplication.setCurrentUser(user);
+				}
+			}
+		}
+    	
     }
 
+    /**
+     * @author cesar
+     */
     @When("the user tries to delete account with the username {string}")
     public void theUserTriesToDeleteAccountWithTheUsername(String arg0) {
+    	
+    	try {
+    		FlexiBookController.deleteCustomerAccount(arg0);
+    	}
+    	catch (InvalidInputException e) {
+    		  error += e.getMessage();
+              errorCounter++;
+    	}
+    	
     }
 
+    /**
+     * @author cesar
+     */
+    
     @Then("the account with the username {string} does not exist")
     public void theAccountWithTheUsernameDoesNotExist(String arg0) {
+    	
+    	boolean test = true;
+    	
+		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+			if (customer.getUsername() == arg0) {
+				test = false;
+			}
+		}
+		assertTrue(test);
+    	
     }
+	/**
+	*
+	*@author cesar
+	*/
+    @Then("the account shall have username {string} and password {string}")
+    public void theAccountShallHaveUsernameAndPassword(String arg0, String arg1) {
+    //assertEquals(FlexiBookApplication.getUser().getUsername(), arg0);
+	//assertEquals(FlexiBookApplication.getUser().getPassword(), arg1);
+	
+	boolean test = false;
+	
+	for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+		if(customer.getUsername().equals(arg0)) {
+			if(customer.getPassword().equals(arg1)) {
+				test=true;
+			}
+		}
+	}
+	assertTrue(test);
+	
+    }
+
 
     @Then("all associated appointments of the account with the username {string} shall not exist")
     public void allAssociatedAppointmentsOfTheAccountWithTheUsernameShallNotExist(String arg0) {
