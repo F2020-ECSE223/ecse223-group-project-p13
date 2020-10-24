@@ -1,6 +1,6 @@
 namespace ca.mcgill.ecse.flexibook.model;
 
-use DisplayedBusinessInfo.ump;
+use TOBusinessInfo.ump;
 
 class FlexiBook {
   1 <@>- 0..1 Business business;
