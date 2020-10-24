@@ -993,32 +993,7 @@ public class CucumberStepDefinitions {
 	}
     }
 
-    @Given("no business exists")
-    public void noBusinessExists() {
-        flexiBook.setBusiness(null);
-    }
-
-    @When("the user tries to set up the business information with new {string} and {string} and {string} and {string}")
-    public void theUserTriesToSetUpTheBusinessInformationWithNewAndAndAnd(String name, String address, String phoneNumber, String email) {
-        try{
-            FlexiBookController.setUpBusinessInfo(name, address, phoneNumber, email, null, null,null, null, null, null,null,true, false, false,false);
-        } catch (InvalidInputException e) {
-            error+=e.getMessage();
-            errorCounter++;
-        }
-    }
-
-    @Then("a new business with new {string} and {string} and {string} and {string} shall {string} created")
-    public void aNewBusinessWithNewAndAndAndShallCreated(String name, String address, String phoneNumber, String email, String arg4) {
-        boolean test = false;
-        if(arg4.equals("be") && flexiBook.getBusiness().getName().equals(name) && flexiBook.getBusiness().getAddress().equals(address) && flexiBook.getBusiness().getPhoneNumber().equals(phoneNumber) && flexiBook.getBusiness().getEmail().equals(email)){
-            test = true;
-        }else if(arg4.equals("not be")){
-            test = true;
-        }
-        assertTrue(test);
-
-    }
+    
 
    
    /**
