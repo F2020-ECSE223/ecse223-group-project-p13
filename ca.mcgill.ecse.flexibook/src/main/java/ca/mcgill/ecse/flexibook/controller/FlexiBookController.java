@@ -1039,14 +1039,10 @@ public class FlexiBookController {
 		public static void updateServiceCombo (String username, String oldName, String name, String mainService, String
 		servicesList, String isMandatory) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-
 			try {
 				if (!(flexiBook.getOwner().getUsername().equals(username))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
 				}
-			/*if(oldName.equals(name)){
-				throw new InvalidInputException("Service combo Wash-Dry already exists");
-			}*/
 
 				if (!(BookableService.hasWithName(mainService))) {
 					throw new InvalidInputException("Service " + mainService + " does not exist");
@@ -1076,12 +1072,31 @@ public class FlexiBookController {
 				//Testing for unique service combos
 				for (BookableService s : flexiBook.getBookableServices()) {
 					if (s instanceof ServiceCombo) {
-						if (s.getName().equals(name)) {
+						if (s.getName().equals(name) && !oldName.equals(name)) {
 							throw new InvalidInputException("Service combo " + name + " already exists");
+							/*if (((ServiceCombo) s).getMainService().getService().getName().equals(mainService)) {
+								int counter = 0;
+								boolean test = false;
+								for(ComboItem c:((ServiceCombo) s).getServices()){
+									if(!(c.getService().getName().equals(services[counter]) &&
+											(c.getMandatory() == Boolean.valueOf(mandatory[counter])))){
+										test = true;
+									}
+									counter++;
+								}
+								if(!test ){
+									if(!s.getName().equals(oldName)){
+
+									}
+								}
+							}*/
+
 						}
 					}
 				}
 				ServiceCombo oldCombo = (ServiceCombo) BookableService.getWithName(oldName);
+				flexiBook.removeBookableService(oldCombo);
+				oldCombo.delete();
 				ServiceCombo combo = new ServiceCombo(name, flexiBook);
 				combo.setName(name);
 				//combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),combo));
@@ -1092,7 +1107,6 @@ public class FlexiBookController {
 						combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
-				flexiBook.removeBookableService(oldCombo);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1235,27 +1249,37 @@ public class FlexiBookController {
 					throw new InvalidInputException("You are not authorized to perform this operation");
 				}
 
-				service.delete();
-
 				List<BookableService> bookableServices = flexibook.getBookableServices();
-				for (BookableService b : bookableServices) {
-					if (b instanceof ServiceCombo) {
+				List<BookableService> servicesToDelete = new ArrayList();
+				
+				for (int i = 0; i < bookableServices.size(); i++) {
+					if (bookableServices.get(i) instanceof ServiceCombo) {
 
-						ServiceCombo combo = (ServiceCombo) b;
+						ServiceCombo combo = (ServiceCombo) bookableServices.get(i);
 
-						if (combo.getMainService().getService().getName().equals(name)) {
-							combo.delete();
-							//deleteServiceCombo(username, combo);
+						if (combo.getMainService().getService().equals(service)) {
+							servicesToDelete.add(combo);
+							
 						} else {
 							List<ComboItem> items = combo.getServices();
-							for (ComboItem i : items) {
-								if (i.getService().getName().equals(name)) {
-									i.delete();
+							for (ComboItem item : items) {
+								if (item.getService().equals(service)) {
+									item.delete();
+									break;
 								}
 							}
 						}
 					}
 				}
+				
+				int size = servicesToDelete.size();
+				for (int i = 0; i < size; i++) {
+					ServiceCombo serviceCombo = (ServiceCombo) servicesToDelete.get(i);
+					deleteServiceCombo(username, serviceCombo);
+				}
+				
+				service.delete();
+				
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1306,134 +1330,207 @@ public class FlexiBookController {
 			}
 		}
 
+		/**
+		 * @author: Florence
+		 */
+		public static TOBusinessInfo showBI(){
+			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+			String name = flexiBook.getBusiness().getName();
+			String address = flexiBook.getBusiness().getAddress();
+			String phoneNumber = flexiBook.getBusiness().getPhoneNumber();
+			String email = flexiBook.getBusiness().getEmail();
+			TOBusinessInfo disp = new TOBusinessInfo(name, address, phoneNumber, email);
+			return disp;
+		}
+
+
+		/**
+		 * @author: Florence
+		 * @param name
+		 * @param address
+		 * @param phoneNumber
+		 * @param email
+		 * @param dayOfWeek
+		 * @param bHstart
+		 * @param bHend
+		 * @param startT
+		 * @param endT
+		 * @param startD
+		 * @param endD
+		 * @param addB
+		 * @param addBusinessH
+		 * @param addV
+		 * @param addH
+		 * @throws InvalidInputException
+		 *
+		 */
 		public static void setUpBusinessInfo (String name, String address, String phoneNumber, String email, String
 		dayOfWeek, String bHstart, String bHend, String startT, String endT, String startD, String endD, Boolean
 		addB, Boolean addBusinessH, Boolean addV, Boolean addH) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-
-			if (!(FlexiBookApplication.getUser() instanceof Owner)) {
-				throw new InvalidInputException("No permission to set up business information");
-			}
-			if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
-				throw new InvalidInputException("Invalid email");
-			}
-
-			if (addB) {
-
-				Business newBusiness = new Business(name, address, phoneNumber, email, flexiBook);
-				flexiBook.setBusiness(newBusiness);
-			}
-			LocalTime bhStart = LocalTime.parse(bHstart);
-			LocalTime bhEnd = LocalTime.parse(bHend);
+			Business biz = flexiBook.getBusiness();
+			try {
 
 
-			if (!(bhStart.isBefore(bhEnd)) && addBusinessH) {
-				throw new InvalidInputException("Start time must be before end time");
-			}
-
-			for (int i = 0; i < flexiBook.getBusiness().numberOfBusinessHours(); i++) {
-				BusinessHour a = flexiBook.getBusiness().getBusinessHour(i);
-				if (addBusinessH && a.getDayOfWeek().toString().equals(dayOfWeek) && a.getStartTime().toLocalTime().isBefore(bhEnd) && bhStart.isBefore(a.getEndTime().toLocalTime())) {
-					throw new InvalidInputException("The business hours cannot overlap");
+				if (!(FlexiBookApplication.getUser() instanceof Owner)) {
+					throw new InvalidInputException("No permission to set up business information");
+				}
+				if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
+					throw new InvalidInputException("Invalid email");
 				}
 
-			}
+				if (addB) {
 
-			LocalTime hStartTime = LocalTime.parse(startT);
-			LocalTime hEndTime = LocalTime.parse(endT);
-			LocalDate hStartDate = LocalDate.parse(startD);
-			LocalDate hEndDate = LocalDate.parse(endD);
-			LocalDateTime hStart = LocalDateTime.of(hStartDate, hStartTime);
-			LocalDateTime hEnd = LocalDateTime.of(hEndDate, hEndTime);
-
-
-			if ((addH || addV) && !(hStart.isBefore(hEnd))) {
-				throw new InvalidInputException("Start time must be before end time");
-			}
-
-
-			for (TimeSlot a : flexiBook.getBusiness().getHolidays()) {
-				LocalTime aStartTime = a.getStartTime().toLocalTime();
-				LocalTime aEndTime = a.getEndTime().toLocalTime();
-				LocalDate aStartDate = a.getStartDate().toLocalDate();
-				LocalDate aEndDate = a.getEndDate().toLocalDate();
-				LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
-				LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
-				if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addV) {
-					throw new InvalidInputException("Holiday and vacation times cannot overlap ");
+					//biz = new Business(name, address, phoneNumber, email, flexiBook);
+					flexiBook.setBusiness(new Business(name, address, phoneNumber, email, flexiBook));
+					//flexiBook.getBusiness().setName(name);
+					//flexiBook.getBusiness().setAddress(address);
+					//flexiBook.getBusiness().setPhoneNumber(phoneNumber);
+					//flexiBook.getBusiness().setEmail(email);
 				}
-				if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addH) {
-					throw new InvalidInputException("Holiday times cannot overlap ");
+				LocalTime bhStart = LocalTime.parse(bHstart);
+				LocalTime bhEnd = LocalTime.parse(bHend);
+
+
+				if (!(bhStart.isBefore(bhEnd)) && addBusinessH) {
+					throw new InvalidInputException("Start time must be before end time");
 				}
-			}
 
-			for (TimeSlot a : flexiBook.getBusiness().getVacation()) {
-				LocalTime aStartTime = a.getStartTime().toLocalTime();
-				LocalTime aEndTime = a.getEndTime().toLocalTime();
-				LocalDate aStartDate = a.getStartDate().toLocalDate();
-				LocalDate aEndDate = a.getEndDate().toLocalDate();
-				LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
-				LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
+				for (int i = 0; i < flexiBook.getBusiness().numberOfBusinessHours(); i++) {
+					BusinessHour a = flexiBook.getBusiness().getBusinessHour(i);
+					if (addBusinessH && a.getDayOfWeek().toString().equals(dayOfWeek) && a.getStartTime().toLocalTime().isBefore(bhEnd) && bhStart.isBefore(a.getEndTime().toLocalTime())) {
+						throw new InvalidInputException("The business hours cannot overlap");
+					}
 
-				if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addH) {
-					throw new InvalidInputException("Holiday and vacation times cannot overlap ");
 				}
-				if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addV) {
-					throw new InvalidInputException("Vacation times cannot overlap ");
+
+				LocalTime hStartTime = LocalTime.parse(startT);
+				LocalTime hEndTime = LocalTime.parse(endT);
+				LocalDate hStartDate = LocalDate.parse(startD);
+				LocalDate hEndDate = LocalDate.parse(endD);
+				LocalDateTime hStart = LocalDateTime.of(hStartDate, hStartTime);
+				LocalDateTime hEnd = LocalDateTime.of(hEndDate, hEndTime);
+
+
+				if ((addH || addV) && !(hStart.isBefore(hEnd))) {
+					throw new InvalidInputException("Start time must be before end time");
 				}
-			}
-			LocalDateTime aNow = LocalDateTime.now();
-			if (hStart.isBefore(aNow) && addV) {
-				throw new InvalidInputException("Holiday cannot start in past");
-			}
-			if (hStart.isBefore(aNow) && addH) {
-				throw new InvalidInputException("Vacation cannot start in past");
-			}
 
 
-			if (addBusinessH) {
-				Time a = Time.valueOf(bHstart);
-				Time b = Time.valueOf(bHend);
-				BusinessHour.DayOfWeek day = null;
-				if (dayOfWeek.equals("Monday")) {
-					day = BusinessHour.DayOfWeek.Monday;
-				} else if (dayOfWeek.equals("Tuesday")) {
-					day = BusinessHour.DayOfWeek.Tuesday;
-				} else if (dayOfWeek.equals("Wednesday")) {
-					day = BusinessHour.DayOfWeek.Wednesday;
-				} else if (dayOfWeek.equals("Thursday")) {
-					day = BusinessHour.DayOfWeek.Thursday;
-				} else if (dayOfWeek.equals("Friday")) {
-					day = BusinessHour.DayOfWeek.Friday;
-				} else if (dayOfWeek.equals("Saturday")) {
-					day = BusinessHour.DayOfWeek.Saturday;
-				} else if (dayOfWeek.equals("Sunday")) {
-					day = BusinessHour.DayOfWeek.Sunday;
+				for (TimeSlot a : flexiBook.getBusiness().getHolidays()) {
+					LocalTime aStartTime = a.getStartTime().toLocalTime();
+					LocalTime aEndTime = a.getEndTime().toLocalTime();
+					LocalDate aStartDate = a.getStartDate().toLocalDate();
+					LocalDate aEndDate = a.getEndDate().toLocalDate();
+					LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
+					LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
+					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addV) {
+						throw new InvalidInputException("Holiday and vacation times cannot overlap ");
+					}
+					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addH) {
+						throw new InvalidInputException("Holiday times cannot overlap ");
+					}
 				}
-				BusinessHour newBH = new BusinessHour(day, a, b, flexiBook);
+
+				for (TimeSlot a : flexiBook.getBusiness().getVacation()) {
+					LocalTime aStartTime = a.getStartTime().toLocalTime();
+					LocalTime aEndTime = a.getEndTime().toLocalTime();
+					LocalDate aStartDate = a.getStartDate().toLocalDate();
+					LocalDate aEndDate = a.getEndDate().toLocalDate();
+					LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
+					LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
+
+					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addH) {
+						throw new InvalidInputException("Holiday and vacation times cannot overlap ");
+					}
+					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && addV) {
+						throw new InvalidInputException("Vacation times cannot overlap ");
+					}
+				}
+				LocalDateTime aNow = LocalDateTime.now();
+				if (hStart.isBefore(aNow) && addV) {
+					throw new InvalidInputException("Holiday cannot start in past");
+				}
+				if (hStart.isBefore(aNow) && addH) {
+					throw new InvalidInputException("Vacation cannot start in past");
+				}
 
 
-				flexiBook.getBusiness().addBusinessHour(newBH);
-			}
-			if (addH) {
-				Time a = Time.valueOf(hStartTime);
-				Time b = Time.valueOf(hEndTime);
-				Date c = Date.valueOf(hStartDate);
-				Date d = Date.valueOf(hEndDate);
-				TimeSlot holiday = new TimeSlot(c, a, d, b, flexiBook);
-				flexiBook.getBusiness().addHoliday(holiday);
-			}
-			if (addV) {
-				Time a = Time.valueOf(hStartTime);
-				Time b = Time.valueOf(hEndTime);
-				Date c = Date.valueOf(hStartDate);
-				Date d = Date.valueOf(hEndDate);
-				TimeSlot vacation = new TimeSlot(c, a, d, b, flexiBook);
-				flexiBook.getBusiness().addVacation(vacation);
+				if (addBusinessH) {
+					Time a = Time.valueOf(bHstart);
+					Time b = Time.valueOf(bHend);
+					BusinessHour.DayOfWeek day = null;
+					if (dayOfWeek.equals("Monday")) {
+						day = BusinessHour.DayOfWeek.Monday;
+					} else if (dayOfWeek.equals("Tuesday")) {
+						day = BusinessHour.DayOfWeek.Tuesday;
+					} else if (dayOfWeek.equals("Wednesday")) {
+						day = BusinessHour.DayOfWeek.Wednesday;
+					} else if (dayOfWeek.equals("Thursday")) {
+						day = BusinessHour.DayOfWeek.Thursday;
+					} else if (dayOfWeek.equals("Friday")) {
+						day = BusinessHour.DayOfWeek.Friday;
+					} else if (dayOfWeek.equals("Saturday")) {
+						day = BusinessHour.DayOfWeek.Saturday;
+					} else if (dayOfWeek.equals("Sunday")) {
+						day = BusinessHour.DayOfWeek.Sunday;
+					}
+					BusinessHour newBH = new BusinessHour(day, a, b, flexiBook);
+					flexiBook.addHour(newBH);
+					flexiBook.getBusiness().addBusinessHour(newBH);
+				}
+				if (addH) {
+					Time a = Time.valueOf(hStartTime);
+					Time b = Time.valueOf(hEndTime);
+					Date c = Date.valueOf(hStartDate);
+					Date d = Date.valueOf(hEndDate);
+					TimeSlot holiday = new TimeSlot(c, a, d, b, flexiBook);
+					flexiBook.getBusiness().addHoliday(holiday);
+
+
+				}
+				if (addV) {
+					Time a = Time.valueOf(hStartTime);
+					Time b = Time.valueOf(hEndTime);
+					Date c = Date.valueOf(hStartDate);
+					Date d = Date.valueOf(hEndDate);
+					TimeSlot vacation = new TimeSlot(c, a, d, b, flexiBook);
+					flexiBook.getBusiness().addVacation(vacation);
+				}
+			}catch (RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
 			}
 
 		}
 
+		/**
+		 * @author: Florence
+		 * @param name
+		 * @param address
+		 * @param phoneNumber
+		 * @param email
+		 * @param dayOfWeek
+		 * @param oldBHStart
+		 * @param oldBHDay
+		 * @param startT
+		 * @param endT
+		 * @param startD
+		 * @param endD
+		 * @param oldStartD
+		 * @param oldStartT
+		 * @param basic
+		 * @param addBusinessH
+		 * @param addV
+		 * @param addH
+		 * @param updateBH
+		 * @param updateH
+		 * @param updateV
+		 * @param removeBH
+		 * @param removeH
+		 * @param removeV
+		 * @throws InvalidInputException
+		 *
+		 */
 		public static void updateBusinessInfo (String name, String address, String phoneNumber, String email, String
 		startBH, String endBH, String dayOfWeek, String oldBHStart, String oldBHDay, String startD, String endD, String
 		startT, String endT, String oldStartD, String oldStartT, Boolean basic, Boolean addBusinessH, Boolean
@@ -1441,208 +1538,228 @@ public class FlexiBookController {
 		removeH, Boolean updateH) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 			Business business = flexiBook.getBusiness();
-			if (!(FlexiBookApplication.getUser() instanceof Owner)) {
-				throw new InvalidInputException("No permission to set up business information");
-			}
-			if (basic) {
-				if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
-					throw new InvalidInputException("Invalid email");
-				} else {
-					business.setName(name);
-					business.setEmail(email);
-					business.setAddress(address);
-					business.setPhoneNumber(phoneNumber);
+			try {
+
+				if (!(FlexiBookApplication.getUser() instanceof Owner)) {
+					throw new InvalidInputException("No permission to set up business information");
 				}
-			}
-			LocalTime bhStart = LocalTime.parse(startBH);
-			LocalTime bhEnd = LocalTime.parse(endBH);
-			if (addBusinessH || updateBH) {
+				if (basic) {
+					if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
+						throw new InvalidInputException("Invalid email");
 
-				if (!(bhStart.isBefore(bhEnd))) {
-					throw new InvalidInputException("Start time must be before end time");
-				}
-				for (BusinessHour a : business.getBusinessHours()) {
-					if (a.getDayOfWeek().toString().equals(oldBHDay) && a.getStartTime().toString().equals(oldBHStart)) {
-						continue;
-					}
-					if (addBusinessH && a.getDayOfWeek().toString().equals(dayOfWeek) && a.getStartTime().toLocalTime().isBefore(bhEnd) && bhStart.isBefore(a.getEndTime().toLocalTime())) {
-						throw new InvalidInputException("The business hours cannot overlap");
-					}
-				}
-			}
-
-			LocalTime hStartTime = LocalTime.parse(startT);
-			LocalTime hEndTime = LocalTime.parse(endT);
-			LocalDate hStartDate = LocalDate.parse(startD);
-			LocalDate hEndDate = LocalDate.parse(endD);
-			LocalDateTime hStart = LocalDateTime.of(hStartDate, hStartTime);
-			LocalDateTime hEnd = LocalDateTime.of(hEndDate, hEndTime);
-			LocalTime hStartTimeOld = LocalTime.parse(oldStartT);
-			LocalDate hStartDateOld = LocalDate.parse(oldStartD);
-			if (addH || addV || updateH || updateV) {
-
-				if ((addH || updateH || addV || updateV) && !(hStart.isBefore(hEnd))) {
-					throw new InvalidInputException("Start time must be before end time");
-				}
-
-				for (TimeSlot a : business.getHolidays()) {
-					if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-						continue;
-					}
-					LocalTime aStartTime = a.getStartTime().toLocalTime();
-					LocalTime aEndTime = a.getEndTime().toLocalTime();
-					LocalDate aStartDate = a.getStartDate().toLocalDate();
-					LocalDate aEndDate = a.getEndDate().toLocalDate();
-					LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
-					LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
-
-					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addV || updateV)) {
-						throw new InvalidInputException("Holiday and vacation times cannot overlap ");
-					}
-					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addH || updateH)) {
-						throw new InvalidInputException("Holiday times cannot overlap ");
-					}
-				}
-				for (TimeSlot a : business.getVacation()) {
-					if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-						continue;
-					}
-					LocalTime aStartTime = a.getStartTime().toLocalTime();
-					LocalTime aEndTime = a.getEndTime().toLocalTime();
-					LocalDate aStartDate = a.getStartDate().toLocalDate();
-					LocalDate aEndDate = a.getEndDate().toLocalDate();
-					LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
-					LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
-
-					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addH || updateH)) {
-						throw new InvalidInputException("Holiday and vacation times cannot overlap ");
-					}
-					if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addV || updateV)) {
-						throw new InvalidInputException("Vacation times cannot overlap ");
+					}else {
+						flexiBook.getBusiness().setName(name);
+						flexiBook.getBusiness().setEmail(email);
+						flexiBook.getBusiness().setAddress(address);
+						flexiBook.getBusiness().setPhoneNumber(phoneNumber);
 					}
 
 				}
-				LocalDateTime aNow = LocalDateTime.now();
-				if (hStart.isBefore(aNow) && (addV || updateV)) {
-					throw new InvalidInputException("Holiday cannot start in past");
-				}
-				if (hStart.isBefore(aNow) && (addH || updateH)) {
-					throw new InvalidInputException("Vacation cannot start in past");
-				}
+				LocalTime bhStart = LocalTime.parse(startBH);
+				LocalTime bhEnd = LocalTime.parse(endBH);
+				if (addBusinessH || updateBH) {
 
-			}
-			if (addBusinessH) {
-				Time x = Time.valueOf(bhStart);
-				Time y = Time.valueOf(bhEnd);
-				BusinessHour.DayOfWeek day = null;
-				if (dayOfWeek.equals("Monday")) {
-					day = BusinessHour.DayOfWeek.Monday;
-				} else if (dayOfWeek.equals("Tuesday")) {
-					day = BusinessHour.DayOfWeek.Tuesday;
-				} else if (dayOfWeek.equals("Wednesday")) {
-					day = BusinessHour.DayOfWeek.Wednesday;
-				} else if (dayOfWeek.equals("Thursday")) {
-					day = BusinessHour.DayOfWeek.Thursday;
-				} else if (dayOfWeek.equals("Friday")) {
-					day = BusinessHour.DayOfWeek.Friday;
-				} else if (dayOfWeek.equals("Saturday")) {
-					day = BusinessHour.DayOfWeek.Saturday;
-				} else if (dayOfWeek.equals("Sunday")) {
-					day = BusinessHour.DayOfWeek.Sunday;
-				}
-
-				BusinessHour bh = new BusinessHour(day, x, y, flexiBook);
-			}
-			if (updateBH) {
-				for (BusinessHour a : business.getBusinessHours()) {
-					if (a.getDayOfWeek().toString().equals(oldBHDay) && a.getStartTime().toString().equals(oldBHStart)) {
-						business.removeBusinessHour(a);
-						Time x = Time.valueOf(bhStart);
-						Time y = Time.valueOf(bhEnd);
-						BusinessHour.DayOfWeek day = null;
-						if (dayOfWeek.equals("Monday")) {
-							day = BusinessHour.DayOfWeek.Monday;
-						} else if (dayOfWeek.equals("Tuesday")) {
-							day = BusinessHour.DayOfWeek.Tuesday;
-						} else if (dayOfWeek.equals("Wednesday")) {
-							day = BusinessHour.DayOfWeek.Wednesday;
-						} else if (dayOfWeek.equals("Thursday")) {
-							day = BusinessHour.DayOfWeek.Thursday;
-						} else if (dayOfWeek.equals("Friday")) {
-							day = BusinessHour.DayOfWeek.Friday;
-						} else if (dayOfWeek.equals("Saturday")) {
-							day = BusinessHour.DayOfWeek.Saturday;
-						} else if (dayOfWeek.equals("Sunday")) {
-							day = BusinessHour.DayOfWeek.Sunday;
+					if (!(bhStart.isBefore(bhEnd))) {
+						throw new InvalidInputException("Start time must be before end time");
+					}
+					for (BusinessHour a : business.getBusinessHours()) {
+						if (a.getDayOfWeek().toString().equals(oldBHDay) && a.getStartTime().toString().equals(oldBHStart)) {
+							continue;
 						}
-						BusinessHour bh = new BusinessHour(day, x, y, flexiBook);
+						if (addBusinessH && a.getDayOfWeek().toString().equals(dayOfWeek) && a.getStartTime().toLocalTime().isBefore(bhEnd) && bhStart.isBefore(a.getEndTime().toLocalTime())) {
+							throw new InvalidInputException("The business hours cannot overlap");
+						}
 					}
 				}
-			}
-			if (removeBH) {
-				for (BusinessHour a : business.getBusinessHours()) {
-					if (a.getDayOfWeek().toString().equals(oldBHDay) && a.getStartTime().toString().equals(oldBHStart)) {
-						business.removeBusinessHour(a);
-					}
-				}
-			}
-			if (addH) {
-				Time a = Time.valueOf(hStartTime);
-				Time b = Time.valueOf(hEndTime);
-				Date c = Date.valueOf(hStartDate);
-				Date d = Date.valueOf(hEndDate);
-				TimeSlot holiday = new TimeSlot(c, a, d, b, flexiBook);
-				business.addHoliday(holiday);
-			}
-			if (addV) {
-				Time a = Time.valueOf(hStartTime);
-				Time b = Time.valueOf(hEndTime);
-				Date c = Date.valueOf(hStartDate);
-				Date d = Date.valueOf(hEndDate);
-				TimeSlot vacation = new TimeSlot(c, a, d, b, flexiBook);
-				business.addVacation(vacation);
-			}
 
-			if (updateH) {
-				for (TimeSlot a : business.getHolidays()) {
-					if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-						business.removeHoliday(a);
-						Time x = Time.valueOf(hStartTime);
-						Time b = Time.valueOf(hEndTime);
-						Date c = Date.valueOf(hStartDate);
-						Date d = Date.valueOf(hEndDate);
-						TimeSlot holiday = new TimeSlot(c, x, d, b, flexiBook);
-						business.addHoliday(holiday);
-					}
-				}
-			}
-			if (updateV) {
-				for (TimeSlot a : business.getVacation()) {
-					if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-						business.removeVacation(a);
-						Time x = Time.valueOf(hStartTime);
-						Time b = Time.valueOf(hEndTime);
-						Date c = Date.valueOf(hStartDate);
-						Date d = Date.valueOf(hEndDate);
-						TimeSlot vacation = new TimeSlot(c, x, d, b, flexiBook);
-						business.addHoliday(vacation);
-					}
-				}
-			}
-			if (removeH) {
-				for (TimeSlot a : business.getHolidays()) {
-					if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-						business.removeHoliday(a);
-					}
-				}
-			}
+				LocalTime hStartTime = LocalTime.parse(startT);
+				LocalTime hEndTime = LocalTime.parse(endT);
+				LocalDate hStartDate = LocalDate.parse(startD);
+				LocalDate hEndDate = LocalDate.parse(endD);
+				LocalDateTime hStart = LocalDateTime.of(hStartDate, hStartTime);
+				LocalDateTime hEnd = LocalDateTime.of(hEndDate, hEndTime);
+				LocalTime hStartTimeOld = LocalTime.parse(oldStartT);
+				LocalDate hStartDateOld = LocalDate.parse(oldStartD);
+				if (addH || addV || updateH || updateV) {
 
-			if (removeV) {
-				for (TimeSlot a : business.getVacation()) {
-					if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-						business.removeVacation(a);
+					if ((addH || updateH || addV || updateV) && !(hStart.isBefore(hEnd))) {
+						throw new InvalidInputException("Start time must be before end time");
+					}
+
+					for (TimeSlot a : business.getHolidays()) {
+						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
+							continue;
+						}
+						LocalTime aStartTime = a.getStartTime().toLocalTime();
+						LocalTime aEndTime = a.getEndTime().toLocalTime();
+						LocalDate aStartDate = a.getStartDate().toLocalDate();
+						LocalDate aEndDate = a.getEndDate().toLocalDate();
+						LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
+						LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
+
+						if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addV || updateV)) {
+							throw new InvalidInputException("Holiday and vacation times cannot overlap ");
+						}
+						if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addH || updateH)) {
+							throw new InvalidInputException("Holiday times cannot overlap ");
+						}
+					}
+					for (TimeSlot a : business.getVacation()) {
+						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
+							continue;
+						}
+						LocalTime aStartTime = a.getStartTime().toLocalTime();
+						LocalTime aEndTime = a.getEndTime().toLocalTime();
+						LocalDate aStartDate = a.getStartDate().toLocalDate();
+						LocalDate aEndDate = a.getEndDate().toLocalDate();
+						LocalDateTime aStart = LocalDateTime.of(aStartDate, aStartTime);
+						LocalDateTime aEnd = LocalDateTime.of(aEndDate, aEndTime);
+
+						if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addH || updateH)) {
+							throw new InvalidInputException("Holiday and vacation times cannot overlap ");
+						}
+						if (aStart.isBefore(hEnd) && hStart.isBefore(aEnd) && (addV || updateV)) {
+							throw new InvalidInputException("Vacation times cannot overlap ");
+						}
+
+					}
+					LocalDateTime aNow = LocalDateTime.now();
+					if (hStart.isBefore(aNow) && (addV || updateV)) {
+						throw new InvalidInputException("Holiday cannot start in past");
+					}
+					if (hStart.isBefore(aNow) && (addH || updateH)) {
+						throw new InvalidInputException("Vacation cannot start in past");
+					}
+
+				}
+				if (addBusinessH) {
+					Time x = Time.valueOf(bhStart);
+					Time y = Time.valueOf(bhEnd);
+					BusinessHour.DayOfWeek day = null;
+					if (dayOfWeek.equals("Monday")) {
+						day = BusinessHour.DayOfWeek.Monday;
+					} else if (dayOfWeek.equals("Tuesday")) {
+						day = BusinessHour.DayOfWeek.Tuesday;
+					} else if (dayOfWeek.equals("Wednesday")) {
+						day = BusinessHour.DayOfWeek.Wednesday;
+					} else if (dayOfWeek.equals("Thursday")) {
+						day = BusinessHour.DayOfWeek.Thursday;
+					} else if (dayOfWeek.equals("Friday")) {
+						day = BusinessHour.DayOfWeek.Friday;
+					} else if (dayOfWeek.equals("Saturday")) {
+						day = BusinessHour.DayOfWeek.Saturday;
+					} else if (dayOfWeek.equals("Sunday")) {
+						day = BusinessHour.DayOfWeek.Sunday;
+					}
+
+					BusinessHour bh = new BusinessHour(day, x, y, flexiBook);
+					business.addBusinessHour(bh);
+				}
+				if (updateBH) {
+					for (BusinessHour a : business.getBusinessHours()) {
+						if (a.getDayOfWeek().toString().equals(oldBHDay) && a.getStartTime().toString().equals(oldBHStart)) {
+							business.removeBusinessHour(a);
+							Time x = Time.valueOf(bhStart);
+							Time y = Time.valueOf(bhEnd);
+							BusinessHour.DayOfWeek day = null;
+							if (dayOfWeek.equals("Monday")) {
+								day = BusinessHour.DayOfWeek.Monday;
+							} else if (dayOfWeek.equals("Tuesday")) {
+								day = BusinessHour.DayOfWeek.Tuesday;
+							} else if (dayOfWeek.equals("Wednesday")) {
+								day = BusinessHour.DayOfWeek.Wednesday;
+							} else if (dayOfWeek.equals("Thursday")) {
+								day = BusinessHour.DayOfWeek.Thursday;
+							} else if (dayOfWeek.equals("Friday")) {
+								day = BusinessHour.DayOfWeek.Friday;
+							} else if (dayOfWeek.equals("Saturday")) {
+								day = BusinessHour.DayOfWeek.Saturday;
+							} else if (dayOfWeek.equals("Sunday")) {
+								day = BusinessHour.DayOfWeek.Sunday;
+							}
+							BusinessHour bh = new BusinessHour(day, x, y, flexiBook);
+							business.addBusinessHour(bh);
+						}
 					}
 				}
+				if (removeBH) {
+					BusinessHour b = null;
+					for (BusinessHour a : business.getBusinessHours()) {
+						LocalTime oldStT = LocalTime.parse(oldBHStart);
+						Time oldT = Time.valueOf(oldStT);
+						if (a.getDayOfWeek().toString().equals(oldBHDay) && a.getStartTime().equals(oldT)) {
+							b = a;
+						}
+					}
+					b.delete();
+				}
+				if (addH) {
+					Time a = Time.valueOf(hStartTime);
+					Time b = Time.valueOf(hEndTime);
+					Date c = Date.valueOf(hStartDate);
+					Date d = Date.valueOf(hEndDate);
+					TimeSlot holiday = new TimeSlot(c, a, d, b, flexiBook);
+					flexiBook.addTimeSlot(holiday);
+					business.addHoliday(holiday);
+				}
+				if (addV) {
+					Time a = Time.valueOf(hStartTime);
+					Time b = Time.valueOf(hEndTime);
+					Date c = Date.valueOf(hStartDate);
+					Date d = Date.valueOf(hEndDate);
+					TimeSlot vacation = new TimeSlot(c, a, d, b, flexiBook);
+					flexiBook.addTimeSlot(vacation);
+					business.addVacation(vacation);
+
+				}
+
+				if (updateH) {
+					for (TimeSlot a : business.getHolidays()) {
+						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
+							business.removeHoliday(a);
+							Time x = Time.valueOf(hStartTime);
+							Time b = Time.valueOf(hEndTime);
+							Date c = Date.valueOf(hStartDate);
+							Date d = Date.valueOf(hEndDate);
+							a.setStartDate(c);
+							a.setStartTime(x);
+							a.setEndDate(d);
+							a.setEndTime(b);
+						}
+					}
+				}
+				if (updateV) {
+					for (TimeSlot a : business.getVacation()) {
+						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
+							business.removeVacation(a);
+							Time x = Time.valueOf(hStartTime);
+							Time b = Time.valueOf(hEndTime);
+							Date c = Date.valueOf(hStartDate);
+							Date d = Date.valueOf(hEndDate);
+							TimeSlot vacation = new TimeSlot(c, x, d, b, flexiBook);
+							business.addHoliday(vacation);
+						}
+					}
+				}
+				if (removeH) {
+					for (TimeSlot a : business.getHolidays()) {
+						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
+							business.removeHoliday(a);
+							a.delete();
+						}
+					}
+				}
+
+				if (removeV) {
+					for (TimeSlot a : business.getVacation()) {
+						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
+							business.removeVacation(a);
+							a.delete();
+						}
+					}
+				}
+			}catch (RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
 			}
 
 
