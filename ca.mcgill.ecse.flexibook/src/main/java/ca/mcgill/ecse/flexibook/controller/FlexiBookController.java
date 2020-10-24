@@ -1204,7 +1204,7 @@ public class FlexiBookController {
 				if (!(username.equals("owner"))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
 				} else {
-					//flexibook.addService(name, duration, downtimeDuration, downtimeStart);
+					new Service(name, flexibook, duration, downtimeDuration, downtimeStart);
 				}
 
 			} catch (RuntimeException e) {
@@ -1212,45 +1212,41 @@ public class FlexiBookController {
 			}
 		}
 
-		/**
-		 * @author Hana Gustyn
-		 * @param username
-		 * @param currentName
-		 * @param name
-		 * @param duration
-		 * @param downtimeDuration
-		 * @param downtimeStart
-		 * @throws InvalidInputException
-		 */
-		public static void updateService (String username, String currentName, String name,int duration,
-		int downtimeDuration, int downtimeStart) throws InvalidInputException {
-			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
+			/**
+			 * @author Hana Gustyn
+			 * @param username
+			 * @param currentName
+			 * @param name
+			 * @param duration
+			 * @param downtimeDuration
+			 * @param downtimeStart
+			 * @throws InvalidInputException
+			 */
+			public static void updateService (String username, String currentName, String name,int duration,
+				int downtimeDuration, int downtimeStart) throws InvalidInputException {
+				FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
-			try {
-				checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
+				try {
+					checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 
-				if (currentName.equals(name)) {
-					throw new InvalidInputException("Service " + name + " already exists");
+					if (!(username.equals("owner"))) {
+						throw new InvalidInputException("You are not authorized to perform this operation");
+					}
+
+					if (BookableService.hasWithName(name) && (!(currentName.equals(name)))) {
+						throw new InvalidInputException("Service " + name + " already exists");
+					} else {
+						Service s = (Service) BookableService.getWithName(currentName);
+
+						s.setName(name);
+						s.setDuration(duration);
+						s.setDowntimeDuration(downtimeDuration);
+						s.setDowntimeStart(downtimeStart);
+					}
+				} catch (RuntimeException e) {
+					throw new InvalidInputException(e.getMessage());
 				}
-
-				if (!(username.equals("owner"))) {
-					throw new InvalidInputException("You are not authorized to perform this operation");
-				}
-
-				if (BookableService.hasWithName(name) && (!(currentName.equals(name)))) {
-					throw new InvalidInputException("Service " + name + " already exists");
-				} else {
-					Service s = (Service) BookableService.getWithName(currentName);
-
-					s.setName(name);
-					s.setDuration(duration);
-					s.setDowntimeDuration(downtimeDuration);
-					s.setDowntimeStart(downtimeStart);
-				}
-			} catch (RuntimeException e) {
-				throw new InvalidInputException(e.getMessage());
 			}
-		}
 
 		/**
 		 * @author Hana Gustyn

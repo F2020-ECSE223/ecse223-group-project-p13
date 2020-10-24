@@ -22,6 +22,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,6 +35,7 @@ public class CucumberStepDefinitions {
     private List<TOAppointmentCalendarItem> output1;
     private List<TOAppointmentCalendarItem> output2;
     private int numAppt;
+    private int nbrOfCustomers;
     	
     /**
      * @author Victoria Sanchez
@@ -133,11 +135,11 @@ public class CucumberStepDefinitions {
     	   /**
          *@author Hana Gustyn
          */
-        @Then("an error message {string} shall be raised")
+        /*@Then("an error message {string} shall be raised")
         public void anErrorMessageShallBeRaised(String errorMsg) {
         	assertTrue(error.contains(errorMsg));
 
-        }
+        }*/
     
     	/**
     	 * @author cesar
@@ -161,7 +163,7 @@ public class CucumberStepDefinitions {
     	 * @author cesar
     	 * @param string
     	 */
-    		@Given("there is an existing username {string}")
+    		/*@Given("there is an existing username {string}")
     		public void there_is_an_existing_username(String string) {
     			flexiBook = FlexiBookApplication.getFlexiBook();
     			
@@ -172,7 +174,7 @@ public class CucumberStepDefinitions {
     			else {
     				flexiBook.addCustomer(string, "password");
     			}
-    		}
+    		}*/
     	
     	/**
     	 * @author cesar
@@ -950,40 +952,29 @@ public class CucumberStepDefinitions {
 	*/
     @Then("the account shall have username {string} and password {string}")
     public void theAccountShallHaveUsernameAndPassword(String arg0, String arg1) {
-    //assertEquals(FlexiBookApplication.getUser().getUsername(), arg0);
-	//assertEquals(FlexiBookApplication.getUser().getPassword(), arg1);
-	
-	boolean test = false;
-	
-	for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
-		if(customer.getUsername().equals(arg0)) {
-			if(customer.getPassword().equals(arg1)) {
-				test=true;
-			}
-		}
-	}
-	assertTrue(test);
-	
-    }
-
-
-    @Then("all associated appointments of the account with the username {string} shall not exist")
-    public void allAssociatedAppointmentsOfTheAccountWithTheUsernameShallNotExist(String arg0) {
-    }
-
-    @Then("the user shall be logged out")
-    public void theUserShallBeLoggedOut() {
-    }
-
-    @Then("the account with the username {string} exists")
-    public void theAccountWithTheUsernameExists(String arg0) {
+        boolean test = false;
+        if(arg0.equals("owner")) {
+            assertEquals(FlexiBookApplication.getUser().getUsername(), arg0);
+            assertEquals(FlexiBookApplication.getUser().getPassword(), arg1);
+            test=true;
+        }
+        else {
+            for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+                if(customer.getUsername().equals(arg0)) {
+                    if(customer.getPassword().equals(arg1)) {
+                        test=true;
+                    }
+                }
+            }
+        }
+        assertTrue(test);
     }
 
     /**
      *@author Hana Gustyn
      */
     @Then("an error message {string} shall be raised")
-    public void anErrorMessageShallBeRaised(String errorMsg) {
+    public void anErrorMessageShallBeRaised1(String errorMsg) {
     	assertTrue(error.contains(errorMsg));
 
     }
@@ -1008,7 +999,7 @@ public class CucumberStepDefinitions {
     @Then("the service combos {string} shall not exist in the system")
     public void theServiceCombosShallNotExistInTheSystem(String serviceCombos) {
     	String[] combos = serviceCombos.split(",");
-    	Boolean test = false;
+    	boolean test = false;
 
     	for (int i = 0; i < combos.length; i++) {
     		if(BookableService.hasWithName(combos[i])) {
@@ -1079,11 +1070,11 @@ public class CucumberStepDefinitions {
 /**
 *@author Victoria Sanchez
 */
-    @Then("the account shall have username {string} and password {string}")
+    /*@Then("the account shall have username {string} and password {string}")
     public void theAccountShallHaveUsernameAndPassword(String arg0, String arg1) {
     assertEquals(FlexiBookApplication.getUser().getUsername(), arg0);
 	assertEquals(FlexiBookApplication.getUser().getPassword(), arg1);
-    }
+    }*/
 /**
 *@author Victoria Sanchez
 */
@@ -1116,7 +1107,7 @@ public class CucumberStepDefinitions {
 
 
    /**
-     * @author: Florence Yared
+     * @author Florence Yared
      *
      */
     @Given("no business exists")
@@ -1125,7 +1116,7 @@ public class CucumberStepDefinitions {
     }
 
     /**
-     * @author: Florence Yared
+     * @author Florence Yared
      * @param name
      * @param address
      * @param phoneNumber
@@ -1746,5 +1737,22 @@ public class CucumberStepDefinitions {
         else {
             flexiBook.addCustomer(string, "password");
         }
+    }
+    /**
+     * @author Hana Gustyn
+     */
+    @Then("the service {string} shall be updated to name {string}, duration {string}, start of down time {string} and down time duration {string}")
+    public void theServiceShallBeUpdatedToNameDurationStartOfDownTimeAndDownTimeDuration(String currentName, String name, String duration, String downtimeStart, String downtimeDuration) {
+        Service service = (Service) BookableService.getWithName(name);
+        assertEquals(service.getName(),name);
+        assertEquals(service.getDuration(), Integer.parseInt(duration));
+        assertEquals(service.getDowntimeStart(), Integer.parseInt(downtimeStart));
+        assertEquals(service.getDowntimeDuration(), Integer.parseInt(downtimeDuration));
+    }
+
+    @Then("the user shall be logged out")
+    public void theUserShallBeLoggedOut() {
+        assertNull(FlexiBookApplication.getUser());
+
     }
 }
