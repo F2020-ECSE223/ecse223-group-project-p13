@@ -1,9 +1,0 @@
-class TOBusinessInfo
-{
-  name;
-  address;
-  phoneNumber;
-  email;
-}
-
-

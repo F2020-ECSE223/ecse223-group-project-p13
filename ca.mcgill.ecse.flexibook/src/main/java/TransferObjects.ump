@@ -1,0 +1,15 @@
+class TOBusinessInfo
+{
+  name;
+  address;
+  phoneNumber;
+  email;
+}
+
+class TOAppointmentCalendarItem{
+  Date date;
+  Time startTime;
+  Time endTime;
+}
+
+
