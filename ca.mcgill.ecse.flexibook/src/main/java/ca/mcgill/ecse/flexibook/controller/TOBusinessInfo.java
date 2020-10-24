@@ -1,11 +1,11 @@
 package ca.mcgill.ecse.flexibook.controller;
 
-public class DisplayedBusinessInfo {
+public class TOBusinessInfo {
     String name;
     String address;
     String phoneNumber;
     String email;
-    public DisplayedBusinessInfo(String n,String a, String pn, String e){
+    public TOBusinessInfo(String n,String a, String pn, String e){
         this.name = n;
         this.address = a;
         this.phoneNumber = pn;
