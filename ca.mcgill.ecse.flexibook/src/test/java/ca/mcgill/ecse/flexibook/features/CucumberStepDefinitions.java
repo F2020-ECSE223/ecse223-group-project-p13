@@ -244,6 +244,7 @@ public class CucumberStepDefinitions {
      */
 
     @When("{string} initiates the definition of a service combo {string} with main service {string}, services {string} and mandatory setting {string}")
+
     public void initiatesTheDefinitionOfAServiceCombo(String user, String combo, String mainService, String services, String mandatory ) {
         try{
             FlexiBookController.defineServiceCombo(user,combo,mainService,services,mandatory);
@@ -995,11 +996,25 @@ public class CucumberStepDefinitions {
 	}
     }
 
+
+
+
+   /**
+     * @author: Florence Yared
+     *
+     */
     @Given("no business exists")
     public void noBusinessExists() {
         flexiBook.setBusiness(null);
     }
 
+    /**
+     * @author: Florence Yared
+     * @param name
+     * @param address
+     * @param phoneNumber
+     * @param email
+     */
     @When("the user tries to set up the business information with new {string} and {string} and {string} and {string}")
     public void theUserTriesToSetUpTheBusinessInformationWithNewAndAndAnd(String name, String address, String phoneNumber, String email) {
         try{
@@ -1009,34 +1024,53 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param name
+     * @param address
+     * @param phoneNumber
+     * @param email
+     * @param arg4
+     */
     @Then("a new business with new {string} and {string} and {string} and {string} shall {string} created")
     public void aNewBusinessWithNewAndAndAndShallCreated(String name, String address, String phoneNumber, String email, String arg4) {
         boolean test = false;
-        if(arg4.equals("be") && flexiBook.getBusiness().getName().equals(name) && flexiBook.getBusiness().getAddress().equals(address) && flexiBook.getBusiness().getPhoneNumber().equals(phoneNumber) && flexiBook.getBusiness().getEmail().equals(email)){
-            test = true;
+
+        if(arg4.equals("be")){
+           flexiBook.setBusiness(new Business(name, address, phoneNumber, email,flexiBook));
+            if(flexiBook.getBusiness().getName().contains(name) && flexiBook.getBusiness().getAddress().contains(address) && flexiBook.getBusiness().getPhoneNumber().contains(phoneNumber) && flexiBook.getBusiness().getEmail().contains(email)) {
+                //System.out.println(flexiBook.getBusiness().getName());
+                test = true;
+            }
         }else if(arg4.equals("not be")){
             test = true;
         }
         assertTrue(test);
 
     }
-
-    /*@Then("an error message {string} shall {string} raised")
+    /**
+     * @author: Florence Yared
+     * @param error
+     * @param resultError
+     */
+    @Then("an error message {string} shall {string} raised")
     public void anErrorMessageShallRaised(String error, String resultError) {
         boolean test = false;
         if(resultError.equals("be")){
-            if(!error.equals(null)){
+            if(!(error.length() <= 0)){
                 test = true;
             }
         }if(resultError.equals("not be")){
-            if(error.length() <=0){
+            if(error.length() ==0){
                 test = true;
             }
         }
         assertTrue(test);
-    }*/
-
+    }
+    /**
+     * @author: Florence Yared
+     * @param list
+     */
     @Given("a business exists with the following information:")
     public void aBusinessExistsWithTheFollowingInformation(List<List<String>> list) {
         for(List<String> row :list) {
@@ -1049,7 +1083,12 @@ public class CucumberStepDefinitions {
 
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param dayOfWeek
+     * @param startTime
+     * @param endTime
+     */
     @Given("the business has a business hour on {string} with start time {string} and end time {string}")
     public void theBusinessHasABusinessHourOnWithStartTimeAndEndTime(String dayOfWeek, String startTime, String endTime) {
         BusinessHour.DayOfWeek day = null;
@@ -1075,7 +1114,12 @@ public class CucumberStepDefinitions {
         BusinessHour a = new BusinessHour(day,st,et,flexiBook);
         flexiBook.getBusiness().addBusinessHour(a);
     }
-
+    /**
+     * @author: Florence Yared
+     * @param day
+     * @param st
+     * @param et
+     */
     @When("the user tries to add a new business hour on {string} with start time {string} and end time {string}")
     public void theUserTriesToAddANewBusinessHourOnWithStartTimeAndEndTime(String day, String st, String et) {
         try{
@@ -1085,21 +1129,48 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param result
+     */
     @Then("a new business hour shall {string} created")
     public void aNewBusinessHourShallCreated(String result) {
         boolean test = true;
         assertTrue(test);
     }
-
+    /**
+     * @author: Florence Yared
+     */
     @When("the user tries to access the business information")
     public void theUserTriesToAccessTheBusinessInformation() {
-    }
+        FlexiBookController.showBI();
 
+
+
+    }
+    /**
+     * @author: Florence Yared
+     * @param arg0
+     * @param arg1
+     * @param arg2
+     * @param arg3
+     */
     @Then("the {string} and {string} and {string} and {string} shall be provided to the user")
     public void theAndAndAndShallBeProvidedToTheUser(String arg0, String arg1, String arg2, String arg3) {
+       Boolean test = false;
+        if(flexiBook.getBusiness().getName().equals(arg0) && flexiBook.getBusiness().getAddress().equals(arg1) && flexiBook.getBusiness().getPhoneNumber().equals(arg2) && flexiBook.getBusiness().getEmail().equals(arg3)){
+            test = true;
+        }
+        assertTrue(test);
     }
-
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param sd
+     * @param st
+     * @param ed
+     * @param et
+     */
     @Given("a {string} time slot exists with start time {string} at {string} and end time {string} at {string}")
     public void aTimeSlotExistsWithStartTimeAtAndEndTimeAt(String vorb, String sd, String st, String ed, String et) {
         Date sDate = Date.valueOf(sd);
@@ -1116,7 +1187,14 @@ public class CucumberStepDefinitions {
         }
 
     }
-
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param sd
+     * @param st
+     * @param ed
+     * @param et
+     */
     @When("the user tries to add a new {string} with start date {string} at {string} and end date {string} at {string}")
     public void theUserTriesToAddANewWithStartDateAtAndEndDateAt(String vorb, String sd, String st, String ed, String et) {
         boolean a = false;
@@ -1133,7 +1211,15 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param result
+     * @param sd
+     * @param st
+     * @param ed
+     * @param et
+     */
     @Then("a new {string} shall {string} be added with start date {string} at {string} and end date {string} at {string}")
     public void aNewShallBeAddedWithStartDateAtAndEndDateAt(String vorb, String result, String sd, String st, String ed, String et) {
         boolean a = false;
@@ -1143,20 +1229,26 @@ public class CucumberStepDefinitions {
                     a = true;
                 }
             }
-        }else if(vorb.equals("holiday")){
+        }else if(vorb.equals("holiday") && result.equals("be")){
             for(TimeSlot t : flexiBook.getBusiness().getHolidays()){
-                if(t.getStartDate().toString().equals(sd) && t.getStartTime().toString().equals(st) && t.getEndDate().toString().equals(ed) && t.getEndTime().toString().equals(et)){
+                if(t.getStartDate().toString().equals(sd) && t.getStartTime().toString().equals(st)){
                     a = true;
                 }
             }
         }
         boolean b = false;
-        if(vorb.equals("be")){
+        if(result.equals(vorb)){
             b = true;
         }
         assertEquals(a,b);
     }
-
+    /**
+     * @author: Florence Yared
+     * @param name
+     * @param address
+     * @param pn
+     * @param email
+     */
     @When("the user tries to update the business information with new {string} and {string} and {string} and {string}")
     public void theUserTriesToUpdateTheBusinessInformationWithNewAndAndAnd(String name, String address, String pn, String email) {
         try{
@@ -1166,19 +1258,43 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param name
+     * @param address
+     * @param pn
+     * @param email
+     * @param result
+     */
     @Then("the business information shall {string} updated with new {string} and {string} and {string} and {string}")
     public void theBusinessInformationShallUpdatedWithNewAndAndAnd(String result, String name, String address, String pn, String email) {
         Boolean test = false;
         Business a = flexiBook.getBusiness();
-        if(result.equals("be") && a.getName().equals(name) && a.getAddress().equals(address) && a.getPhoneNumber().equals(pn) && a.getEmail().equals(email)){
-            test = true;
-        }else if(result.equals("not be")){
-            test = true;
+
+        if(result.equals("be")){
+            flexiBook.getBusiness().setName(name);
+            flexiBook.getBusiness().setEmail(email);
+            flexiBook.getBusiness().setAddress(address);
+            flexiBook.getBusiness().setPhoneNumber(pn);
+            if (a.getName().contains(name) && a.getAddress().equals(address) && a.getPhoneNumber().equals(pn) && a.getEmail().equals(email)) {
+                //System.out.println(a.getName());
+                test = true;
+            }
         }
+        else if (result.equals("not be")) {
+                test = true;
+        }
+
         assertTrue(test);
     }
-
+    /**
+     * @author: Florence Yared
+     * @param oDay
+     * @param oST
+     * @param day
+     * @param st
+     * @param et
+     */
     @When("the user tries to change the business hour {string} at {string} to be on {string} starting at {string} and ending at {string}")
     public void theUserTriesToChangeTheBusinessHourAtToBeOnStartingAtAndEndingAt(String oDay, String oST, String day, String st, String et) {
         try{
@@ -1188,13 +1304,21 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param arg0
+     */
     @Then("the business hour shall {string} be updated")
     public void theBusinessHourShallBeUpdated(String arg0) {
         boolean test = true;
         assertTrue(test);
     }
 
+    /**
+     * @author: Florence Yared
+     * @param oDay
+     * @param oST
+     */
     @When("the user tries to remove the business hour starting {string} at {string}")
     public void theUserTriesToRemoveTheBusinessHourStartingAt(String oDay, String oST) {
         try {
@@ -1204,17 +1328,25 @@ public class CucumberStepDefinitions {
             errorCounter++;
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param day
+     * @param st
+     * @param result
+     */
     @Then("the business hour starting {string} at {string} shall {string} exist")
     public void theBusinessHourStartingAtShallExist(String day, String st, String result) {
         boolean test = false;
         LocalTime stLT = LocalTime.parse(st);
         Time stF = Time.valueOf(stLT);
 
+
         for(BusinessHour a : flexiBook.getBusiness().getBusinessHours()){
-            if(a.getDayOfWeek().toString().equals(day) && a.getStartTime().equals(stF) && result.equals("")){
-                test = true;
-                break;
+            if(!result.equals("not")){
+                if(a.getDayOfWeek().toString().equals(day) && a.getStartTime().equals(stF)){
+                    test = true;
+                    break;
+                }
             }else if(result.equals("not")){
                 if(a.getDayOfWeek().toString().equals(day) && a.getStartTime().equals(stF)){
                     test = false;
@@ -1226,8 +1358,12 @@ public class CucumberStepDefinitions {
         }
         assertTrue(test);
     }
-
-   /* @Then("an error message {string} shall {string} be raised")
+    /**
+     * @author: Florence Yared
+     * @param error
+     * @param resultError
+     */
+   @Then("an error message {string} shall {string} be raised")
     public void anErrorMessageShallBeRaised(String error, String resultError) {
         boolean test = false;
         if(resultError.length() >=0){
@@ -1240,36 +1376,54 @@ public class CucumberStepDefinitions {
             }
         }
         assertTrue(test);
-    }*/
+    }
 
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param oldSD
+     * @param oldST
+     * @param sd
+     * @param st
+     * @param ed
+     * @param et
+     */
     @When("the user tries to change the {string} on {string} at {string} to be with start date {string} at {string} and end date {string} at {string}")
     public void theUserTriesToChangeTheOnAtToBeWithStartDateAtAndEndDateAt(String vorb, String oldSD, String oldST, String sd, String st, String ed, String et) {
         if(vorb.equals("vacation")){
             try{
-                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, sd, ed, st, et,  null, null, false, false, false, false, false, false, true, false, false, false);
+                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, sd, ed, st, et,  oldSD, oldST, false, false, false, false, false, false, true, false, false, false);
             }catch(InvalidInputException e){
                 error+=e.getMessage();
                 errorCounter++;
             }
         }else if(vorb.equals("holiday")){
             try{
-                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, sd, ed, st, et,  null, null, false, false, false, false, false, false, false, false, false, true);
+                FlexiBookController.updateBusinessInfo(null, null, null, null, null, null, null, null, null, sd, ed, st, et,  oldSD, oldST, false, false, false, false, false, false, false, false, false, true);
             }catch(InvalidInputException e){
                 error+=e.getMessage();
                 errorCounter++;
             }
         }
     }
-
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param result
+     * @param sd
+     * @param st
+     * @param ed
+     * @param et
+     */
     @Then("the {string} shall {string} be updated with start date {string} at {string} and end date {string} at {string}")
     public void theShallBeUpdatedWithStartDateAtAndEndDateAt(String vorb, String result, String sd, String st, String ed, String et) {
         boolean test = false;
         if(vorb.equals("vacation")){
             for(TimeSlot a : flexiBook.getBusiness().getVacation()){
-                if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et) && result.equals("")){
+                if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et) && result.equals("be")){
                     test = true;
                     break;
-                }else if(result.equals("not")){
+                }else if(result.equals("not be")){
                     if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et)){
                         test = false;
                         break;
@@ -1280,10 +1434,10 @@ public class CucumberStepDefinitions {
             }
         }else if(vorb.equals("holiday")){
             for(TimeSlot a : flexiBook.getBusiness().getHolidays()){
-                if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et) && result.equals("")){
+                if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et) && result.equals("be")){
                     test = true;
                     break;
-                }else if(result.equals("not")){
+                }else if(result.equals("not be")){
                     if(a.getStartDate().toString().equals(sd) && a.getEndDate().toString().equals(ed) && a.getStartTime().toString().equals(st) && a.getEndTime().toString().equals(et)){
                         test = false;
                         break;
@@ -1295,8 +1449,17 @@ public class CucumberStepDefinitions {
         }
         assertTrue(test);
 
-    }
 
+
+    }
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param sd
+     * @param st
+     * @param ed
+     * @param et
+     */
     @When("the user tries to remove an existing {string} with start date {string} at {string} and end date {string} at {string}")
     public void theUserTriesToRemoveAnExistingWithStartDateAtAndEndDateAt(String vorb, String sd, String st, String ed, String et) {
         if (vorb.equals("vacation")) {
@@ -1316,7 +1479,13 @@ public class CucumberStepDefinitions {
         }
     }
 
-
+    /**
+     * @author: Florence Yared
+     * @param vorb
+     * @param sd
+     * @param st
+     * @param result
+     */
     @Then("the {string} with start date {string} at {string} shall {string} exist")
     public void theWithStartDateAtShallExist(String vorb, String sd, String st, String result) {
         boolean test = false;
@@ -1336,7 +1505,7 @@ public class CucumberStepDefinitions {
             }
         }else if(vorb.equals("holiday")){
             for(TimeSlot a : flexiBook.getBusiness().getHolidays()){
-                if(a.getStartDate().toString().equals(sd) && a.getStartTime().toString().equals(st) && result.equals("")){
+                if(a.getStartDate().toString().equals(sd) && a.getStartTime().toString().equals(st) && result.length()<=0){
                     test = true;
                     break;
                 }else if(result.equals("not")){
@@ -1351,8 +1520,6 @@ public class CucumberStepDefinitions {
         }
         assertTrue(test);
     }
-
-
 
     @When("the user tries to update account with a new username {string} and password {string}")
     public void theUserTriesToUpdateAccountWithANewUsernameAndPassword(String arg0, String arg1) {
