@@ -898,14 +898,10 @@ public class FlexiBookController {
 		public static void updateServiceCombo (String username, String oldName, String name, String mainService, String
 		servicesList, String isMandatory) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-
 			try {
 				if (!(flexiBook.getOwner().getUsername().equals(username))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
 				}
-			/*if(oldName.equals(name)){
-				throw new InvalidInputException("Service combo Wash-Dry already exists");
-			}*/
 
 				if (!(BookableService.hasWithName(mainService))) {
 					throw new InvalidInputException("Service " + mainService + " does not exist");
@@ -935,12 +931,31 @@ public class FlexiBookController {
 				//Testing for unique service combos
 				for (BookableService s : flexiBook.getBookableServices()) {
 					if (s instanceof ServiceCombo) {
-						if (s.getName().equals(name)) {
+						if (s.getName().equals(name) && !oldName.equals(name)) {
 							throw new InvalidInputException("Service combo " + name + " already exists");
+							/*if (((ServiceCombo) s).getMainService().getService().getName().equals(mainService)) {
+								int counter = 0;
+								boolean test = false;
+								for(ComboItem c:((ServiceCombo) s).getServices()){
+									if(!(c.getService().getName().equals(services[counter]) &&
+											(c.getMandatory() == Boolean.valueOf(mandatory[counter])))){
+										test = true;
+									}
+									counter++;
+								}
+								if(!test ){
+									if(!s.getName().equals(oldName)){
+
+									}
+								}
+							}*/
+
 						}
 					}
 				}
 				ServiceCombo oldCombo = (ServiceCombo) BookableService.getWithName(oldName);
+				flexiBook.removeBookableService(oldCombo);
+				oldCombo.delete();
 				ServiceCombo combo = new ServiceCombo(name, flexiBook);
 				combo.setName(name);
 				//combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(mainService),combo));
@@ -951,7 +966,6 @@ public class FlexiBookController {
 						combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
-				flexiBook.removeBookableService(oldCombo);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
