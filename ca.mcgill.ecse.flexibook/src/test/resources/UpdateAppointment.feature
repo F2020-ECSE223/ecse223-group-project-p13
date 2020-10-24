@@ -23,14 +23,14 @@ Feature: Update appointment
       | color-basic  | color       | wash,color,dry                | false,true,false            |
       | cut-basic    | cut         | wash,cut,dry                  | false,true,false            |
       | color-deluxe | color       | wash,extensions,color,dry,cut | false,false,true,true,false |
-    Given the business has the following opening hours
+    Given the business has the following opening hours:
       | day       | startTime | endTime |
       | Monday    | 9:00      | 17:00   |
       | Tuesday   | 9:00      | 17:00   |
       | Wednesday | 9:00      | 17:00   |
       | Thursday  | 9:00      | 17:00   |
       | Friday    | 9:00      | 15:00   |
-    Given the business has the following holidays
+    Given the business has the following holidays:
       | startDate  | endDate    | startTime | endTime |
       | 2020-12-31 | 2021-01-01 | 0:00      | 23:59   |
     Given the following appointments exist in the system:

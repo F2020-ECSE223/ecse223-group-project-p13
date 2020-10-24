@@ -377,26 +377,18 @@ public class FlexiBookController {
 					throw new InvalidInputException("You do not have permission to delete this account");
 
 				}
-				
+
 				if (user.equals(FlexiBookApplication.getUser())) {
 					flexibook.getCustomers().remove(user);
 					user.delete();
-				}
-				else {
+				} else {
 					throw new InvalidInputException("You do not have permission to delete this account");
 				}
-				
+
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-
-		public static void makeAppointment () {
-		}
-		public static void cancelAppointment (User customer, Appointment appointment) throws InvalidInputException {
-
-		}
-
 
 			/**
 		 * this method returns the available timeslots for a given day

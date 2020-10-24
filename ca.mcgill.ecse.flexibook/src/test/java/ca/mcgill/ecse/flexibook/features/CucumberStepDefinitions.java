@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
@@ -626,16 +627,6 @@ public class CucumberStepDefinitions {
         }
     }
 
-    @Given("the business has the following opening hours")
-    public void theBusinessHasTheFollowingOpeningHours(List<List<String>> list) {
-        //VICTORIA
-    }
-
-    @Given("the business has the following holidays")
-    public void theBusinessHasTheFollowingHolidays(List<List<String>> list) {
-        //VICTORIA
-    }
-
     /**
      * @author Fiona Ryan
      * @param customer
@@ -646,7 +637,7 @@ public class CucumberStepDefinitions {
     @When("{string} schedules an appointment on {string} for {string} with {string} at {string}")
     public void schedulesAnAppointmentOnForAt(String customer, String date, String service,String optionalServices, String time) {
         try{
-            FlexiBookController.makeAppointment(customer,date,time,service);
+            FlexiBookController.makeAppointment(customer,date,time,service,optionalServices);
         }
         catch(InvalidInputException e){
             error+=e.getMessage();
@@ -656,7 +647,7 @@ public class CucumberStepDefinitions {
     @When("{string} schedules an appointment on {string} for {string} at {string}")
     public void schedulesAnAppointmentOnForAt(String customer, String date, String service, String time) {
         try{
-            FlexiBookController.makeAppointment(customer,date,time,service);
+            FlexiBookController.makeAppointment(customer,date,time,service,null);
         }
         catch(InvalidInputException e){
             error+=e.getMessage();
@@ -690,7 +681,7 @@ public class CucumberStepDefinitions {
     @When("{string} schedules an appointment on on {string} for {string} at {string}")
     public void schedulesAnAppointmentOnOnForAt(String customer, String date, String service, String time) {
         try{
-            FlexiBookController.makeAppointment(customer,date,time,service);
+            FlexiBookController.makeAppointment(customer,date,time,service,null);
         }
         catch(InvalidInputException e){
             error+=e.getMessage();
@@ -1669,5 +1660,22 @@ public class CucumberStepDefinitions {
     @After
     public void tearDown() {
     	flexiBook.delete();
+    }
+
+    /**
+     * @author cesar
+     * @param string
+     */
+    @Given("there is an existing username {string}")
+    public void there_is_an_existing_username(String string) {
+        flexiBook = FlexiBookApplication.getFlexiBook();
+
+        if(string.equals("owner")){
+            Owner owner = new Owner("owner", "owner", flexiBook);
+            flexiBook.setOwner(owner);
+        }
+        else {
+            flexiBook.addCustomer(string, "password");
+        }
     }
 }
