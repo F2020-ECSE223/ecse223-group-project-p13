@@ -30,12 +30,16 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 public class FlexiBookController {
 	public static void login(String username, String password) throws InvalidInputException {
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
+		boolean found = false;
+		boolean correctPassword=false;
 
 		if (username.length() == 0 || password.length() == 0) {
 			throw new InvalidInputException("invalid entry");
 		}
 		if (flexibook.getOwner() == null) {
 			if (username.equals("owner") && password.equals("owner")) {
+				correctPassword=true;
+				found=true;
 				Owner newOwner = new Owner(username, password, flexibook);
 				flexibook.setOwner(newOwner);
 				FlexiBookApplication.setCurrentUser(flexibook.getOwner());
@@ -46,32 +50,32 @@ public class FlexiBookController {
 		if (flexibook.getOwner() != null) {
 			if (username == flexibook.getOwner().getUsername()) {
 				if (!(password.equals(flexibook.getOwner().getPassword()))) {
-					throw new InvalidInputException("username/password not found");
+					throw new InvalidInputException("Username/password not found");
 				} else {
+					correctPassword=true;
+					found=true;
 					FlexiBookApplication.setCurrentUser(flexibook.getOwner());
 
 				}
 			}
 		}
+		
 
-		boolean found = false;
-		for (User user : flexibook.getCustomers()) {
-			if (username.equals(user.getUsername())) {
+		for (User currentUser : flexibook.getCustomers()) {
+			if (username.equals(currentUser.getUsername())) {
 				found = true;
-				if (!(password.equals(user.getPassword()))) {
-					throw new InvalidInputException("username/password not found");
-
-				} else {
-					FlexiBookApplication.setCurrentUser(user);
+				if (password.equals(currentUser.getPassword())) {
+					correctPassword=true;
+					FlexiBookApplication.setCurrentUser(currentUser);	
+					}
 				}
 			}
-			if (!found) {
-				throw new InvalidInputException("username/password not found");
-
-			}
+		if (!found || !correctPassword) {
+			FlexiBookApplication.setCurrentUser(null);
+			throw new InvalidInputException("Username/password not found");
 		}
-
 	}
+
 
 	/**
 	 * @throws InvalidInputException
@@ -377,7 +381,7 @@ public class FlexiBookController {
 		}
 
 
-		/**
+			/**
 		 * this method returns the available timeslots for a given day
 		 * @author Victoria Sanchez
 		 * @param date
@@ -494,7 +498,7 @@ public class FlexiBookController {
 		 * @throws ParseException
 		 */
 		public static List<TOAppointmentCalendarItem> getUnavailableAppointmentCalendar (String date) throws
-				InvalidInputException, ParseException, ParseException {
+			InvalidInputException, ParseException, ParseException {
 			SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
 			java.util.Date d1;
 			d1 = s1.parse(date);
@@ -503,8 +507,18 @@ public class FlexiBookController {
 			checkDate(date1);
 			DayOfWeek dayOfWeek = date1.getDayOfWeek();
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-
 			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
+			int count = 0;
+			for (BusinessHour b : flexibook.getBusiness().getBusinessHours()) {
+				if (b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
+					count++;
+				}
+			}
+			if (count == 0) {
+				return calendar;
+			}
+
+
 			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
 			for (Appointment a : flexibook.getAppointments()) {
 				if (a.getTimeSlot().getStartDate().equals(sqlDate)) {
@@ -522,6 +536,7 @@ public class FlexiBookController {
 					holidaySlots.add(t);
 				}
 			}
+
 			if (!holidaySlots.isEmpty()) {
 				for (BusinessHour b1 : flexibook.getBusiness().getBusinessHours()) {
 					if (b1.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
@@ -529,38 +544,43 @@ public class FlexiBookController {
 						calendar.add(newT);
 						return calendar;
 					}
+
 				}
 			}
+
 			sortDailyAppointments(DayAppointments);
+			boolean added=false;
+
 			for (BusinessHour b1 : flexibook.getBusiness().getBusinessHours()) {
 				if (b1.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					for (Appointment a : DayAppointments) {
-						for (ComboItem c : a.getChosenItems()) {
-							if (c.getService().getDowntimeDuration() != 0) {
-								Calendar newC = Calendar.getInstance();
-								newC.setTime(a.getTimeSlot().getStartTime());
-								newC.add(Calendar.MINUTE, c.getService().getDowntimeStart());
+					for (Appointment a : DayAppointments) { //going through appointments
+						for (ComboItem s : a.getChosenItems()) { //going through service times
+							if (s.getService().getDowntimeDuration() != 0) { //if there is a service time
+								Calendar newC = Calendar.getInstance(); //create a calendar instance
+								newC.setTime(a.getTimeSlot().getStartTime()); //set the calendar instance the start time of the appointment
+								newC.add(Calendar.MINUTE, s.getService().getDowntimeStart()); //
 								Time newT1 = (Time) newC.getTime();
 								Calendar newCEnd = Calendar.getInstance();
 								newCEnd.setTime(a.getTimeSlot().getStartTime());
-								newCEnd.add(Calendar.MINUTE, c.getService().getDowntimeStart() + c.getService().getDowntimeDuration());
+								newCEnd.add(Calendar.MINUTE, s.getService().getDowntimeStart() + s.getService().getDowntimeDuration());
 								Time newT2 = (Time) newCEnd.getTime();
 
 								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getStartTime(), newT1);
-								TOAppointmentCalendarItem T2 = new TOAppointmentCalendarItem(sqlDate, newT2, a.getTimeSlot().getEndTime());
+								TOAppointmentCalendarItem newT3= new TOAppointmentCalendarItem(sqlDate, newT2, a.getTimeSlot().getEndTime());
 								calendar.add(newT);
-								calendar.add(T2);
-
-							} else {
-								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime());
-								calendar.add(newT);
-							}
+								calendar.add(newT3);
+								added=true;
+							} 
+							
+						} 
+						if(!added) {
+						TOAppointmentCalendarItem app= new TOAppointmentCalendarItem(sqlDate,a.getTimeSlot().getStartTime(),a.getTimeSlot().getEndTime());
+						calendar.add(app);
 						}
 					}
-
+					
 				}
 			}
-
 			return calendar;
 		}
 		/**
