@@ -1178,13 +1178,13 @@ public class FlexiBookController {
 		/**
 		 * @author: Florence
 		 */
-		public static DisplayedBusinessInfo showBI(){
+		public static TOBusinessInfo showBI(){
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 			String name = flexiBook.getBusiness().getName();
 			String address = flexiBook.getBusiness().getAddress();
 			String phoneNumber = flexiBook.getBusiness().getPhoneNumber();
 			String email = flexiBook.getBusiness().getEmail();
-			DisplayedBusinessInfo disp = new DisplayedBusinessInfo(name, address, phoneNumber, email);
+			TOBusinessInfo disp = new TOBusinessInfo(name, address, phoneNumber, email);
 			return disp;
 		}
 
