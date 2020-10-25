@@ -398,6 +398,7 @@ public class FlexiBookController {
 		 * @throws ParseException
 		 */
 
+		
 		public static List<TOAppointmentCalendarItem> getAvailableAppointmentCalendarDay (String date) throws
 		InvalidInputException, ParseException {
 			SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
@@ -464,7 +465,6 @@ public class FlexiBookController {
 								newCEnd.setTime(a.getTimeSlot().getStartTime());
 								newCEnd.add(Calendar.MINUTE, s.getService().getDowntimeStart() + s.getService().getDowntimeDuration());
 								Time newT2 = (Time) newCEnd.getTime();
-
 								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, newT1, newT2);
 								calendar.add(newT);
 							}
@@ -476,7 +476,16 @@ public class FlexiBookController {
 								TOAppointmentCalendarItem newT2 = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getEndTime(), DayAppointments.get(indexA + 1).getTimeSlot().getStartTime());
 								calendar.add(newT);
 								calendar.add(newT2);
-							} else {
+							if(DayAppointments.size()==1) {
+								TOAppointmentCalendarItem availableTime1= new TOAppointmentCalendarItem(sqlDate,b1.getStartTime(),a.getTimeSlot().getStartTime());
+								TOAppointmentCalendarItem availableTime= new TOAppointmentCalendarItem(sqlDate,a.getTimeSlot().getStartTime(),b1.getEndTime());
+								calendar.add(availableTime1);
+								calendar.add(availableTime);
+							}
+							}if(DayAppointments.size()==1) {
+								TOAppointmentCalendarItem app2= new TOAppointmentCalendarItem(sqlDate,a.getTimeSlot().getEndTime(),b1.getEndTime());
+							}
+							else {
 								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getEndTime(), DayAppointments.get(indexA + 1).getTimeSlot().getStartTime());
 								calendar.add(newT);
 							}
@@ -495,7 +504,6 @@ public class FlexiBookController {
 					}
 				}
 			}
-
 			return calendar;
 		}
 
