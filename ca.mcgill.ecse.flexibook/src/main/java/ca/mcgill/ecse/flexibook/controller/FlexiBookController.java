@@ -240,11 +240,13 @@ public class FlexiBookController {
 		t1.addAll(t7);
 		return t1;
 	}
-		/**
+			/**
 		 * @author cesar
 		 * @param aUsername
 		 * @param aPassword
 		 * @throw InvalidInputException
+		 * checks if there are any faults in the username or password, if there isn't a new account is created 
+		 * and added to the list of customers
 		 */
 
 		public static void customerSignUp (String aUsername, String aPassword) throws
@@ -291,19 +293,49 @@ public class FlexiBookController {
 		 * @param newUsername
 		 * @param newPassword
 		 * @throw InvalidInputException
+		 * checks if there are any faults in the new username and password chosen, then changes the username and
+		 * password for the customer and only the password for the owner
 		 */
 
 		public static void updateAccount (String oldUsername, String newUsername, String newPassword) throws
 		InvalidInputException {
 
+			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+			Owner owner = flexiBook.getOwner();
+			
 			try {
 
-				if (newUsername == null || newUsername.equals("") || newPassword.equals("") || newPassword == null) {
-					throw new InvalidInputException("The username/password cannot be empty");
+				if (newPassword.equals("") || newPassword == null) {
+					throw new InvalidInputException("The password cannot be empty");
 				}
-
+				if(newUsername == null || newUsername.equals("")) {
+					throw new InvalidInputException("The user name cannot be empty");
+				}
+				
+				
 				User user = findUser(oldUsername);
-				//Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
+				
+				if(owner!=null) {
+					if(oldUsername.equals(owner.getUsername())) {
+						if(oldUsername.equals(newUsername)) {
+							owner.setPassword(newPassword);
+							return;
+						}
+						else {
+							throw new InvalidInputException("Changing username of owner is not allowed");
+						}
+					}
+
+				}
+				
+				
+				for (User customer : flexiBook.getCustomers()) {
+					if (customer.getUsername().equals(newUsername)) {
+						throw new InvalidInputException("Username not available");
+					}
+				}
+					
+				
 
 				if (user == null) {
 					throw new InvalidInputException("No account with this username can be found");
@@ -331,6 +363,8 @@ public class FlexiBookController {
 		/**
 		 * @author cesar
 		 * @param aUsername
+		 * searches the costomer list to find a customer with the name we are looking for
+		 * if we are searching for the owner then it returns the owner of the flexiBook
 		 */
 
 		private static User findUser (String aUsername){
@@ -361,35 +395,47 @@ public class FlexiBookController {
 		 * @author cesar
 		 * @param aUsername
 		 * @throw InvalidInputException
+		 * Verifies that the account that is going to be deleted is the account logged in, can't delete the 
+		 * owner account. 
 		 */
 
 		public static void deleteCustomerAccount (String aUsername) throws InvalidInputException {
 
-			//Customer customer = FlexiBookApplication.getFlexiBook().getCustomer(index);
+			
 			User user = findUser(aUsername);
 			Owner owner = FlexiBookApplication.getFlexiBook().getOwner();
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
+			
 
 
 			try {
 
-				if (user.equals(owner)) {
+				if (/*user.equals(owner)||*/aUsername.equals("owner")) {
 					throw new InvalidInputException("You do not have permission to delete this account");
 
 				}
 
 				if (user.equals(FlexiBookApplication.getUser())) {
-					flexibook.getCustomers().remove(user);
+					Customer customer=(Customer) user;
+					List<Appointment> userApps = customer.getAppointments();
+					for(Appointment userApp : userApps) {
+						flexibook.removeAppointment(userApp);
+						userApp.delete();
+					}
+					
+					flexibook.removeCustomer(customer);
 					user.delete();
+					
 				} else {
 					throw new InvalidInputException("You do not have permission to delete this account");
 				}
+				FlexiBookApplication.setCurrentUser(null);
 
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-
+	
 			/**
 		 * this method returns the available timeslots for a given day
 		 * @author Victoria Sanchez
