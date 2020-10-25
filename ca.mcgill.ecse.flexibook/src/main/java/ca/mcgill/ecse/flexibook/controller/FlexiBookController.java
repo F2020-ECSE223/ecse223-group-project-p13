@@ -1752,49 +1752,60 @@ public class FlexiBookController {
 				}
 
 				if (updateH) {
+					TimeSlot temp = null;
 					for (TimeSlot a : business.getHolidays()) {
 						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-							business.removeHoliday(a);
-							Time x = Time.valueOf(hStartTime);
-							Time b = Time.valueOf(hEndTime);
-							Date c = Date.valueOf(hStartDate);
-							Date d = Date.valueOf(hEndDate);
-							a.setStartDate(c);
-							a.setStartTime(x);
-							a.setEndDate(d);
-							a.setEndTime(b);
+							temp=a;
 						}
 					}
+					Time x = Time.valueOf(hStartTime);
+					Time b = Time.valueOf(hEndTime);
+					Date c = Date.valueOf(hStartDate);
+					Date d = Date.valueOf(hEndDate);
+					temp.setStartDate(c);
+					temp.setStartTime(x);
+					temp.setEndDate(d);
+					temp.setEndTime(b);
 				}
 				if (updateV) {
+					TimeSlot temp = null;
 					for (TimeSlot a : business.getVacation()) {
 						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-							business.removeVacation(a);
-							Time x = Time.valueOf(hStartTime);
-							Time b = Time.valueOf(hEndTime);
-							Date c = Date.valueOf(hStartDate);
-							Date d = Date.valueOf(hEndDate);
-							TimeSlot vacation = new TimeSlot(c, x, d, b, flexiBook);
-							business.addHoliday(vacation);
+							temp=a;
+							break;
 						}
 					}
+					Time x = Time.valueOf(hStartTime);
+					Time b = Time.valueOf(hEndTime);
+					Date c = Date.valueOf(hStartDate);
+					Date d = Date.valueOf(hEndDate);
+					temp.setStartDate(c);
+					temp.setStartTime(x);
+					temp.setEndDate(d);
+					temp.setEndTime(b);
 				}
 				if (removeH) {
+					TimeSlot temp = null;
 					for (TimeSlot a : business.getHolidays()) {
 						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-							business.removeHoliday(a);
-							a.delete();
+							temp = a;
+							break;
 						}
 					}
+					business.removeHoliday(temp);
+					temp.delete();
 				}
 
 				if (removeV) {
+					TimeSlot temp = null;
 					for (TimeSlot a : business.getVacation()) {
 						if (a.getStartDate().toString().equals(oldStartD) && a.getStartTime().toString().equals(oldStartT)) {
-							business.removeVacation(a);
-							a.delete();
+							temp = a;
+							break;
 						}
 					}
+					business.removeHoliday(temp);
+					temp.delete();
 				}
 			}catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
