@@ -1882,4 +1882,96 @@ public class CucumberStepDefinitions {
         assertNull(FlexiBookApplication.getUser());
 
     }
+
+	@Given("the business has the following opening hours")
+	public void theBusinessHasTheFollowingOpeningHours() {
+	}
+
+	@Given("the business has the following holidays")
+	public void theBusinessHasTheFollowingHolidays() {
+	}
+
+	@Given("{string} has {int} no-show records")
+	public void hasNoShowRecords(String arg0, int arg1) {
+	}
+
+	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
+	public void makesAAppointmentForTheDateAndTimeAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+	}
+
+	@When("{string} attempts to change the service in the appointment to {string} at {string}")
+	public void attemptsToChangeTheServiceInTheAppointmentToAt(String arg0, String arg1, String arg2) {
+	}
+
+	@Then("the appointment shall be booked")
+	public void theAppointmentShallBeBooked() {
+	}
+
+	@Then("the service in the appointment shall be {string}")
+	public void theServiceInTheAppointmentShallBe(String arg0) {
+	}
+
+	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
+	public void theAppointmentShallBeForTheDateWithStartTimeAndEndTime(String arg0, String arg1, String arg2) {
+	}
+
+	@Then("the username associated with the appointment shall be {string}")
+	public void theUsernameAssociatedWithTheAppointmentShallBe(String arg0) {
+	}
+
+	@Then("the user {string} shall have {int} no-show records")
+	public void theUserShallHaveNoShowRecords(String arg0, int arg1) {
+	}
+
+	@Then("the system shall have {int} appointments")
+	public void theSystemShallHaveAppointments(int arg0) {
+	}
+
+	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
+	public void attemptsToUpdateTheDateToAndTimeToAt(String arg0, String arg1, String arg2, String arg3) {
+	}
+
+	@When("{string} attempts to cancel the appointment at {string}")
+	public void attemptsToCancelTheAppointmentAt(String arg0, String arg1) {
+	}
+
+	@Then("the system shall have {int} appointment")
+	public void theSystemShallHaveAppointment(int arg0) {
+	}
+
+	@When("{string} makes a {string} appointment without choosing optional services for the date {string} and time {string} at {string}")
+	public void makesAAppointmentWithoutChoosingOptionalServicesForTheDateAndTimeAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+	}
+
+	@When("{string} attempts to add the optional service {string} to the service combo in the appointment at {string}")
+	public void attemptsToAddTheOptionalServiceToTheServiceComboInTheAppointmentAt(String arg0, String arg1, String arg2) {
+	}
+
+	@Then("the service combo in the appointment shall be {string}")
+	public void theServiceComboInTheAppointmentShallBe(String arg0) {
+	}
+
+	@Then("the service combo shall have {string} selected services")
+	public void theServiceComboShallHaveSelectedServices(String arg0) {
+	}
+
+	@When("the owner starts the appointment at {string}")
+	public void theOwnerStartsTheAppointmentAt(String arg0) {
+	}
+
+	@When("the owner ends the appointment at {string}")
+	public void theOwnerEndsTheAppointmentAt(String arg0) {
+	}
+
+	@Then("the appointment shall be in progress")
+	public void theAppointmentShallBeInProgress() {
+	}
+
+	@When("the owner attempts to register a no-show for the appointment at {string}")
+	public void theOwnerAttemptsToRegisterANoShowForTheAppointmentAt(String arg0) {
+	}
+
+	@When("the owner attempts to end the appointment at {string}")
+	public void theOwnerAttemptsToEndTheAppointmentAt(String arg0) {
+	}
 }

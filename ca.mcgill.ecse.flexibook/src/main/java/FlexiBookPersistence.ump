@@ -1,0 +1,84 @@
+external interface Serializable {}
+
+class FlexiBook {
+    depend java.io.Serializable;
+    isA Serializable;
+    
+	public void reinitialize() {
+	    BookableService.reinitializeBookableServiceByName(this.getBookableServices());
+        User.reinitializeUserByUsername(this.getUsers(),this.getOwner());
+	}
+	private static final long serialVersionUID = 2683593616927794571L;
+}
+
+class Appointment {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = 2315072607928790501L;
+}
+
+class BookableService {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = 8896099581655989380L;
+	public static void reinitializeBookableServiceByName(List<BookableService> services) {
+	    bookableservicesByName = new HashMap<String, BookableService>();
+	    for (BookableService service : services) {
+	        bookableservicesByName.put(service.getName(), service);
+	    }
+	}
+}
+
+class User {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = 2045406856025012133L;
+    public static void reinitializeUserByUsername(List<Customer> customers,Owner owner) {
+	    usersByUsername = new HashMap<String,User>;
+        usersByUsername.put(owner.getUsername(),owner);
+	    for (Customer customer : customers) {
+	        usersByUsername.put(customer.getUsername(),customer)
+	    }
+	}
+
+}
+
+class BusinessHour {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -49586124598156848L;
+}
+
+class ComboItem {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -45271189451849489L;
+}
+
+class Customer {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -21386486846168498L;
+}
+class Owner {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -12354848795468647L;
+}
+class Service {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -78546518498458678L;
+}
+class ServiceCombo {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -65139845648498498L;
+}
+class TimeSlot {
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -34528498454684865L;
+}
+
+
