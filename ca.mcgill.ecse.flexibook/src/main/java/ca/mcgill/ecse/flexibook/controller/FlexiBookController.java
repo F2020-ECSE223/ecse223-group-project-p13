@@ -24,6 +24,7 @@ import ca.mcgill.ecse.flexibook.model.Service;
 import ca.mcgill.ecse.flexibook.model.ServiceCombo;
 import ca.mcgill.ecse.flexibook.model.TimeSlot;
 import ca.mcgill.ecse.flexibook.model.User;
+import ca.mcgill.ecse.flexibook.persistence.FlexiBookPersistence;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 
@@ -1120,6 +1121,7 @@ public class FlexiBookController {
 						serv.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
+				FlexiBookPersistence.save(flexiBook);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1208,6 +1210,7 @@ public class FlexiBookController {
 						combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
+				FlexiBookPersistence.save(flexiBook);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1236,6 +1239,7 @@ public class FlexiBookController {
 
 					}
 					combo.delete();
+					FlexiBookPersistence.save(flexiBook);
 				}
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
