@@ -18,7 +18,7 @@ public class FlexiBookPersistence {
             flexiBook = new FlexiBook();
         }
         else{
-            //flexiBook.reinitialize();
+            flexiBook.reinitialize();
         }
         return flexiBook;
     }
