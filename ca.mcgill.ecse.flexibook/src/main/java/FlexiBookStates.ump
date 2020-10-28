@@ -1,0 +1,22 @@
+namespace ca.mcgill.ecse.flexibook.model;
+class Appointment{
+    existStatus{
+        Before{
+            toggleStart() -> InProgress;
+            toggleCancel() -> Ended;
+
+        }
+        InProgress{
+            updateDate(Date date) /{
+                rejectUpdate(date);
+            } -> InProgress;
+        }
+        Ended{
+
+        }
+    }
+    private rejectUpdate(Date date){
+
+    }
+
+}
