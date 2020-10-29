@@ -14,11 +14,11 @@ class Appointment{
             } -> InProgress;
         }
         Ended{
-			event->Final;
+		event->Final;
         }
     }
     
-    private acceptupdate(Date date){
+    private acceptUpdate(Date date){
     	
     }
     
