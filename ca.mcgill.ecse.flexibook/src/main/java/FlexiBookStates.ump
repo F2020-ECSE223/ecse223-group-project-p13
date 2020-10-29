@@ -4,7 +4,9 @@ class Appointment{
         Before{
             toggleStart() -> InProgress;
             toggleCancel() -> Ended;
-
+            updateDate(Date date) /{
+            	acceptUpdate(date);
+            } -> before;
         }
         InProgress{
             updateDate(Date date) /{
@@ -12,11 +14,16 @@ class Appointment{
             } -> InProgress;
         }
         Ended{
-
+			event->Final;
         }
     }
+    
+    private acceptupdate(Date date){
+    	
+    }
+    
     private rejectUpdate(Date date){
-
+		throw new RuntimeException("An appointment in progress cannot be updated");
     }
 
 }
