@@ -6,7 +6,7 @@ class FlexiBook {
     
 	public void reinitialize() {
 	    BookableService.reinitializeBookableServiceByName(this.getBookableServices());
-        User.reinitializeUserByUsername(this.getUsers(),this.getOwner());
+        User.reinitializeUserByUsername(this.getCustomers(),this.getOwner());
 	}
 	private static final long serialVersionUID = 2683593616927794571L;
 }
@@ -34,10 +34,10 @@ class User {
     isA Serializable;
     private static final long serialVersionUID = 2045406856025012133L;
     public static void reinitializeUserByUsername(List<Customer> customers,Owner owner) {
-	    usersByUsername = new HashMap<String,User>;
+	    usersByUsername = new HashMap<String,User>();
         usersByUsername.put(owner.getUsername(),owner);
 	    for (Customer customer : customers) {
-	        usersByUsername.put(customer.getUsername(),customer)
+	        usersByUsername.put(customer.getUsername(),customer);
 	    }
 	}
 
