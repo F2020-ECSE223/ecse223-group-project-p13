@@ -5,7 +5,7 @@ package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 
 // line 52 "../../../../../FlexiBookPersistence.ump"
-// line 81 "../../../../../FlexiBook.ump"
+// line 82 "../../../../../FlexiBook.ump"
 public class ComboItem implements Serializable
 {
 

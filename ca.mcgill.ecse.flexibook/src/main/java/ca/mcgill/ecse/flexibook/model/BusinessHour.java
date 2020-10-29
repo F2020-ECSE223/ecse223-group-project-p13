@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.sql.Time;
 
 // line 46 "../../../../../FlexiBookPersistence.ump"
-// line 46 "../../../../../FlexiBook.ump"
+// line 47 "../../../../../FlexiBook.ump"
 public class BusinessHour implements Serializable
 {
 

@@ -1,21 +1,37 @@
-namespace ca.mcgill.ecse.flexibook.model;
 class Appointment{
     existStatus{
         Before{
-            toggleStart() -> InProgress;
-            toggleCancel() -> Ended;
+          toggleStart[isDayOf()] -> InProgress;
+            toggleCancel[!isDayOf()] -> Final;
+          updateDate(Date date)/{
+              acceptDateUpdate(date);
+          }->Before;
+          updateService(String service)/{
+              acceptServiceUpdate(service);
+          }->Before;
 
         }
         InProgress{
             updateDate(Date date) /{
-                rejectUpdate(date);
+                rejectDateUpdate(date);
             } -> InProgress;
-        }
-        Ended{
-
+          updateService(String service)/{
+              rejectServiceUpdate(service);
+          }-> InProgress;
+          toggleEnded->Final;
         }
     }
-    private rejectUpdate(Date date){
+    private rejectDateUpdate(Date date){
+
+    }
+    private acceptServiceUpdate(String service){
+    }
+    private acceptDateUpdate(Date date){
+    }
+    private boolean isDayOf(){
+
+    }
+  private rejectServiceUpdate(){
 
     }
 

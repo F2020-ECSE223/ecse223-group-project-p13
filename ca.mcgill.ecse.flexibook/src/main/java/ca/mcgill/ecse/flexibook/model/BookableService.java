@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 20 "../../../../../FlexiBookPersistence.ump"
-// line 60 "../../../../../FlexiBook.ump"
+// line 61 "../../../../../FlexiBook.ump"
 public abstract class BookableService implements Serializable
 {
 
@@ -227,6 +227,7 @@ public abstract class BookableService implements Serializable
 
   // line 25 "../../../../../FlexiBookPersistence.ump"
    public static  void reinitializeBookableServiceByName(List<BookableService> services){
+    bookableservicesByName = new HashMap<String, BookableService>();
 	    for (BookableService service : services) {
 	        bookableservicesByName.put(service.getName(), service);
 	    }

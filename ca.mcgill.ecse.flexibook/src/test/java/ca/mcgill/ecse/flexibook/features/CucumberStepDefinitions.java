@@ -1880,7 +1880,6 @@ public class CucumberStepDefinitions {
     @Then("the user shall be logged out")
     public void theUserShallBeLoggedOut() {
         assertNull(FlexiBookApplication.getUser());
-
     }
 
 	@Given("the business has the following opening hours")

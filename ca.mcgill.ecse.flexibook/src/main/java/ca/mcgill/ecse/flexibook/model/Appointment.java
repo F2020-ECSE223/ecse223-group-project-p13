@@ -6,13 +6,18 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 14 "../../../../../FlexiBookPersistence.ump"
-// line 86 "../../../../../FlexiBook.ump"
+// line 1 "../../../../../FlexiBookStates.ump"
+// line 87 "../../../../../FlexiBook.ump"
 public class Appointment implements Serializable
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
+
+  //Appointment State Machines
+  public enum ExistStatus { Before, Final, InProgress }
+  private ExistStatus existStatus;
 
   //Appointment Associations
   private Customer customer;
@@ -47,11 +52,150 @@ public class Appointment implements Serializable
     {
       throw new RuntimeException("Unable to create appointment due to flexiBook. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
+    setExistStatus(ExistStatus.Before);
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public String getExistStatusFullName()
+  {
+    String answer = existStatus.toString();
+    return answer;
+  }
+
+  public ExistStatus getExistStatus()
+  {
+    return existStatus;
+  }
+
+  public boolean toggleStart()
+  {
+    boolean wasEventProcessed = false;
+    
+    ExistStatus aExistStatus = existStatus;
+    switch (aExistStatus)
+    {
+      case Before:
+        if (isDayOf())
+        {
+          setExistStatus(ExistStatus.InProgress);
+          wasEventProcessed = true;
+          break;
+        }
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean toggleCancel()
+  {
+    boolean wasEventProcessed = false;
+    
+    ExistStatus aExistStatus = existStatus;
+    switch (aExistStatus)
+    {
+      case Before:
+        if (!(isDayOf()))
+        {
+          setExistStatus(ExistStatus.Final);
+          wasEventProcessed = true;
+          break;
+        }
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean updateDate(Date date)
+  {
+    boolean wasEventProcessed = false;
+    
+    ExistStatus aExistStatus = existStatus;
+    switch (aExistStatus)
+    {
+      case Before:
+        // line 6 "../../../../../FlexiBookStates.ump"
+        acceptDateUpdate(date);
+        setExistStatus(ExistStatus.Before);
+        wasEventProcessed = true;
+        break;
+      case InProgress:
+        // line 15 "../../../../../FlexiBookStates.ump"
+        rejectDateUpdate(date);
+        setExistStatus(ExistStatus.InProgress);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean updateService(String service)
+  {
+    boolean wasEventProcessed = false;
+    
+    ExistStatus aExistStatus = existStatus;
+    switch (aExistStatus)
+    {
+      case Before:
+        // line 9 "../../../../../FlexiBookStates.ump"
+        acceptServiceUpdate(service);
+        setExistStatus(ExistStatus.Before);
+        wasEventProcessed = true;
+        break;
+      case InProgress:
+        // line 18 "../../../../../FlexiBookStates.ump"
+        rejectServiceUpdate(service);
+        setExistStatus(ExistStatus.InProgress);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean toggleEnded()
+  {
+    boolean wasEventProcessed = false;
+    
+    ExistStatus aExistStatus = existStatus;
+    switch (aExistStatus)
+    {
+      case InProgress:
+        setExistStatus(ExistStatus.Final);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void setExistStatus(ExistStatus aExistStatus)
+  {
+    existStatus = aExistStatus;
+
+    // entry actions and do activities
+    switch(existStatus)
+    {
+      case Final:
+        delete();
+        break;
+    }
+  }
   /* Code from template association_GetOne */
   public Customer getCustomer()
   {
@@ -250,6 +394,31 @@ public class Appointment implements Serializable
     {
       placeholderFlexiBook.removeAppointment(this);
     }
+  }
+
+  // line 26 "../../../../../FlexiBookStates.ump"
+   private void rejectDateUpdate(Date date){
+    
+  }
+
+  // line 28 "../../../../../FlexiBookStates.ump"
+   private void acceptServiceUpdate(String service){
+    
+  }
+
+  // line 30 "../../../../../FlexiBookStates.ump"
+   private void acceptDateUpdate(Date date){
+    
+  }
+
+  // line 33 "../../../../../FlexiBookStates.ump"
+   private boolean isDayOf(){
+    return true;
+  }
+
+  // line 36 "../../../../../FlexiBookStates.ump"
+   private void rejectServiceUpdate(String service){
+    
   }
   
   //------------------------

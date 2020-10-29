@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 // line 32 "../../../../../FlexiBookPersistence.ump"
-// line 15 "../../../../../FlexiBook.ump"
+// line 16 "../../../../../FlexiBook.ump"
 public abstract class User implements Serializable
 {
 
@@ -95,7 +95,7 @@ public abstract class User implements Serializable
 
   // line 37 "../../../../../FlexiBookPersistence.ump"
    public static  void reinitializeUserByUsername(List<Customer> customers, Owner owner){
-    //usersByUsername = new HashMap<String,User>();
+    usersByUsername = new HashMap<String,User>();
         usersByUsername.put(owner.getUsername(),owner);
 	    for (Customer customer : customers) {
 	        usersByUsername.put(customer.getUsername(),customer);

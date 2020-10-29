@@ -8,7 +8,7 @@ import java.sql.Time;
 import java.sql.Date;
 
 // line 3 "../../../../../FlexiBookPersistence.ump"
-// line 5 "../../../../../FlexiBook.ump"
+// line 6 "../../../../../FlexiBook.ump"
 public class FlexiBook implements Serializable
 {
 
@@ -681,7 +681,7 @@ public class FlexiBook implements Serializable
   // line 8 "../../../../../FlexiBookPersistence.ump"
    public void reinitialize(){
     BookableService.reinitializeBookableServiceByName(this.getBookableServices());
-    User.reinitializeUserByUsername(this.getCustomers(),this.getOwner());
+        User.reinitializeUserByUsername(this.getCustomers(),this.getOwner());
   }
   
   //------------------------
