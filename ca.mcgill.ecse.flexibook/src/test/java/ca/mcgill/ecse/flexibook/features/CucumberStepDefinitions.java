@@ -1672,7 +1672,7 @@ public class CucumberStepDefinitions {
      * @param ed
      * @param et
      */
-    @Then("the {string} shall {string} be updated with start date {string} at {string} and end date {string} at {string}")
+    @Then("the {string} shall {string} updated with start date {string} at {string} and end date {string} at {string}")
     public void theShallBeUpdatedWithStartDateAtAndEndDateAt(String vorb, String result, String sd, String st, String ed, String et) {
         boolean test = false;
         if(vorb.equals("vacation")){
@@ -1882,20 +1882,28 @@ public class CucumberStepDefinitions {
         assertNull(FlexiBookApplication.getUser());
     }
 
-	@Given("the business has the following opening hours")
-	public void theBusinessHasTheFollowingOpeningHours() {
-	}
-
-	@Given("the business has the following holidays")
-	public void theBusinessHasTheFollowingHolidays() {
-	}
-
 	@Given("{string} has {int} no-show records")
 	public void hasNoShowRecords(String arg0, int arg1) {
 	}
 
+	/**
+	 * @author Tomasz Mroz
+	 * @param customer
+	 * @param service
+	 * @param date
+	 * @param time
+	 * @param systemTime
+	 */
 	@When("{string} makes a {string} appointment for the date {string} and time {string} at {string}")
-	public void makesAAppointmentForTheDateAndTimeAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+	public void makesAAppointmentForTheDateAndTimeAt(String customer, String service, String date, String time, String systemTime) {
+    	try{
+    		SystemTime.setTime(systemTime);
+    		FlexiBookController.makeAppointment(customer,date,time,service,null);
+		}
+    	catch (InvalidInputException e){
+    		error += e;
+    		errorCounter++;
+		}
 	}
 
 	@When("{string} attempts to change the service in the appointment to {string} at {string}")
