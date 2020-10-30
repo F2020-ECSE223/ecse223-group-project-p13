@@ -1943,7 +1943,8 @@ public class CucumberStepDefinitions {
 	}
 
 	@Then("the system shall have {int} appointment")
-	public void theSystemShallHaveAppointment(int arg0) {
+	public void theSystemShallHaveAppointment(int size) {
+		assertEquals(flexiBook.getAppointments().size(),size);
 	}
 
 	@When("{string} makes a {string} appointment without choosing optional services for the date {string} and time {string} at {string}")

@@ -140,7 +140,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  public boolean updateService(String service)
+  public boolean updateService(Service service)
   {
     boolean wasEventProcessed = false;
     
@@ -155,7 +155,6 @@ public class Appointment implements Serializable
         break;
       case InProgress:
         // line 18 "../../../../../FlexiBookStates.ump"
-        rejectServiceUpdate(service);
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
         break;
@@ -402,22 +401,24 @@ public class Appointment implements Serializable
   }
 
   // line 28 "../../../../../FlexiBookStates.ump"
-   private void acceptServiceUpdate(String service){
-    
+   private void acceptServiceUpdate(Service service){
+    if(service != null){
+            this.setBookableService(service);
+        }
   }
 
-  // line 30 "../../../../../FlexiBookStates.ump"
+  // line 33 "../../../../../FlexiBookStates.ump"
    private void acceptDateUpdate(Date date){
     
   }
 
-  // line 33 "../../../../../FlexiBookStates.ump"
+  // line 36 "../../../../../FlexiBookStates.ump"
    private boolean isDayOf(){
     return true;
   }
 
-  // line 36 "../../../../../FlexiBookStates.ump"
-   private void rejectServiceUpdate(String service){
+  // line 39 "../../../../../FlexiBookStates.ump"
+   private void rejectServiceUpdate(){
     
   }
   

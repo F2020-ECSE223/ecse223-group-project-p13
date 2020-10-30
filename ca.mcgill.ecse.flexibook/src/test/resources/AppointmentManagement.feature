@@ -7,14 +7,14 @@ Feature: Appointment management process
     Given the following customers exist in the system:
       | username  | password |
       | customer1 | 12345678 |
-    Given the business has the following opening hours
+    Given the business has the following opening hours:
       | day       | startTime | endTime |
       | Monday    | 8:00      | 18:00   |
       | Tuesday   | 8:00      | 18:00   |
       | Wednesday | 8:00      | 18:00   |
       | Thursday  | 8:00      | 18:00   |
       | Friday    | 8:00      | 18:00   |
-    Given the business has the following holidays
+    Given the business has the following holidays:
       | startDate  | endDate    | startTime | endTime |
       | 2020-12-18 | 2021-12-18 | 10:00      | 23:59   |
     Given a "vacation" time slot exists with start time "2020-12-14" at "12:00" and end time "2020-12-16" at "13:00"

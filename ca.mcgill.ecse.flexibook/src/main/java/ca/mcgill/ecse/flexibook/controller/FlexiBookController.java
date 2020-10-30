@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.flexibook.controller;
 
+import java.rmi.ServerError;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
@@ -955,7 +956,7 @@ public class FlexiBookController {
 
 					//slot is a holiday
 					for (TimeSlot t : flexibook.getBusiness().getHolidays()) {
-						if(t.getStartDate().equals(sDate) || t.getEndDate().equals(sDate)){
+						if (t.getStartDate().equals(sDate) || t.getEndDate().equals(sDate)) {
 							throw new InvalidInputException("unsuccessful");
 						}
 
@@ -968,26 +969,25 @@ public class FlexiBookController {
 					}
 
 					//slot is not a business hour (saturday)
-					if(cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) || cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)){
+					if (cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) || cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
 						throw new InvalidInputException("unsuccessful");
 					}
 
 					//endTime of slot is not within business hours
 					int dur = 0;
-					BookableService s =  appt.getBookableService();
-					if(s instanceof Service){
+					BookableService s = appt.getBookableService();
+					if (s instanceof Service) {
 						dur = ((Service) s).getDuration();
-					}
-					else{
-						for(ComboItem c: ((ServiceCombo)s).getServices()){
+					} else {
+						for (ComboItem c : ((ServiceCombo) s).getServices()) {
 							dur += c.getService().getDuration();
 						}
 					}
 
 					Time eTime = Time.valueOf(sTime.toLocalTime().plusMinutes(dur));
 					for (BusinessHour f : flexibook.getHours()) {
-						if(DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek()) ){
-							if(f.getEndTime().compareTo(eTime) <0 ){
+						if (DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek())) {
+							if (f.getEndTime().compareTo(eTime) < 0) {
 								throw new InvalidInputException("unsuccessful");
 							}
 						}
@@ -996,7 +996,7 @@ public class FlexiBookController {
 
 					//slot is occupied by an existing appointment
 					for (Appointment r : flexibook.getAppointments()) {
-						if(r.getTimeSlot().getStartTime().equals(sTime)){
+						if (r.getTimeSlot().getStartTime().equals(sTime)) {
 							throw new InvalidInputException("unsuccessful");
 						}
 					}
@@ -1005,7 +1005,7 @@ public class FlexiBookController {
 					//Updating appointment
 
 					Appointment newAppt = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceType),
-							new TimeSlot(sDate,sTime,sDate,eTime,flexibook), flexibook);
+							new TimeSlot(sDate, sTime, sDate, eTime, flexibook), flexibook);
 
 					flexibook.removeAppointment(appt);
 					appt.delete();
@@ -1015,52 +1015,59 @@ public class FlexiBookController {
 
 					//updating action or comboItem
 				} else if (newTime == null && newDate == null) {
-					//if action is add
-					if (action.equals("add")) {
-						ServiceCombo name = (ServiceCombo) appt.getBookableService();
-						int counter = 0;
-						for (ComboItem c : name.getServices()) {
-							counter += c.getService().getDowntimeDuration();
-						}
-
-						//additional extensions service does not fit in available slot
-						int cycle = name.getServices().size();
-						for (int i = 0; i < cycle; i++) {
-							counter += name.getServices().get(i).getService().getDuration();
-							if (((Service) BookableService.getWithName(newComboItem)).getDuration() < counter) {
-								throw new InvalidInputException("unsuccessful");
+					BookableService serv = appt.getBookableService();
+					if (serv instanceof Service) {
+						appt.updateService(((Service)serv));
+						FlexiBookPersistence.save(flexibook);
+					} else {
+						ServiceCombo name = (ServiceCombo) serv;
+						//if action is add
+						if (action.equals("add")) {
+							//ServiceCombo name = (ServiceCombo) appt.getBookableService();
+							int counter = 0;
+							for (ComboItem c : name.getServices()) {
+								counter += c.getService().getDowntimeDuration();
 							}
-						}
-						//add chosenItem
-						appt.addChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),name));
 
-						throw new InvalidInputException("successful");
-
-					}
-
-					//if action is remove
-					else if (action.equals("remove")) {
-						//cannot remove main service
-						ServiceCombo s = (ServiceCombo) appt.getBookableService();
-						if(s.getMainService().getService().getName().equals(newComboItem)){
-							throw new InvalidInputException("unsuccessful");
-						}
-						//cannot remove mandatory service
-						for(ComboItem c:s.getServices()){
-							if(c.getService().getName().equals(newComboItem)){
-								if(c.getMandatory()){
+							//additional extensions service does not fit in available slot
+							int cycle = name.getServices().size();
+							for (int i = 0; i < cycle; i++) {
+								counter += name.getServices().get(i).getService().getDuration();
+								if (((Service) BookableService.getWithName(newComboItem)).getDuration() < counter) {
 									throw new InvalidInputException("unsuccessful");
 								}
 							}
+							//add chosenItem
+							appt.addChosenItem(new ComboItem(false, ((Service) BookableService.getWithName(newComboItem)), name));
+
+							throw new InvalidInputException("successful");
+
 						}
-						//remove chosenItem
-						appt.removeChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),s));
-						throw new InvalidInputException("successful");
+
+						//if action is remove
+						else if (action.equals("remove")) {
+							//cannot remove main service
+							ServiceCombo s = (ServiceCombo) appt.getBookableService();
+							if (s.getMainService().getService().getName().equals(newComboItem)) {
+								throw new InvalidInputException("unsuccessful");
+							}
+							//cannot remove mandatory service
+							for (ComboItem c : s.getServices()) {
+								if (c.getService().getName().equals(newComboItem)) {
+									if (c.getMandatory()) {
+										throw new InvalidInputException("unsuccessful");
+									}
+								}
+							}
+							//remove chosenItem
+							appt.removeChosenItem(new ComboItem(false, ((Service) BookableService.getWithName(newComboItem)), s));
+							throw new InvalidInputException("successful");
+						}
+
 					}
-
 				}
-
-			} catch (RuntimeException e) {
+			}
+			catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
