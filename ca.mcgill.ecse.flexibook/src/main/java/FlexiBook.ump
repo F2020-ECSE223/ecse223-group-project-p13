@@ -25,6 +25,7 @@ class Owner {
 
 class Customer {
   isA User;
+  lazy int noShows;
 }
 
 class Business {

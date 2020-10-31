@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.flexibook.controller;
 
+import java.rmi.ServerError;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
@@ -956,7 +957,7 @@ public class FlexiBookController {
 
 					//slot is a holiday
 					for (TimeSlot t : flexibook.getBusiness().getHolidays()) {
-						if(t.getStartDate().equals(sDate) || t.getEndDate().equals(sDate)){
+						if (t.getStartDate().equals(sDate) || t.getEndDate().equals(sDate)) {
 							throw new InvalidInputException("unsuccessful");
 						}
 
@@ -969,14 +970,14 @@ public class FlexiBookController {
 					}
 
 					//slot is not a business hour (saturday)
-					if(cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) || cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)){
+					if (cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) || cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
 						throw new InvalidInputException("unsuccessful");
 					}
 
 					//endTime of slot is not within business hours
 					int dur = 0;
-					BookableService s =  appt.getBookableService();
-					if(s instanceof Service){
+					BookableService s = appt.getBookableService();
+					if (s instanceof Service) {
 						dur = ((Service) s).getDuration();
 					}
 					else{
@@ -1057,11 +1058,10 @@ public class FlexiBookController {
 						//remove chosenItem
 						appt.removeChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),s));
 						throw new InvalidInputException("successful");
-
 					}
 
 				}
-				FlexiBookPersistence.save(flexibook);
+
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1286,7 +1286,7 @@ public class FlexiBookController {
 				} else {
 					new Service(name, flexibook, duration, downtimeDuration, downtimeStart);
 				}
-
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1323,6 +1323,7 @@ public class FlexiBookController {
 						s.setDowntimeDuration(downtimeDuration);
 						s.setDowntimeStart(downtimeStart);
 					}
+					FlexiBookPersistence.save(flexibook);
 				} catch (RuntimeException e) {
 					throw new InvalidInputException(e.getMessage());
 				}
@@ -1385,6 +1386,7 @@ public class FlexiBookController {
 				
 				service.delete();
 				
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1880,7 +1882,9 @@ public class FlexiBookController {
 
 
 		}
-	}
+		public static void startAppointment(){ }
+		public static void endAppointment(){ }
+}
 
 
 

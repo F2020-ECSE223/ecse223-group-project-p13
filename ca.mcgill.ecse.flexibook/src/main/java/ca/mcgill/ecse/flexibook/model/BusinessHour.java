@@ -5,8 +5,8 @@ package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 import java.sql.Time;
 
-// line 46 "../../../../../FlexiBookPersistence.ump"
-// line 47 "../../../../../FlexiBook.ump"
+// line 40 "../../../../../FlexiBookPersistence.ump"
+// line 48 "../../../../../FlexiBook.ump"
 public class BusinessHour implements Serializable
 {
 
@@ -134,7 +134,7 @@ public class BusinessHour implements Serializable
   // DEVELOPER CODE - PROVIDED AS-IS
   //------------------------
   
-  // line 49 "../../../../../FlexiBookPersistence.ump"
+  // line 43 "../../../../../FlexiBookPersistence.ump"
   private static final long serialVersionUID = -49586124598156848L ;
 
   
