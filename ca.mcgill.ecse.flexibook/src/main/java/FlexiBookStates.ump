@@ -36,7 +36,7 @@ class Appointment{
         }
     }
     private acceptDateUpdate(TimeSlot timeslot){
-       if(a != null){
+       if(timeslot != null){
         this.setTimeSlot(a);
        }
     }
