@@ -5,9 +5,6 @@ package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 import java.util.*;
 
-
-
-
 // line 14 "../../../../../FlexiBookPersistence.ump"
 // line 1 "../../../../../FlexiBookStates.ump"
 // line 88 "../../../../../FlexiBook.ump"
@@ -17,6 +14,9 @@ public class Appointment implements Serializable
   //------------------------
   // MEMBER VARIABLES
   //------------------------
+
+  //Appointment Attributes
+  private boolean isDayOf;
 
   //Appointment State Machines
   public enum ExistStatus { Before, Final, InProgress }
@@ -35,6 +35,7 @@ public class Appointment implements Serializable
 
   public Appointment(Customer aCustomer, BookableService aBookableService, TimeSlot aTimeSlot, FlexiBook aFlexiBook)
   {
+    isDayOf = false;
     boolean didAddCustomer = setCustomer(aCustomer);
     if (!didAddCustomer)
     {
@@ -62,6 +63,19 @@ public class Appointment implements Serializable
   // INTERFACE
   //------------------------
 
+  public boolean setIsDayOf(boolean aIsDayOf)
+  {
+    boolean wasSet = false;
+    isDayOf = aIsDayOf;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean getIsDayOf()
+  {
+    return isDayOf;
+  }
+
   public String getExistStatusFullName()
   {
     String answer = existStatus.toString();
@@ -81,7 +95,7 @@ public class Appointment implements Serializable
     switch (aExistStatus)
     {
       case Before:
-        if (isDayOf())
+        if (getIsDayOf())
         {
           setExistStatus(ExistStatus.InProgress);
           wasEventProcessed = true;
@@ -103,7 +117,7 @@ public class Appointment implements Serializable
     switch (aExistStatus)
     {
       case Before:
-        if (!(isDayOf()))
+        if (!(getIsDayOf()))
         {
           setExistStatus(ExistStatus.Final);
           wasEventProcessed = true;
@@ -117,7 +131,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  public boolean updateDate(Date date)
+  public boolean updateDate(TimeSlot timeslot)
   {
     boolean wasEventProcessed = false;
     
@@ -125,14 +139,14 @@ public class Appointment implements Serializable
     switch (aExistStatus)
     {
       case Before:
-        // line 6 "../../../../../FlexiBookStates.ump"
-        acceptDateUpdate(date);
+        // line 7 "../../../../../FlexiBookStates.ump"
+        acceptDateUpdate(timeslot);
         setExistStatus(ExistStatus.Before);
         wasEventProcessed = true;
         break;
       case InProgress:
-        // line 15 "../../../../../FlexiBookStates.ump"
-        rejectDateUpdate(date);
+        // line 16 "../../../../../FlexiBookStates.ump"
+        rejectDateUpdate(timeslot);
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
         break;
@@ -151,13 +165,13 @@ public class Appointment implements Serializable
     switch (aExistStatus)
     {
       case Before:
-        // line 9 "../../../../../FlexiBookStates.ump"
+        // line 10 "../../../../../FlexiBookStates.ump"
         acceptServiceUpdate(service);
         setExistStatus(ExistStatus.Before);
         wasEventProcessed = true;
         break;
       case InProgress:
-        // line 18 "../../../../../FlexiBookStates.ump"
+        // line 19 "../../../../../FlexiBookStates.ump"
         rejectServiceUpdate(service);
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
@@ -399,34 +413,46 @@ public class Appointment implements Serializable
     }
   }
 
-  // line 26 "../../../../../FlexiBookStates.ump"
-   private void rejectDateUpdate(Date date){
-
-     }
+  // line 27 "../../../../../FlexiBookStates.ump"
+   private void rejectDateUpdate(TimeSlot timeslot) {
+    throw new RuntimeException("You cannot update the date if the appointment is in progress");
   }
 
-  // line 28 "../../../../../FlexiBookStates.ump"
+  // line 31 "../../../../../FlexiBookStates.ump"
+   private void rejectServiceUpdate(Service service) {
+    throw new RuntimeException("You cannot update a service if the appointment is in progress");
+  }
+
+  // line 35 "../../../../../FlexiBookStates.ump"
    private void acceptServiceUpdate(Service service){
     if(service != null){
             this.setBookableService(service);
         }
+      else{
+      	getFlexiBook().addBookableService(service);
+      }
   }
 
-  // line 33 "../../../../../FlexiBookStates.ump"
-   private void acceptDateUpdate(Date date){
-    
+  // line 43 "../../../../../FlexiBookStates.ump"
+   private void acceptDateUpdate(TimeSlot timeslot){
+    if(timeslot != null){
+           this.setTimeSlot(timeslot);
+       }
+       else{
+          	getFlexiBook().addTimeSlot(timeslot);
+       }
   }
 
-  // line 36 "../../../../../FlexiBookStates.ump"
-   private boolean isDayOf(){
-    
-  }
 
-  // line 39 "../../../../../FlexiBookStates.ump"
-   private void rejectServiceUpdate(){
-    
-  }
-  
+  public String toString()
+  {
+    return super.toString() + "["+
+            "isDayOf" + ":" + getIsDayOf()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "customer = "+(getCustomer()!=null?Integer.toHexString(System.identityHashCode(getCustomer())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "bookableService = "+(getBookableService()!=null?Integer.toHexString(System.identityHashCode(getBookableService())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "timeSlot = "+(getTimeSlot()!=null?Integer.toHexString(System.identityHashCode(getTimeSlot())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "flexiBook = "+(getFlexiBook()!=null?Integer.toHexString(System.identityHashCode(getFlexiBook())):"null");
+  }  
   //------------------------
   // DEVELOPER CODE - PROVIDED AS-IS
   //------------------------

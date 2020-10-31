@@ -25,10 +25,9 @@ public class Customer extends User implements Serializable
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aUsername, String aPassword, int aNoShows, FlexiBook aFlexiBook)
+  public Customer(String aUsername, String aPassword, FlexiBook aFlexiBook)
   {
     super(aUsername, aPassword);
-    noShows = aNoShows;
     boolean didAddFlexiBook = setFlexiBook(aFlexiBook);
     if (!didAddFlexiBook)
     {
