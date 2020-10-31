@@ -30,6 +30,27 @@ class Appointment{
         }
     }
     private acceptDateUpdate(Date date){
+
+        boolean wasEventProcessed = false;
+
+        ExistStatus aExistStatus = existStatus;
+        switch (aExistStatus)
+        {
+          case Before:
+            // line 6 "../../../../../FlexiBookStates.ump"
+            acceptDateUpdate(date, time, curDateTime);
+            setExistStatus(ExistStatus.Before);
+            wasEventProcessed = true;
+            break;
+          case InProgress:
+            // line 15 "../../../../../FlexiBookStates.ump"
+            rejectDateUpdate(date, curDateTime);
+            setExistStatus(ExistStatus.InProgress);
+            wasEventProcessed = true;
+            break;
+          default:
+            // Other states do respond to this event
+    
     }
     private boolean isDayOf(){
 
