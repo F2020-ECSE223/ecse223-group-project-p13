@@ -4,9 +4,7 @@
 package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 import java.util.*;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 
 
@@ -119,7 +117,7 @@ public class Appointment implements Serializable
     return wasEventProcessed;
   }
 
-  public boolean updateDate(String date, String time, String curDateTime)
+  public boolean updateDate(Date date)
   {
     boolean wasEventProcessed = false;
     
@@ -128,13 +126,13 @@ public class Appointment implements Serializable
     {
       case Before:
         // line 6 "../../../../../FlexiBookStates.ump"
-        acceptDateUpdate(date, time, curDateTime);
+        acceptDateUpdate(date);
         setExistStatus(ExistStatus.Before);
         wasEventProcessed = true;
         break;
       case InProgress:
         // line 15 "../../../../../FlexiBookStates.ump"
-        rejectDateUpdate(date, curDateTime);
+        rejectDateUpdate(date);
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
         break;
@@ -401,12 +399,7 @@ public class Appointment implements Serializable
   }
 
   // line 26 "../../../../../FlexiBookStates.ump"
-   private void rejectDateUpdate(String date, String current){
-    LocalDate upDate = LocalDate.parse(date);
-    LocalDateTime curDateTime = LocalDateTime.parse(current);
-    LocalDate curDate = curDateTime.toLocalDate();
-    if(curDate.equals(upDate)){
-
+   private void rejectDateUpdate(Date date){
 
      }
   }
@@ -419,7 +412,7 @@ public class Appointment implements Serializable
   }
 
   // line 33 "../../../../../FlexiBookStates.ump"
-   private void acceptDateUpdate(String date, String time, String curDateTime){
+   private void acceptDateUpdate(Date date){
     
   }
 
