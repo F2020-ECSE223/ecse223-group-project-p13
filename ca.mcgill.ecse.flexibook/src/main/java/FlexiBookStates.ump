@@ -34,11 +34,18 @@ class Appointment{
         if(service != null){
             this.setBookableService(service);
         }
+      else{
+      	getFlexiBook().addBookableService(service);
+      }
     }
     private acceptDateUpdate(TimeSlot timeslot){
        if(timeslot != null){
            this.setTimeSlot(timeslot);
        }
+       else{
+          	getFlexiBook().addTimeSlot(timeslot);
+       }
+
     }
     private boolean isDayOf(){
 
