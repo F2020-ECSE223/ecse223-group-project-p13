@@ -1291,7 +1291,7 @@ public class FlexiBookController {
 				} else {
 					new Service(name, flexibook, duration, downtimeDuration, downtimeStart);
 				}
-
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1328,6 +1328,7 @@ public class FlexiBookController {
 						s.setDowntimeDuration(downtimeDuration);
 						s.setDowntimeStart(downtimeStart);
 					}
+					FlexiBookPersistence.save(flexibook);
 				} catch (RuntimeException e) {
 					throw new InvalidInputException(e.getMessage());
 				}
@@ -1390,6 +1391,7 @@ public class FlexiBookController {
 				
 				service.delete();
 				
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
