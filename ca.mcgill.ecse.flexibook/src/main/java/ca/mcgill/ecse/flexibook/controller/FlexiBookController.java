@@ -866,7 +866,7 @@ public class FlexiBookController {
 						flexibook.addAppointment(appointment);
 
 					}
-
+					FlexiBookPersistence.save(flexibook);
 				} catch (RuntimeException e) {
 					throw new InvalidInputException(e.getMessage());
 				}
@@ -903,6 +903,7 @@ public class FlexiBookController {
 						a.delete();
 					}
 				}
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1056,10 +1057,11 @@ public class FlexiBookController {
 						//remove chosenItem
 						appt.removeChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),s));
 						throw new InvalidInputException("successful");
+
 					}
 
 				}
-
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}

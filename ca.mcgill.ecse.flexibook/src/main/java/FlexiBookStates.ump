@@ -25,9 +25,13 @@ class Appointment{
 
     }
     private acceptServiceUpdate(String service){
+
     }
+
     private acceptDateUpdate(Date date){
+
     }
+
     private boolean isDayOf(){
 
     }
