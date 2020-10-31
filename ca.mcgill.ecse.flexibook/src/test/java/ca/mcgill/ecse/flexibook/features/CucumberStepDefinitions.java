@@ -749,7 +749,7 @@ public class CucumberStepDefinitions {
 
 		for (Appointment appt : flexiBook.getAppointments()) {
 			if (appt.getCustomer().getUsername().equals(customer)) {
-				if (appt.getBookableService().equals(type)) {
+				if (appt.getBookableService().getName().equals(type)) {
 					if(appt.getTimeSlot().getStartTime().equals(time)){
 						if(appt.getTimeSlot().getStartDate().equals(date)){
 							fail();

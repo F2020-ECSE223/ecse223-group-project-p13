@@ -273,9 +273,9 @@ public class FlexiBook implements Serializable
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Customer addCustomer(String aUsername, String aPassword)
+  public Customer addCustomer(String aUsername, String aPassword, int aNoShows)
   {
-    return new Customer(aUsername, aPassword, this);
+    return new Customer(aUsername, aPassword, aNoShows, this);
   }
 
   public boolean addCustomer(Customer aCustomer)

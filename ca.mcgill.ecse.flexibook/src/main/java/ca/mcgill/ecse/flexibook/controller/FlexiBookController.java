@@ -1882,10 +1882,10 @@ public class FlexiBookController {
 			}catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
-
-
 		}
-	}
+		public static void startAppointment(){ }
+		public static void endAppointment(){ }
+}
 
 
 

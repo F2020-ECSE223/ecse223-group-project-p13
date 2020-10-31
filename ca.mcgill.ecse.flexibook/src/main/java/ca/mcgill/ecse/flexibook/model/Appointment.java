@@ -7,7 +7,7 @@ import java.util.*;
 
 // line 14 "../../../../../FlexiBookPersistence.ump"
 // line 1 "../../../../../FlexiBookStates.ump"
-// line 87 "../../../../../FlexiBook.ump"
+// line 88 "../../../../../FlexiBook.ump"
 public class Appointment implements Serializable
 {
 
@@ -155,6 +155,7 @@ public class Appointment implements Serializable
         break;
       case InProgress:
         // line 18 "../../../../../FlexiBookStates.ump"
+        rejectServiceUpdate(service);
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
         break;
@@ -414,7 +415,7 @@ public class Appointment implements Serializable
 
   // line 36 "../../../../../FlexiBookStates.ump"
    private boolean isDayOf(){
-    return true;
+    
   }
 
   // line 39 "../../../../../FlexiBookStates.ump"

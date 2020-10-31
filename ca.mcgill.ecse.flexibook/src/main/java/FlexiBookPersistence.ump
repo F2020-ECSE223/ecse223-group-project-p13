@@ -18,9 +18,6 @@ class Appointment {
 }
 
 class BookableService {
-    depend java.io.Serializable;
-    isA Serializable;
-    private static final long serialVersionUID = 8896099581655989380L;
 	public static void reinitializeBookableServiceByName(List<BookableService> services) {
 	    bookableservicesByName = new HashMap<String, BookableService>();
 	    for (BookableService service : services) {
@@ -30,9 +27,6 @@ class BookableService {
 }
 
 class User {
-    depend java.io.Serializable;
-    isA Serializable;
-    private static final long serialVersionUID = 2045406856025012133L;
     public static void reinitializeUserByUsername(List<Customer> customers,Owner owner) {
 	    usersByUsername = new HashMap<String,User>();
         usersByUsername.put(owner.getUsername(),owner);

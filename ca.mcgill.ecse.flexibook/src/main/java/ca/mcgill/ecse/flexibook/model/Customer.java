@@ -5,7 +5,7 @@ package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 import java.util.*;
 
-// line 58 "../../../../../FlexiBookPersistence.ump"
+// line 52 "../../../../../FlexiBookPersistence.ump"
 // line 26 "../../../../../FlexiBook.ump"
 public class Customer extends User implements Serializable
 {
@@ -13,6 +13,9 @@ public class Customer extends User implements Serializable
   //------------------------
   // MEMBER VARIABLES
   //------------------------
+
+  //Customer Attributes
+  private int noShows;
 
   //Customer Associations
   private FlexiBook flexiBook;
@@ -22,9 +25,10 @@ public class Customer extends User implements Serializable
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aUsername, String aPassword, FlexiBook aFlexiBook)
+  public Customer(String aUsername, String aPassword, int aNoShows, FlexiBook aFlexiBook)
   {
     super(aUsername, aPassword);
+    noShows = aNoShows;
     boolean didAddFlexiBook = setFlexiBook(aFlexiBook);
     if (!didAddFlexiBook)
     {
@@ -36,6 +40,19 @@ public class Customer extends User implements Serializable
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setNoShows(int aNoShows)
+  {
+    boolean wasSet = false;
+    noShows = aNoShows;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getNoShows()
+  {
+    return noShows;
+  }
   /* Code from template association_GetOne */
   public FlexiBook getFlexiBook()
   {
@@ -178,12 +195,19 @@ public class Customer extends User implements Serializable
     }
     super.delete();
   }
-  
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "noShows" + ":" + getNoShows()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "flexiBook = "+(getFlexiBook()!=null?Integer.toHexString(System.identityHashCode(getFlexiBook())):"null");
+  }  
   //------------------------
   // DEVELOPER CODE - PROVIDED AS-IS
   //------------------------
   
-  // line 61 "../../../../../FlexiBookPersistence.ump"
+  // line 55 "../../../../../FlexiBookPersistence.ump"
   private static final long serialVersionUID = -21386486846168498L ;
 
   
