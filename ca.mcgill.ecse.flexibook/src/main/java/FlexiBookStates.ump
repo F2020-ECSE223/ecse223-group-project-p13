@@ -47,8 +47,8 @@ class Appointment{
        }
 
     }
-    private boolean isDayOf(){
-
+    private boolean isDayOf(Date date){
+        return this.getTimeSlot().getDate().equals(date);
     }
 
 }
