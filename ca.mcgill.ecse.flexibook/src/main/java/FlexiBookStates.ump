@@ -37,7 +37,7 @@ class Appointment{
     }
     private acceptDateUpdate(TimeSlot timeslot){
        if(timeslot != null){
-        this.setTimeSlot(a);
+           this.setTimeSlot(timeslot);
        }
     }
     private boolean isDayOf(){
