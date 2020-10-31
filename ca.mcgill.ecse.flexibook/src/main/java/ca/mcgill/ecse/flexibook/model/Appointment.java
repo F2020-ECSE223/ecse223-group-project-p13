@@ -5,6 +5,9 @@ package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 import java.util.*;
 
+
+
+
 // line 14 "../../../../../FlexiBookPersistence.ump"
 // line 1 "../../../../../FlexiBookStates.ump"
 // line 88 "../../../../../FlexiBook.ump"
@@ -398,7 +401,8 @@ public class Appointment implements Serializable
 
   // line 26 "../../../../../FlexiBookStates.ump"
    private void rejectDateUpdate(Date date){
-    
+
+     }
   }
 
   // line 28 "../../../../../FlexiBookStates.ump"
