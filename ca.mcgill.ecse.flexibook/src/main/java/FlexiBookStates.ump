@@ -21,41 +21,24 @@ class Appointment{
           toggleEnded->Final;
         }
     }
+    
     private rejectDateUpdate(Date date){
-
+    	throw new RunTimeException("You cannot update the date if the appointment is in progress");
     }
+    
+    private rejectServiceUpdate(){
+    	throw new RunTimeException("You cannot a service if the appointment is in progress");
+    }
+    
     private acceptServiceUpdate(Service service){
         if(service != null){
             this.setBookableService(service);
         }
     }
     private acceptDateUpdate(Date date){
-
-        boolean wasEventProcessed = false;
-
-        ExistStatus aExistStatus = existStatus;
-        switch (aExistStatus)
-        {
-          case Before:
-            // line 6 "../../../../../FlexiBookStates.ump"
-            acceptDateUpdate(date, time, curDateTime);
-            setExistStatus(ExistStatus.Before);
-            wasEventProcessed = true;
-            break;
-          case InProgress:
-            // line 15 "../../../../../FlexiBookStates.ump"
-            rejectDateUpdate(date, curDateTime);
-            setExistStatus(ExistStatus.InProgress);
-            wasEventProcessed = true;
-            break;
-          default:
-            // Other states do respond to this event
     
     }
     private boolean isDayOf(){
-
-    }
-    private rejectServiceUpdate(){
 
     }
 
