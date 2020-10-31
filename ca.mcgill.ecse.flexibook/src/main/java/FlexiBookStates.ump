@@ -3,8 +3,8 @@ class Appointment{
         Before{
           toggleStart[isDayOf()] -> InProgress;
             toggleCancel[!isDayOf()] -> Final;
-          updateDate(Date date)/{
-              acceptDateUpdate(date);
+          updateDate(TimeSlot timeslot)/{
+              acceptDateUpdate(timeslot);
           }->Before;
           updateService(Service service)/{
               acceptServiceUpdate(service);
@@ -12,8 +12,8 @@ class Appointment{
 
         }
         InProgress{
-            updateDate(Date date) /{
-                rejectDateUpdate(date);
+            updateDate(TimeSlot timeslot) /{
+                rejectDateUpdate(timeslot);
             } -> InProgress;
           updateService(Service service)/{
               rejectServiceUpdate(service);
@@ -22,7 +22,7 @@ class Appointment{
         }
     }
     
-    private rejectDateUpdate(Date date){
+    private rejectDateUpdate(TimeSlot timeslot){
     	throw new RunTimeException("You cannot update the date if the appointment is in progress");
     }
     
@@ -35,8 +35,10 @@ class Appointment{
             this.setBookableService(service);
         }
     }
-    private acceptDateUpdate(Date date){
-    
+    private acceptDateUpdate(TimeSlot timeslot){
+       if(a != null){
+        this.setTimeSlot(a);
+       }
     }
     private boolean isDayOf(){
 
