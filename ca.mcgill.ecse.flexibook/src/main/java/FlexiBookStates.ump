@@ -27,7 +27,7 @@ class Appointment{
     }
     
     private rejectServiceUpdate(){
-    	throw new RunTimeException("You cannot a service if the appointment is in progress");
+    	throw new RunTimeException("You cannot update a service if the appointment is in progress");
     }
     
     private acceptServiceUpdate(Service service){
