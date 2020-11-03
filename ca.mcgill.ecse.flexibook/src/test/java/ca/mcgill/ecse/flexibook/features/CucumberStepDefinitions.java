@@ -1921,17 +1921,56 @@ public class CucumberStepDefinitions {
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
 	public void theAppointmentShallBeForTheDateWithStartTimeAndEndTime(String arg0, String arg1, String arg2) {
 	}
-//Cesar
+	 /**
+	 * @author cesar
+	 * @param arg0
+	 * checks if the username of the appointment is equals to the username given
+	 */
 	@Then("the username associated with the appointment shall be {string}")
 	public void theUsernameAssociatedWithTheAppointmentShallBe(String arg0) {
+		userApp = flexiBook.getAppointments();
+		boolean test = false;
+		
+		for (Appointment app : userApp) {
+			if(app.getCustomer().getUsername().equals(arg0)) {
+				test = true;
+			}
+		}
+		assertTrue(test);
+		
 	}
-//Cesar
+	
+	/**
+	 * @author cesar
+	 * @param arg0
+	 * @param arg1
+	 * checks if the number of noShows for a customer is correct
+	 */
 	@Then("the user {string} shall have {int} no-show records")
 	public void theUserShallHaveNoShowRecords(String arg0, int arg1) {
+		Customer cust=null;
+		
+		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+			if (customer.getUsername() == arg0) {
+				cust = customer;
+			}
+
+		}
+		assertEquals(cust.getNoShows(), arg1);
+		
 	}
-//Cesar
+	
+	/**
+	 * @author cesar
+	 * @param arg0
+	 * checks if the number of appointments is correct
+	 */
 	@Then("the system shall have {int} appointments")
 	public void theSystemShallHaveAppointments(int arg0) {
+		numAppt = flexiBook.getAppointments().size();
+		
+		assertEquals(numAppt, arg0);
+		
 	}
 //Cesar
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
