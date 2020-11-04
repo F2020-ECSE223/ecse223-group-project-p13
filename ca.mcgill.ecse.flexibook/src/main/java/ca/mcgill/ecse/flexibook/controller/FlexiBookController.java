@@ -31,6 +31,7 @@ import ca.mcgill.ecse.flexibook.util.SystemTime;
 
 public class FlexiBookController {
 	public static void login(String username, String password) throws InvalidInputException {
+		try{
 		FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		boolean found = false;
 		boolean correctPassword=false;
@@ -60,6 +61,7 @@ public class FlexiBookController {
 
 				}
 			}
+		
 		}
 		
 
@@ -76,6 +78,12 @@ public class FlexiBookController {
 			FlexiBookApplication.setCurrentUser(null);
 			throw new InvalidInputException("Username/password not found");
 		}
+			FlexiBookPersistence.save(flexiBook);
+			
+		}	
+			catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+			}
 	}
 
 
@@ -84,11 +92,18 @@ public class FlexiBookController {
 	 * @author Victoria Sanchez
 	 */
 	public static void logout() throws Exception {
+		try{
 		if (FlexiBookApplication.getUser() == null) {
 			throw new Exception("The user is already logged out");
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
 		}
+				FlexiBookPersistence.save(flexiBook);
+			
+		}	
+			catch (RuntimeException e){
+			throw new InvalidInputException(e.getMessage());
+			}
 
 	}
 
