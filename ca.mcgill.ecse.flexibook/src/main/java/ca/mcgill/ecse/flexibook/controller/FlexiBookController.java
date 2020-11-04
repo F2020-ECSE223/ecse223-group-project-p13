@@ -857,9 +857,12 @@ public class FlexiBookController {
 							duration += c.getService().getDuration();
 						}
 						LocalTime endTime = sTime.toLocalTime().plusMinutes(duration);
+
 						Appointment appointment = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceName),
 								new TimeSlot(sDate,sTime,sDate,Time.valueOf(endTime),flexibook), flexibook);
+
 						String[] services = optionalServices.split(",");
+
 						for(String s: services){
 							appointment.addChosenItem(new ComboItem(true,(Service)BookableService.getWithName(s),(ServiceCombo)BookableService.getWithName(serviceName)));
 						}
@@ -1012,6 +1015,7 @@ public class FlexiBookController {
 					flexibook.removeAppointment(appt);
 					appt.delete();
 
+					FlexiBookPersistence.save(flexibook);
 					throw new InvalidInputException("successful");
 
 
@@ -1035,7 +1039,7 @@ public class FlexiBookController {
 						}
 						//add chosenItem
 						appt.addChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),name));
-
+						FlexiBookPersistence.save(flexibook);
 						throw new InvalidInputException("successful");
 
 					}
@@ -1057,6 +1061,7 @@ public class FlexiBookController {
 						}
 						//remove chosenItem
 						appt.removeChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),s));
+						FlexiBookPersistence.save(flexibook);
 						throw new InvalidInputException("successful");
 					}
 
