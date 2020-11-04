@@ -2051,6 +2051,15 @@ public class CucumberStepDefinitions {
 //Florence
 	@When("{string} attempts to cancel the appointment at {string}")
 	public void attemptsToCancelTheAppointmentAt(String arg0, String arg1) {
+		LocalDateTime h = LocalDateTime.parse(dateTime);
+		LocalDate date = h.toLocalDate();
+		LocalTime time = h.toLocalTime();
+		try{
+			FlexiBookController.cancelAppointment(user, null,date.toString(), time.toString());
+		}catch(Exception e) {
+			error += e.getMessage();
+			errorCounter++;
+		}
 	}
 
 	/**
@@ -2064,6 +2073,12 @@ public class CucumberStepDefinitions {
 //Florence
 	@When("{string} makes a {string} appointment without choosing optional services for the date {string} and time {string} at {string}")
 	public void makesAAppointmentWithoutChoosingOptionalServicesForTheDateAndTimeAt(String arg0, String arg1, String arg2, String arg3, String arg4) {
+		try{
+			FlexiBookController.makeAppointment(user, aptDate, aptTime, combo, null);
+		}catch(Exception e) {
+			error += e.getMessage();
+			errorCounter++;
+		}
 	}
 
 	@When("{string} attempts to add the optional service {string} to the service combo in the appointment at {string}")
@@ -2080,10 +2095,30 @@ public class CucumberStepDefinitions {
 //Florence
 	@When("the owner starts the appointment at {string}")
 	public void theOwnerStartsTheAppointmentAt(String arg0) {
+		LocalDateTime h = LocalDateTime.parse(arg0);
+		LocalDate date = h.toLocalDate();
+		LocalTime time = h.toLocalTime();
+		Appointment a = getAppointment(null, date.toString(), time.toString());
+		try{
+			FlexiBookController.startAppointment(a);
+		}catch(Exception e) {
+			error += e.getMessage();
+			errorCounter++;
+		}
 	}
 //Florence
 	@When("the owner ends the appointment at {string}")
 	public void theOwnerEndsTheAppointmentAt(String arg0) {
+		LocalDateTime h = LocalDateTime.parse(arg0);
+		LocalDate date = h.toLocalDate();
+		LocalTime time = h.toLocalTime();
+		Appointment a = getAppointment(null, date.toString(), time.toString());
+		try{
+			FlexiBookController.endAppointment(a);
+		}catch(Exception e) {
+			error += e.getMessage();
+			errorCounter++;
+		}
 	}
 //Hana
 	@Then("the appointment shall be in progress")
