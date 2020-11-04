@@ -769,7 +769,6 @@ public class FlexiBookController {
 					//SERVICE COMBO
 					else {
 						for (Appointment a : flexibook.getAppointments()) {
-
 							//slot in 2019
 							if (cleanDate(sDate).getYear() < 2020) {
 								throw new InvalidInputException("There are no available slots for " + serviceName + " on " + date + " at " + newTime);
@@ -912,21 +911,16 @@ public class FlexiBookController {
 		 * @author Fiona Ryan
 		 * Updates appointment time/date or add/removes comboItem
 		 * @param customer
-		 * @param aService
-		 * @param date
 		 * @param action
 		 * @param newComboItem
 		 * @param newTime
 		 * @param newDate
 		 * @param serviceType
-		 * @param time
 		 * @throws InvalidInputException
 		 * */
-		public static void updateAppointment (String customer, String serviceType, String date, String time, String
-				aService, String newTime, String newDate, String action, String newComboItem) throws InvalidInputException {
-
+		public static void updateAppointment (String customer, String serviceType,String newTime, String newDate, String action,
+											  String newComboItem) throws InvalidInputException {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-
 			try {
 				Appointment appt = null;
 				for (Appointment a : flexibook.getAppointments()) {
@@ -1003,15 +997,9 @@ public class FlexiBookController {
 
 
 					//Updating appointment
-
-					Appointment newAppt = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceType),
-							new TimeSlot(sDate, sTime, sDate, eTime, flexibook), flexibook);
-
-					flexibook.removeAppointment(appt);
-					appt.delete();
-
+					appt.updateDate(new TimeSlot(sDate, sTime, sDate, eTime, flexibook));
+					FlexiBookPersistence.save(flexibook);
 					throw new InvalidInputException("successful");
-
 
 					//updating action or comboItem
 				} else if (newTime == null && newDate == null) {
@@ -1885,13 +1873,10 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-		public static void startAppointment(){ }
-		public static void endAppointment(){ }
+		public static void startAppointment(Appointment appt){
+			appt.toggleStart();
+		}
+		public static void endAppointment(Appointment appt){
+			appt.toggleEnded();
+		}
 }
-
-
-
-
-
-
-

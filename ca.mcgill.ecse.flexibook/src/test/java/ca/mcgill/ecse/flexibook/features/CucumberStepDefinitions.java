@@ -925,7 +925,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToUpdateTheirAppointmentOnAtToAt(String customer, String type, String date, String startTime, String newDate, String newStartTime) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer,type,date,startTime,null,newStartTime,newDate,null,null);
+			FlexiBookController.updateAppointment(customer,type,newStartTime,newDate,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1000,7 +1000,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToFromTheirAppointmentOnAt(String customer, String action, String comboItem, String type, String date, String time) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer,type,date,time,null,null,null,action,comboItem);
+			FlexiBookController.updateAppointment(customer,type,null,null,action,comboItem);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1022,7 +1022,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToUpdateSAppointmentOnAtToAt(String customer1, String customer2, String type, String date, String time, String newDate, String newTime) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer1,type,date,time,type,newTime,newDate,null,null);
+			FlexiBookController.updateAppointment(customer1,type,newTime,newDate,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1942,6 +1942,10 @@ public class CucumberStepDefinitions {
 	public void attemptsToCancelTheAppointmentAt(String arg0, String arg1) {
 	}
 
+	/**
+	 * @author Tomasz Mroz
+	 * @param size
+	 */
 	@Then("the system shall have {int} appointment")
 	public void theSystemShallHaveAppointment(int size) {
 		assertEquals(flexiBook.getAppointments().size(),size);
