@@ -1972,9 +1972,31 @@ public class CucumberStepDefinitions {
 		assertEquals(numAppt, arg0);
 		
 	}
-//Cesar
+	/**
+	 * @author cesar
+	 * @param arg0
+	 * @param arg1
+	 * @param arg2
+	 * @param arg3
+	 */
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
 	public void attemptsToUpdateTheDateToAndTimeToAt(String arg0, String arg1, String arg2, String arg3) {
+		
+		try{
+			Customer cust=null;
+			for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+				if (customer.getUsername() == arg0) {
+					cust = customer;
+				}
+
+			}
+			FlexiBookController.updateAppointment(cust.getUsername(),null,arg2,arg1,null,null);
+		}
+		catch(InvalidInputException e){
+			error+=e.getMessage();
+			errorCounter++;
+		}
+		
 	}
 //Florence
 	@When("{string} attempts to cancel the appointment at {string}")
