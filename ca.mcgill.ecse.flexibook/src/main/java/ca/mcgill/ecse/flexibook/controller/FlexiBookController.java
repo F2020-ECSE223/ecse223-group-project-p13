@@ -80,8 +80,8 @@ public class FlexiBookController {
 			throw new InvalidInputException("Username/password not found");
 		}
 			FlexiBookPersistence.save(flexibook);
-			
-		}	
+
+		}
 			catch (RuntimeException e){
 			throw new InvalidInputException(e.getMessage());
 			}
@@ -94,13 +94,15 @@ public class FlexiBookController {
 	 */
 	public static void logout() throws Exception {
 		try{
+			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		if (FlexiBookApplication.getUser() == null) {
 			throw new Exception("The user is already logged out");
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
 		}
-			
-		}	
+				FlexiBookPersistence.save(flexibook);
+
+		}
 			catch (RuntimeException e){
 			throw new InvalidInputException(e.getMessage());
 			}
@@ -880,6 +882,7 @@ public class FlexiBookController {
 							}
 						}
 						LocalTime endTime = sTime.toLocalTime().plusMinutes(duration);
+
 						Appointment appointment = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceName),
 								new TimeSlot(sDate,sTime,sDate,Time.valueOf(endTime),flexibook), flexibook);
 						for(ComboItem c :serviceCombo.getServices()){
@@ -892,11 +895,12 @@ public class FlexiBookController {
 								appointment.addChosenItem(new ComboItem(true,(Service)BookableService.getWithName(s),serviceCombo));
 							}
 						}
+
 						flexibook.addAppointment(appointment);
 						FlexiBookPersistence.save(flexibook);
 
 					}
-
+					FlexiBookPersistence.save(flexibook);
 				} catch (RuntimeException e) {
 					throw new InvalidInputException(e.getMessage());
 				}
@@ -933,6 +937,7 @@ public class FlexiBookController {
 						a.delete();
 					}
 				}
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1016,8 +1021,8 @@ public class FlexiBookController {
 
 					Time eTime = Time.valueOf(sTime.toLocalTime().plusMinutes(dur));
 					for (BusinessHour f : flexibook.getHours()) {
-						if (DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek())) {
-							if (f.getEndTime().compareTo(eTime) < 0) {
+						if(DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek()) ){
+							if(f.getEndTime().compareTo(eTime) <0 ){
 								throw new InvalidInputException("unsuccessful");
 							}
 						}
@@ -1026,10 +1031,12 @@ public class FlexiBookController {
 
 					//slot is occupied by an existing appointment
 					for (Appointment r : flexibook.getAppointments()) {
-						if (r.getTimeSlot().getStartTime().equals(sTime)) {
+						if(r.getTimeSlot().getStartTime().equals(sTime)){
 							throw new InvalidInputException("unsuccessful");
 						}
 					}
+
+
 					//Updating appointment
 					if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
 						appt.updateDate(new TimeSlot(sDate, sTime, sDate, eTime, flexibook));
@@ -1058,20 +1065,18 @@ public class FlexiBookController {
 									counter += c.getService().getDowntimeDuration();
 								}
 
-								//additional extensions service does not fit in available slot
-								int cycle = appt.getChosenItems().size();
-								for (int i = 0; i < cycle; i++) {
-									counter += name.getServices().get(i).getService().getDuration();
-									if (((Service) BookableService.getWithName(newComboItem)).getDuration() > counter) {
-										throw new InvalidInputException("unsuccessful");
-									}
-								}
-								//add chosenItem
-								appt.addChosenItem(new ComboItem(true, ((Service) BookableService.getWithName(newComboItem)), name));
-								Time end = Time.valueOf(appt.getTimeSlot().getEndTime().toLocalTime().plusMinutes(((Service)BookableService.getWithName(newComboItem)).getDuration()));
-								appt.getTimeSlot().setEndTime(end);
-								FlexiBookPersistence.save(flexibook);
-								throw new InvalidInputException("successful");
+						//additional extensions service does not fit in available slot
+						int cycle = name.getServices().size();
+						for (int i = 0; i < cycle; i++) {
+							counter += name.getServices().get(i).getService().getDuration();
+							if (((Service) BookableService.getWithName(newComboItem)).getDuration() < counter) {
+								throw new InvalidInputException("unsuccessful");
+							}
+						}
+						//add chosenItem
+						appt.addChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),name));
+						FlexiBookPersistence.save(flexibook);
+						throw new InvalidInputException("successful");
 
 							}
 
@@ -1097,8 +1102,8 @@ public class FlexiBookController {
 						}
 					}
 				}
-			}
-			catch (RuntimeException e) {
+
+			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
@@ -1915,6 +1920,8 @@ public class FlexiBookController {
 			}catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
+
+
 		}
 		public static void startAppointment(Appointment appt){
 			if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(appt.getTimeSlot().getStartDate())){
