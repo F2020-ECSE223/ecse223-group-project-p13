@@ -1043,9 +1043,15 @@ public class FlexiBookController {
 					if (serv instanceof Service) {
 						if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
 							Service s = (Service) BookableService.getWithName(newComboItem);
-							appt.updateService(s);
+
 							Time start = appt.getTimeSlot().getStartTime();
 							Time end = Time.valueOf(start.toLocalTime().plusMinutes(s.getDuration()));
+							for (Appointment r : flexibook.getAppointments()) {
+								if(r.getTimeSlot().getStartTime().compareTo(start) >=0 && r.getTimeSlot().getStartTime().compareTo(end) <= 0){
+									throw new InvalidInputException("unsuccessful");
+								}
+							}
+							appt.updateService(s);
 							appt.getTimeSlot().setEndTime(end);
 							FlexiBookPersistence.save(flexibook);
 						}
