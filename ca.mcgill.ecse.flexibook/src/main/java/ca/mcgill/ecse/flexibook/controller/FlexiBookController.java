@@ -52,7 +52,7 @@ public class FlexiBookController {
 		}
 
 		if (flexibook.getOwner() != null) {
-			if (username == flexibook.getOwner().getUsername()) {
+			if (username.equals(flexibook.getOwner().getUsername())) {
 				if (!(password.equals(flexibook.getOwner().getPassword()))) {
 					throw new InvalidInputException("Username/password not found");
 				} else {
@@ -979,8 +979,8 @@ public class FlexiBookController {
 					}
 
 					//slot is a holiday
-					for (TimeSlot t : flexibook.getBusiness().getHolidays()) {
-						if (t.getStartDate().equals(sDate) || t.getEndDate().equals(sDate)) {
+					for (TimeSlot e : flexibook.getBusiness().getHolidays()) {
+						if (e.getStartDate().compareTo(sDate) < 0 && e.getEndDate().compareTo(sDate) > 0) {
 							throw new InvalidInputException("unsuccessful");
 						}
 
@@ -996,6 +996,12 @@ public class FlexiBookController {
 					if (cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SATURDAY) || cleanDate(sDate).toLocalDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
 						throw new InvalidInputException("unsuccessful");
 					}
+					/*else{
+						String date = cleanDate(sDate).toLocalDate().getDayOfWeek();
+						if()){
+
+						}
+					}*/
 
 					//endTime of slot is not within business hours
 					int dur = 0;
@@ -1003,7 +1009,7 @@ public class FlexiBookController {
 					if (s instanceof Service) {
 						dur = ((Service) s).getDuration();
 					} else {
-						for (ComboItem c : ((ServiceCombo) s).getServices()) {
+						for (ComboItem c : appt.getChosenItems()) {
 							dur += c.getService().getDuration();
 						}
 					}
@@ -1911,6 +1917,9 @@ public class FlexiBookController {
 			}
 		}
 		public static void startAppointment(Appointment appt){
+			if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(appt.getTimeSlot().getStartDate())){
+				appt.setIsDayOf(true);
+			}
 			appt.toggleStart();
 		}
 		public static void endAppointment(Appointment appt) throws InvalidInputException {
@@ -1925,19 +1934,26 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-		public static void registerNoShow(String date,String time){
-			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-			Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
-			Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
-			
+		public static void registerNoShow(String date,String time) throws IllegalAccessException {
+			try{
+				FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+				Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
+				Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
 
-			List<Appointment> appointments = flexiBook.getAppointments();
-			Appointment apt = null;
-			for (Appointment a : appointments) {
-				if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate)) {
-					apt = a;
+
+				List<Appointment> appointments = flexiBook.getAppointments();
+				Appointment apt = null;
+				for (Appointment a : appointments) {
+					if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate)) {
+						apt = a;
+					}
+				}
+				if(apt != null){
+					apt.updateNoShow(apt.getCustomer());
 				}
 			}
-			apt.updateNoShow(apt.getCustomer());
+			catch (RuntimeException e){
+				throw new IllegalAccessException(e.getMessage());
+			}
 		}
 }

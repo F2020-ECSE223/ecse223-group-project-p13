@@ -2134,24 +2134,26 @@ public class CucumberStepDefinitions {
 
 	@Then("the service combo in the appointment shall be {string}")
 	public void theServiceComboInTheAppointmentShallBe(String arg0) {
+		Appointment a = getAppointment(null,appointmentDate,appointmentTime);
+		assertEquals(a.getBookableService().getName(),arg0);
 	}
 
 	@Then("the service combo shall have {string} selected services")
 	public void theServiceComboShallHaveSelectedServices(String arg0) {
+		Appointment a = getAppointment(null,appointmentDate,appointmentTime);
+		String opt = "";
+		for(ComboItem c:a.getChosenItems()){
+			if(c.getMandatory()){
+				opt+=c.getService().getName()+",";
+			}
+		}
+		assertEquals(opt.substring(0,opt.length()-1),arg0);
 	}
 //Florence
 	@When("the owner starts the appointment at {string}")
 	public void theOwnerStartsTheAppointmentAt(String arg0) {
-		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
-		LocalDate date = h.toLocalDate();
-		Time sTime;
-		if (appointmentTime.length() == 4) {
-			sTime = Time.valueOf(LocalTime.parse(appointmentTime, DateTimeFormatter.ofPattern("k:mm")));
-		} else {
-			sTime = Time.valueOf(LocalTime.parse(appointmentTime, DateTimeFormatter.ofPattern("kk:mm")));
-
-		}
-		Appointment a = getAppointment(null, date.toString(), sTime.toString());
+		SystemTime.setTime(arg0);
+		Appointment a = getAppointment(null, appointmentDate, appointmentTime);
 		try{
 			FlexiBookController.startAppointment(a);
 			appointmentHasStarted = true;
@@ -2189,8 +2191,14 @@ public class CucumberStepDefinitions {
  */
 	@When("the owner attempts to register a no-show for the appointment at {string}")
 	public void theOwnerAttemptsToRegisterANoShowForTheAppointmentAt(String dateTime) {
-		SystemTime.setTime(dateTime);
-		FlexiBookController.registerNoShow(appointmentDate,appointmentTime);
+		try{
+			SystemTime.setTime(dateTime);
+			FlexiBookController.registerNoShow(appointmentDate,appointmentTime);
+		}
+		catch(IllegalAccessException e){
+			error+=e;
+			errorCounter++;
+		}
 	}
 /**
  * @author Hana Gustyn
