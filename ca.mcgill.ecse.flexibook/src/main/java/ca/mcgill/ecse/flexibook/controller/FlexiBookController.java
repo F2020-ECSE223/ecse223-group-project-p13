@@ -92,6 +92,7 @@ public class FlexiBookController {
 	 */
 	public static void logout() throws Exception {
 		try{
+			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 		if (FlexiBookApplication.getUser() == null) {
 			throw new Exception("The user is already logged out");
 		} else {
@@ -1139,7 +1140,7 @@ public class FlexiBookController {
 						serv.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
-				FlexiBookPersistence.save(flexibook);
+				FlexiBookPersistence.save(flexiBook);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1228,7 +1229,7 @@ public class FlexiBookController {
 						combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
-				FlexiBookPersistence.save(flexibook);
+				FlexiBookPersistence.save(flexiBook);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1257,7 +1258,7 @@ public class FlexiBookController {
 
 					}
 					combo.delete();
-					FlexiBookPersistence.save(flexibook);
+					FlexiBookPersistence.save(flexiBook);
 				}
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
