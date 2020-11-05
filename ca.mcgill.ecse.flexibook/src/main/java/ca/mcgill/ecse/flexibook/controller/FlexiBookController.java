@@ -1019,12 +1019,14 @@ public class FlexiBookController {
 				} else if (newTime == null && newDate == null) {
 					BookableService serv = appt.getBookableService();
 					if (serv instanceof Service) {
-						Service s = (Service) BookableService.getWithName(newComboItem);
-						appt.updateService(s);
-						Time start = appt.getTimeSlot().getStartTime();
-						Time end = Time.valueOf(start.toLocalTime().plusMinutes(s.getDuration()));
-						appt.getTimeSlot().setEndTime(end);
-						FlexiBookPersistence.save(flexibook);
+						if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
+							Service s = (Service) BookableService.getWithName(newComboItem);
+							appt.updateService(s);
+							Time start = appt.getTimeSlot().getStartTime();
+							Time end = Time.valueOf(start.toLocalTime().plusMinutes(s.getDuration()));
+							appt.getTimeSlot().setEndTime(end);
+							FlexiBookPersistence.save(flexibook);
+						}
 					} else {
 						ServiceCombo name = (ServiceCombo) serv;
 						//if action is add
