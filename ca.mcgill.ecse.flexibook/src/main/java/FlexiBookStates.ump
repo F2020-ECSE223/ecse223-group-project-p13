@@ -56,6 +56,9 @@ class Appointment{
         throw new RuntimeException("You cannot register a no-show if the appointment is in progress");
     }
     private acceptNoShow(Customer c){
+        int i = c.getNoShows();
+        c.setNoShows(i + 1);
+        this.delete();
     }
 
 }

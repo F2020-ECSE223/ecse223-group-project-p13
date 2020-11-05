@@ -21,6 +21,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.java.sl.In;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -508,7 +509,7 @@ public class CucumberStepDefinitions {
                     combo.setMainService(new ComboItem(true, (Service) BookableService.getWithName(row.get(1)),combo));
                 }
                 else {
-                    combo.addService(Boolean.getBoolean(mandatory[i]), (Service) BookableService.getWithName(services[i]));
+                    combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
                 }
             }
         }
@@ -2120,7 +2121,15 @@ public class CucumberStepDefinitions {
 	}
 
 	@When("{string} attempts to add the optional service {string} to the service combo in the appointment at {string}")
-	public void attemptsToAddTheOptionalServiceToTheServiceComboInTheAppointmentAt(String arg0, String arg1, String arg2) {
+	public void attemptsToAddTheOptionalServiceToTheServiceComboInTheAppointmentAt(String username, String service, String arg2) {
+		try{
+			SystemTime.setTime(arg2);
+			FlexiBookController.updateAppointment(username,null,null,null,"add",service);
+		}
+		catch (InvalidInputException e){
+			errorCounter+=1;
+			error+=e;
+		}
 	}
 
 	@Then("the service combo in the appointment shall be {string}")

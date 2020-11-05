@@ -27,6 +27,7 @@ import ca.mcgill.ecse.flexibook.model.TimeSlot;
 import ca.mcgill.ecse.flexibook.model.User;
 import ca.mcgill.ecse.flexibook.persistence.FlexiBookPersistence;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
+import org.checkerframework.checker.units.qual.C;
 
 
 public class FlexiBookController {
@@ -61,6 +62,7 @@ public class FlexiBookController {
 
 				}
 			}
+		
 		}
 		
 
@@ -865,19 +867,32 @@ public class FlexiBookController {
 								throw new InvalidInputException("unsuccessful");
 							}
 						}
-
+						String[] services = new String[0];
+						ServiceCombo serviceCombo = (ServiceCombo)BookableService.getWithName(serviceName);
 						int duration = 0;
-						for(ComboItem c: ((ServiceCombo)BookableService.getWithName(serviceName)).getServices()){
-							duration += c.getService().getDuration();
+						for(ComboItem c :serviceCombo.getServices()){
+							if(c.getMandatory()){
+								duration += c.getService().getDuration();
+							}
+						}
+						if(optionalServices !=  null){
+							services = optionalServices.split(",");
+							for(String s: services){
+								duration += ((Service)BookableService.getWithName(s)).getDuration();
+							}
 						}
 						LocalTime endTime = sTime.toLocalTime().plusMinutes(duration);
 
 						Appointment appointment = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceName),
 								new TimeSlot(sDate,sTime,sDate,Time.valueOf(endTime),flexibook), flexibook);
-						if(optionalServices != null){
-							String[] services = optionalServices.split(",");
+						for(ComboItem c :serviceCombo.getServices()){
+							if(c.getMandatory()){
+								appointment.addChosenItem(c);
+							}
+						}
+						if(services.length > 0){
 							for(String s: services){
-								appointment.addChosenItem(new ComboItem(true,(Service)BookableService.getWithName(s),(ServiceCombo)BookableService.getWithName(serviceName)));
+								appointment.addChosenItem(new ComboItem(true,(Service)BookableService.getWithName(s),serviceCombo));
 							}
 						}
 
@@ -1037,12 +1052,12 @@ public class FlexiBookController {
 					} else {
 						ServiceCombo name = (ServiceCombo) serv;
 						//if action is add
-						if (action.equals("add")) {
-							//ServiceCombo name = (ServiceCombo) appt.getBookableService();
-							int counter = 0;
-							for (ComboItem c : name.getServices()) {
-								counter += c.getService().getDowntimeDuration();
-							}
+						if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
+							if (action != null && action.equals("add")) {
+								int counter = 0;
+								for (ComboItem c : appt.getChosenItems()) {
+									counter += c.getService().getDowntimeDuration();
+								}
 
 						//additional extensions service does not fit in available slot
 						int cycle = name.getServices().size();
@@ -1057,28 +1072,28 @@ public class FlexiBookController {
 						FlexiBookPersistence.save(flexibook);
 						throw new InvalidInputException("successful");
 
-						}
-
-						//if action is remove
-						else if (action.equals("remove")) {
-							//cannot remove main service
-							ServiceCombo s = (ServiceCombo) appt.getBookableService();
-							if (s.getMainService().getService().getName().equals(newComboItem)) {
-								throw new InvalidInputException("unsuccessful");
 							}
-							//cannot remove mandatory service
-							for (ComboItem c : s.getServices()) {
-								if (c.getService().getName().equals(newComboItem)) {
-									if (c.getMandatory()) {
-										throw new InvalidInputException("unsuccessful");
+
+							//if action is remove
+							else if (action != null && action.equals("remove")) {
+								//cannot remove main service
+								ServiceCombo s = (ServiceCombo) appt.getBookableService();
+								if (s.getMainService().getService().getName().equals(newComboItem)) {
+									throw new InvalidInputException("unsuccessful");
+								}
+								//cannot remove mandatory service
+								for (ComboItem c : s.getServices()) {
+									if (c.getService().getName().equals(newComboItem)) {
+										if (c.getMandatory()) {
+											throw new InvalidInputException("unsuccessful");
+										}
 									}
 								}
+								//remove chosenItem
+								appt.removeChosenItem(new ComboItem(false, ((Service) BookableService.getWithName(newComboItem)), s));
+								throw new InvalidInputException("successful");
 							}
-							//remove chosenItem
-							appt.removeChosenItem(new ComboItem(false, ((Service) BookableService.getWithName(newComboItem)), s));
-							throw new InvalidInputException("successful");
 						}
-
 					}
 				}
 
@@ -1919,7 +1934,6 @@ public class FlexiBookController {
 		}
 		public static void registerNoShow(String date,String time){
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-			//LocalDateh = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 			Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
 			Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
 			
@@ -1931,8 +1945,6 @@ public class FlexiBookController {
 					apt = a;
 				}
 			}
-			int i = apt.getCustomer().getNoShows();
-			apt.getCustomer().setNoShows(i +1);
-			apt.delete();
+			apt.updateNoShow(apt.getCustomer());
 		}
 }
