@@ -4,31 +4,36 @@ class Appointment{
         Before{
           	toggleStart[getIsDayOf()] -> InProgress;
             toggleCancel[!getIsDayOf()] -> Final;
-          updateDate(TimeSlot timeslot)/{
-              acceptDateUpdate(timeslot);
-          }->Before;
-          updateService(Service service)/{
-              acceptServiceUpdate(service);
-          }->Before;
-
+            updateDate(TimeSlot timeslot)/{
+                acceptDateUpdate(timeslot);
+            }->Before;
+            updateService(Service service)/{
+                acceptServiceUpdate(service);
+            }->Before;
+            updateNoShow(Customer c)/{
+                acceptNoShow(c);
+            }->Final;
         }
         InProgress{
+            toggleEnded->Final;
             updateDate(TimeSlot timeslot) /{
                 rejectDateUpdate(timeslot);
             } -> InProgress;
-          updateService(Service service)/{
+            updateService(Service service)/{
               rejectServiceUpdate(service);
-          }-> InProgress;
-          toggleEnded->Final;
+            }-> InProgress;
+            updateNoShow(Customer c)/{
+                rejectNoShow();
+            }->InProgress;
         }
     }
 
     private rejectDateUpdate(TimeSlot timeslot){
-    	throw new RunTimeException("You cannot update the date if the appointment is in progress");
+    	throw new RuntimeException("You cannot update the date if the appointment is in progress");
     }
 
     private rejectServiceUpdate(Service service){
-    	throw new RunTimeException("You cannot update a service if the appointment is in progress");
+    	throw new RuntimeException("You cannot update a service if the appointment is in progress");
     }
 
     private acceptServiceUpdate(Service service){
@@ -46,5 +51,11 @@ class Appointment{
        else{
           	getFlexiBook().addTimeSlot(timeslot);
        }
-       }
+    }
+    private rejectNoShow(){
+        throw new RuntimeException("You cannot register a no-show if the appointment is in progress");
+    }
+    private acceptNoShow(Customer c){
+    }
+
 }
