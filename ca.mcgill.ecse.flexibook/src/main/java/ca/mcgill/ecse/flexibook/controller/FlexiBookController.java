@@ -78,7 +78,7 @@ public class FlexiBookController {
 			FlexiBookApplication.setCurrentUser(null);
 			throw new InvalidInputException("Username/password not found");
 		}
-			FlexiBookPersistence.save(flexiBook);
+			FlexiBookPersistence.save(flexibook);
 			
 		}	
 			catch (RuntimeException e){
@@ -98,7 +98,6 @@ public class FlexiBookController {
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
 		}
-				FlexiBookPersistence.save(flexiBook);
 			
 		}	
 			catch (RuntimeException e){
@@ -1893,5 +1892,8 @@ public class FlexiBookController {
 		}
 		public static void endAppointment(Appointment appt){
 			appt.toggleEnded();
+		}
+		public static void registerNoShow(String dateTime){
+
 		}
 }
