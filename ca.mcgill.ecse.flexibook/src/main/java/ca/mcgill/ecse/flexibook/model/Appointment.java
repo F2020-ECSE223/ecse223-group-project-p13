@@ -2,11 +2,8 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.flexibook.model;
-import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
-
 import java.io.Serializable;
 import java.util.*;
-import java.lang.RuntimeException;
 
 // line 14 "../../../../../FlexiBookPersistence.ump"
 // line 1 "../../../../../FlexiBookStates.ump"
@@ -148,7 +145,7 @@ public class Appointment implements Serializable
         wasEventProcessed = true;
         break;
       case InProgress:
-        // line 16 "../../../../../FlexiBookStates.ump"
+        // line 19 "../../../../../FlexiBookStates.ump"
         rejectDateUpdate(timeslot);
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
@@ -174,8 +171,34 @@ public class Appointment implements Serializable
         wasEventProcessed = true;
         break;
       case InProgress:
-        // line 19 "../../../../../FlexiBookStates.ump"
+        // line 22 "../../../../../FlexiBookStates.ump"
         rejectServiceUpdate(service);
+        setExistStatus(ExistStatus.InProgress);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean updateNoShow(Customer c)
+  {
+    boolean wasEventProcessed = false;
+    
+    ExistStatus aExistStatus = existStatus;
+    switch (aExistStatus)
+    {
+      case Before:
+        // line 13 "../../../../../FlexiBookStates.ump"
+        acceptNoShow(c);
+        setExistStatus(ExistStatus.Final);
+        wasEventProcessed = true;
+        break;
+      case InProgress:
+        // line 25 "../../../../../FlexiBookStates.ump"
+        rejectNoShow();
         setExistStatus(ExistStatus.InProgress);
         wasEventProcessed = true;
         break;
@@ -416,17 +439,17 @@ public class Appointment implements Serializable
     }
   }
 
-  // line 27 "../../../../../FlexiBookStates.ump"
-   private void rejectDateUpdate(TimeSlot timeslot) {
+  // line 32 "../../../../../FlexiBookStates.ump"
+   private void rejectDateUpdate(TimeSlot timeslot){
     throw new RuntimeException("You cannot update the date if the appointment is in progress");
   }
 
-  // line 31 "../../../../../FlexiBookStates.ump"
-   private void rejectServiceUpdate(Service service) {
+  // line 36 "../../../../../FlexiBookStates.ump"
+   private void rejectServiceUpdate(Service service){
     throw new RuntimeException("You cannot update a service if the appointment is in progress");
   }
 
-  // line 35 "../../../../../FlexiBookStates.ump"
+  // line 40 "../../../../../FlexiBookStates.ump"
    private void acceptServiceUpdate(Service service){
     if(service != null){
             this.setBookableService(service);
@@ -436,7 +459,7 @@ public class Appointment implements Serializable
       }
   }
 
-  // line 43 "../../../../../FlexiBookStates.ump"
+  // line 48 "../../../../../FlexiBookStates.ump"
    private void acceptDateUpdate(TimeSlot timeslot){
     if(timeslot != null){
            this.setTimeSlot(timeslot);
@@ -444,6 +467,16 @@ public class Appointment implements Serializable
        else{
           	getFlexiBook().addTimeSlot(timeslot);
        }
+  }
+
+  // line 56 "../../../../../FlexiBookStates.ump"
+   private void rejectNoShow(){
+    throw new RuntimeException("You cannot register a no-show if the appointment is in progress");
+  }
+
+  // line 59 "../../../../../FlexiBookStates.ump"
+   private void acceptNoShow(Customer c){
+    
   }
 
 
