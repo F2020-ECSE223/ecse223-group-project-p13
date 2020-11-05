@@ -2115,8 +2115,14 @@ public class CucumberStepDefinitions {
 	public void theOwnerStartsTheAppointmentAt(String arg0) {
 		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 		LocalDate date = h.toLocalDate();
-		LocalTime time = h.toLocalTime();
-		Appointment a = getAppointment(null, date.toString(), time.toString());
+		Time sTime;
+		if (appointmentTime.length() == 4) {
+			sTime = Time.valueOf(LocalTime.parse(appointmentTime, DateTimeFormatter.ofPattern("k:mm")));
+		} else {
+			sTime = Time.valueOf(LocalTime.parse(appointmentTime, DateTimeFormatter.ofPattern("kk:mm")));
+
+		}
+		Appointment a = getAppointment(null, date.toString(), sTime.toString());
 		try{
 			FlexiBookController.startAppointment(a);
 			appointmentHasStarted = true;
@@ -2131,7 +2137,7 @@ public class CucumberStepDefinitions {
 		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 		LocalDate date = h.toLocalDate();
 		LocalTime time = h.toLocalTime();
-		Appointment a = getAppointment(null, date.toString(), time.toString());
+		Appointment a = getAppointment(null, date.toString(), appointmentTime);
 		try{
 			FlexiBookController.endAppointment(a);
 			appointmentHasEnded = true;
@@ -2170,15 +2176,24 @@ private Appointment getAppointment(String name, String date, String time) {
 	Time sTime;
 	if (time.length() == 4) {
 		sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("k:mm")));
-	} else {
+	} else if(time.length() == 8){
+		sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("kk:mm:ss")));
+	}
+	else{
 		sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("kk:mm")));
-
 	}
 
 	List<Appointment> appointments = flexiBook.getAppointments();
 	for (Appointment a : appointments) {
-		if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate) && a.getBookableService().getName().equals(name)) {
-			return a;
+		if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate)){
+			if(name ==  null){
+				return a;
+			}
+			else{
+				if( a.getBookableService().getName().equals(name)){
+					return a;
+				}
+			}
 		}
 	}
 	return null;

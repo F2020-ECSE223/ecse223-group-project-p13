@@ -1894,8 +1894,17 @@ public class FlexiBookController {
 		public static void startAppointment(Appointment appt){
 			appt.toggleStart();
 		}
-		public static void endAppointment(Appointment appt){
-			appt.toggleEnded();
+		public static void endAppointment(Appointment appt) throws InvalidInputException {
+			try{
+				appt.toggleEnded();
+				FlexiBook  f = FlexiBookApplication.getFlexiBook();
+				f.removeAppointment(appt);
+				appt.delete();
+				FlexiBookPersistence.save(f);
+			}
+			catch (RuntimeException e){
+				throw new InvalidInputException(e.getMessage());
+			}
 		}
 		public static void registerNoShow(String dateTime){
 
