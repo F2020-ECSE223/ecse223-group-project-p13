@@ -1907,6 +1907,22 @@ public class FlexiBookController {
 			}
 		}
 		public static void registerNoShow(String dateTime){
+			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+			LocalDateTime h = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
+			LocalDate date = h.toLocalDate();
+			LocalTime time = h.toLocalTime();
+			Date sDate = Date.valueOf(date);
+			Time sTime = Time.valueOf(time);
+			
 
+			List<Appointment> appointments = flexiBook.getAppointments();
+			Appointment apt = null;
+			for (Appointment a : appointments) {
+				if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate)) {
+					apt = a;
+				}
+			}
+			int i = apt.getCustomer().getNoShows();
+			apt.getCustomer().setNoShows(i +1);
 		}
 }
