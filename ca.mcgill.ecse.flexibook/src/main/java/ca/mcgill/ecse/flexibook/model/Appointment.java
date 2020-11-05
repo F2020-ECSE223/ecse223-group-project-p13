@@ -2,8 +2,11 @@
 /*This code was generated using the UMPLE 1.30.1.5099.60569f335 modeling language!*/
 
 package ca.mcgill.ecse.flexibook.model;
+import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
+
 import java.io.Serializable;
 import java.util.*;
+import java.lang.RuntimeException;
 
 // line 14 "../../../../../FlexiBookPersistence.ump"
 // line 1 "../../../../../FlexiBookStates.ump"

@@ -74,5 +74,10 @@ class TimeSlot {
     isA Serializable;
     private static final long serialVersionUID = -34528498454684865L;
 }
+class Business{
+    depend java.io.Serializable;
+    isA Serializable;
+    private static final long serialVersionUID = -59764821534565658L;
+}
 
 

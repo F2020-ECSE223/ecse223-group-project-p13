@@ -1931,7 +1931,8 @@ public class CucumberStepDefinitions {
 	public void attemptsToChangeTheServiceInTheAppointmentToAt(String customer, String service, String systemTime) {
 		try {
 			SystemTime.setTime(systemTime);
-			FlexiBookController.updateAppointment(customer, appointmentTime,null,null, null, null);
+			appointmentName=service;
+			FlexiBookController.updateAppointment(customer, null,null,null, null, service);
 		}
 		catch(InvalidInputException e){
 			error +=e;
@@ -1956,7 +1957,7 @@ public class CucumberStepDefinitions {
 	public void theServiceInTheAppointmentShallBe(String arg0) {
 		assertTrue(getAppointment(appointmentName, appointmentDate, appointmentTime).getBookableService().getName().equals(arg0));
 	}
-	/*
+	/**
 	 * @author Victoria Sanchez
 	 * @param arg0
 	 * @param arg1
@@ -1980,9 +1981,10 @@ public class CucumberStepDefinitions {
 			bTime = Time.valueOf(LocalTime.parse(arg2, DateTimeFormatter.ofPattern("kk:mm")));
 
 		}
-		assertTrue(getAppointment(appointmentName, appointmentDate,appointmentTime).getTimeSlot().getStartDate().equals(sDate));
-		assertTrue(getAppointment(appointmentName, appointmentDate,appointmentTime).getTimeSlot().getStartTime().equals(sTime));
-		assertTrue(getAppointment(appointmentName, appointmentDate,appointmentTime).getTimeSlot().getEndTime().equals(bTime));
+		Appointment a = getAppointment(appointmentName, appointmentDate,appointmentTime);
+		assertTrue(a.getTimeSlot().getStartDate().equals(sDate));
+		assertTrue(a.getTimeSlot().getStartTime().equals(sTime));
+		assertTrue(a.getTimeSlot().getEndTime().equals(bTime));
 		
 		
 	}
