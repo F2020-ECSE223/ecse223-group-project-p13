@@ -1946,7 +1946,7 @@ public class CucumberStepDefinitions {
 
 	@Then("the appointment shall be booked")
 	public void theAppointmentShallBeBooked() {
-		assertTrue(getAppointment(appointmentName, appointmentDate, appointmentTime)!=null);
+		assertTrue(getAppointment(null, appointmentDate, appointmentTime)!=null);
 	}
 	/**
 	*@author Victoria Sanchez
@@ -1955,7 +1955,7 @@ public class CucumberStepDefinitions {
 
 	@Then("the service in the appointment shall be {string}")
 	public void theServiceInTheAppointmentShallBe(String arg0) {
-		assertTrue(getAppointment(appointmentName, appointmentDate, appointmentTime).getBookableService().getName().equals(arg0));
+		assertTrue(getAppointment(null, appointmentDate, appointmentTime).getBookableService().getName().equals(arg0));
 	}
 	/**
 	 * @author Victoria Sanchez
@@ -1981,7 +1981,7 @@ public class CucumberStepDefinitions {
 			bTime = Time.valueOf(LocalTime.parse(arg2, DateTimeFormatter.ofPattern("kk:mm")));
 
 		}
-		Appointment a = getAppointment(appointmentName, appointmentDate,appointmentTime);
+		Appointment a = getAppointment(null, appointmentDate,appointmentTime);
 		assertTrue(a.getTimeSlot().getStartDate().equals(sDate));
 		assertTrue(a.getTimeSlot().getStartTime().equals(sTime));
 		assertTrue(a.getTimeSlot().getEndTime().equals(bTime));
@@ -2057,7 +2057,7 @@ public class CucumberStepDefinitions {
 				}
 
 			}
-			FlexiBookController.updateAppointment(cust.getUsername(),null,arg2,arg1,null,null);
+			FlexiBookController.updateAppointment(arg0,null,arg2,arg1,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -2071,8 +2071,15 @@ public class CucumberStepDefinitions {
 		LocalDateTime h = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 		LocalDate date = h.toLocalDate();
 		LocalTime time = h.toLocalTime();
+		SystemTime.setTime(dateTime);
 		try{
-			FlexiBookController.cancelAppointment(user, null,date.toString(), time.toString());
+			Appointment appt = null;
+			for(Appointment a: flexiBook.getAppointments()){
+				if(a.getCustomer().getUsername().equals(user)){
+					appt = a;
+				}
+			}
+			FlexiBookController.cancelAppointment(user, null,appt.getTimeSlot().getStartDate().toString(), appt.getTimeSlot().getStartTime().toString());
 		}catch(Exception e) {
 			error += e.getMessage();
 			errorCounter++;
@@ -2115,8 +2122,14 @@ public class CucumberStepDefinitions {
 	public void theOwnerStartsTheAppointmentAt(String arg0) {
 		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 		LocalDate date = h.toLocalDate();
-		LocalTime time = h.toLocalTime();
-		Appointment a = getAppointment(null, date.toString(), time.toString());
+		Time sTime;
+		if (appointmentTime.length() == 4) {
+			sTime = Time.valueOf(LocalTime.parse(appointmentTime, DateTimeFormatter.ofPattern("k:mm")));
+		} else {
+			sTime = Time.valueOf(LocalTime.parse(appointmentTime, DateTimeFormatter.ofPattern("kk:mm")));
+
+		}
+		Appointment a = getAppointment(null, date.toString(), sTime.toString());
 		try{
 			FlexiBookController.startAppointment(a);
 			appointmentHasStarted = true;
@@ -2131,7 +2144,7 @@ public class CucumberStepDefinitions {
 		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 		LocalDate date = h.toLocalDate();
 		LocalTime time = h.toLocalTime();
-		Appointment a = getAppointment(null, date.toString(), time.toString());
+		Appointment a = getAppointment(null, date.toString(), appointmentTime);
 		try{
 			FlexiBookController.endAppointment(a);
 			appointmentHasEnded = true;
@@ -2149,6 +2162,7 @@ public class CucumberStepDefinitions {
 //Hana
 	@When("the owner attempts to register a no-show for the appointment at {string}")
 	public void theOwnerAttemptsToRegisterANoShowForTheAppointmentAt(String arg0) {
+		FlexiBookController.registerNoShow(arg0);
 	}
 //Hana
 	@When("the owner attempts to end the appointment at {string}")
@@ -2170,15 +2184,24 @@ private Appointment getAppointment(String name, String date, String time) {
 	Time sTime;
 	if (time.length() == 4) {
 		sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("k:mm")));
-	} else {
+	} else if(time.length() == 8){
+		sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("kk:mm:ss")));
+	}
+	else{
 		sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("kk:mm")));
-
 	}
 
 	List<Appointment> appointments = flexiBook.getAppointments();
 	for (Appointment a : appointments) {
-		if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate) && a.getBookableService().getName().equals(name)) {
-			return a;
+		if (a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate)){
+			if(name ==  null){
+				return a;
+			}
+			else{
+				if( a.getBookableService().getName().equals(name)){
+					return a;
+				}
+			}
 		}
 	}
 	return null;
