@@ -1894,6 +1894,11 @@ public class CucumberStepDefinitions {
 
 	@Given("{string} has {int} no-show records")
 	public void hasNoShowRecords(String arg0, int arg1) {
+    	for(Customer c:flexiBook.getCustomers()){
+    		if(c.getUsername().equals(arg0)){
+    			assertEquals(c.getNoShows(),arg1);
+			}
+		}
 	}
 
 	/**
@@ -2057,9 +2062,15 @@ public class CucumberStepDefinitions {
 				}
 
 			}
+			SystemTime.setTime(arg3);
 			FlexiBookController.updateAppointment(arg0,null,arg2,arg1,null,null);
+
 		}
 		catch(InvalidInputException e){
+			if(e.getMessage().equals("successful")){
+				appointmentTime=arg2;
+				appointmentDate=arg1;
+			}
 			error+=e.getMessage();
 			errorCounter++;
 		}
@@ -2096,10 +2107,12 @@ public class CucumberStepDefinitions {
 	}
 //Florence
 	@When("{string} makes a {string} appointment without choosing optional services for the date {string} and time {string} at {string}")
-	public void makesAAppointmentWithoutChoosingOptionalServicesForTheDateAndTimeAt(String user, String aptDate, String aptTime, String combo, String systemTime) {
+	public void makesAAppointmentWithoutChoosingOptionalServicesForTheDateAndTimeAt(String user,String combo,  String aptDate,  String aptTime,String systemTime) {
 		try{
 			SystemTime.setTime(systemTime);
-			FlexiBookController.makeAppointment(user, combo, aptDate, aptTime, null);
+			FlexiBookController.makeAppointment(user, aptDate, aptTime,combo, null);
+			appointmentTime = aptTime;
+			appointmentDate=aptDate;
 		}catch(Exception e) {
 			error += e.getMessage();
 			errorCounter++;
@@ -2162,7 +2175,8 @@ public class CucumberStepDefinitions {
 //Hana
 	@When("the owner attempts to register a no-show for the appointment at {string}")
 	public void theOwnerAttemptsToRegisterANoShowForTheAppointmentAt(String arg0) {
-		FlexiBookController.registerNoShow(arg0);
+		SystemTime.setTime(arg0);
+		FlexiBookController.registerNoShow(appointmentDate,appointmentTime);
 	}
 //Hana
 	@When("the owner attempts to end the appointment at {string}")

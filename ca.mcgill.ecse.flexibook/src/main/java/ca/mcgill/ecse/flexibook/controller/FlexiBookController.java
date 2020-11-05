@@ -872,12 +872,14 @@ public class FlexiBookController {
 						LocalTime endTime = sTime.toLocalTime().plusMinutes(duration);
 						Appointment appointment = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceName),
 								new TimeSlot(sDate,sTime,sDate,Time.valueOf(endTime),flexibook), flexibook);
-						String[] services = optionalServices.split(",");
-						for(String s: services){
-							appointment.addChosenItem(new ComboItem(true,(Service)BookableService.getWithName(s),(ServiceCombo)BookableService.getWithName(serviceName)));
+						if(optionalServices != null){
+							String[] services = optionalServices.split(",");
+							for(String s: services){
+								appointment.addChosenItem(new ComboItem(true,(Service)BookableService.getWithName(s),(ServiceCombo)BookableService.getWithName(serviceName)));
+							}
 						}
-
 						flexibook.addAppointment(appointment);
+						FlexiBookPersistence.save(flexibook);
 
 					}
 
@@ -1008,13 +1010,12 @@ public class FlexiBookController {
 							throw new InvalidInputException("unsuccessful");
 						}
 					}
-
-
 					//Updating appointment
-					appt.updateDate(new TimeSlot(sDate, sTime, sDate, eTime, flexibook));
-					FlexiBookPersistence.save(flexibook);
-					throw new InvalidInputException("successful");
-
+					if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
+						appt.updateDate(new TimeSlot(sDate, sTime, sDate, eTime, flexibook));
+						FlexiBookPersistence.save(flexibook);
+						throw new InvalidInputException("successful");
+					}
 					//updating action or comboItem
 				} else if (newTime == null && newDate == null) {
 					BookableService serv = appt.getBookableService();
@@ -1908,13 +1909,11 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-		public static void registerNoShow(String dateTime){
+		public static void registerNoShow(String date,String time){
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-			LocalDateTime h = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
-			LocalDate date = h.toLocalDate();
-			LocalTime time = h.toLocalTime();
-			Date sDate = Date.valueOf(date);
-			Time sTime = Time.valueOf(time);
+			//LocalDateh = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
+			Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
+			Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
 			
 
 			List<Appointment> appointments = flexiBook.getAppointments();
@@ -1926,5 +1925,6 @@ public class FlexiBookController {
 			}
 			int i = apt.getCustomer().getNoShows();
 			apt.getCustomer().setNoShows(i +1);
+			apt.delete();
 		}
 }
