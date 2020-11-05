@@ -2135,6 +2135,16 @@ public class CucumberStepDefinitions {
 //Hana
 	@When("the owner attempts to end the appointment at {string}")
 	public void theOwnerAttemptsToEndTheAppointmentAt(String arg0) {
+		LocalDateTime h = LocalDateTime.parse(arg0);
+		LocalDate date = h.toLocalDate();
+		LocalTime time = h.toLocalTime();
+		Appointment a = getAppointment(null, date.toString(), time.toString());
+		try{
+			FlexiBookController.endAppointment(a);
+		}catch(Exception e) {
+			error += e.getMessage();
+			errorCounter++;
+		}
 	}
 
 private Appointment getAppointment(String name, String date, String time) {
