@@ -39,6 +39,8 @@ public class CucumberStepDefinitions {
     private String oldPassword;
     private String oldUsername;
     private List<Appointment> userApp;
+	private boolean appointmentHasStarted;
+    private boolean appointmentHasEnded;
     	
 	  /**
 	 * @author cesar
@@ -2123,6 +2125,8 @@ public class CucumberStepDefinitions {
 //Hana
 	@Then("the appointment shall be in progress")
 	public void theAppointmentShallBeInProgress() {
+		assertTrue(appointmentHasStarted);
+		assertFalse(appointmentHasEnded);
 	}
 //Hana
 	@When("the owner attempts to register a no-show for the appointment at {string}")
