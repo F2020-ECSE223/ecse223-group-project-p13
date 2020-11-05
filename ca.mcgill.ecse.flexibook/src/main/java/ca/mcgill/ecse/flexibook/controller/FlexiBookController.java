@@ -77,7 +77,7 @@ public class FlexiBookController {
 			FlexiBookApplication.setCurrentUser(null);
 			throw new InvalidInputException("Username/password not found");
 		}
-			FlexiBookPersistence.save(flexiBook);
+			FlexiBookPersistence.save(flexibook);
 
 		}
 			catch (RuntimeException e){
@@ -97,7 +97,7 @@ public class FlexiBookController {
 		} else {
 			FlexiBookApplication.setCurrentUser(null);
 		}
-				FlexiBookPersistence.save(flexiBook);
+				FlexiBookPersistence.save(flexibook);
 
 		}
 			catch (RuntimeException e){
@@ -1140,7 +1140,7 @@ public class FlexiBookController {
 						serv.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
-				FlexiBookPersistence.save(flexiBook);
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1229,7 +1229,7 @@ public class FlexiBookController {
 						combo.addService(Boolean.valueOf(mandatory[i]), (Service) BookableService.getWithName(services[i]));
 					}
 				}
-				FlexiBookPersistence.save(flexiBook);
+				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -1258,7 +1258,7 @@ public class FlexiBookController {
 
 					}
 					combo.delete();
-					FlexiBookPersistence.save(flexiBook);
+					FlexiBookPersistence.save(flexibook);
 				}
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
