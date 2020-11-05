@@ -45,6 +45,10 @@ public class CucumberStepDefinitions {
 
 
 	/**
+	private boolean appointmentHasStarted;
+    private boolean appointmentHasEnded;
+
+	  /**
 	 * @author cesar
 	 * @param string
 	 * check if there exists a customer with the username {string}
@@ -2132,6 +2136,8 @@ public class CucumberStepDefinitions {
 //Hana
 	@Then("the appointment shall be in progress")
 	public void theAppointmentShallBeInProgress() {
+		assertTrue(appointmentHasStarted);
+		assertFalse(appointmentHasEnded);
 	}
 //Hana
 	@When("the owner attempts to register a no-show for the appointment at {string}")
@@ -2140,6 +2146,16 @@ public class CucumberStepDefinitions {
 //Hana
 	@When("the owner attempts to end the appointment at {string}")
 	public void theOwnerAttemptsToEndTheAppointmentAt(String arg0) {
+		LocalDateTime h = LocalDateTime.parse(arg0);
+		LocalDate date = h.toLocalDate();
+		LocalTime time = h.toLocalTime();
+		Appointment a = getAppointment(null, date.toString(), time.toString());
+		try{
+			FlexiBookController.endAppointment(a);
+		}catch(Exception e) {
+			error += e.getMessage();
+			errorCounter++;
+		}
 	}
 
 private Appointment getAppointment(String name, String date, String time) {
