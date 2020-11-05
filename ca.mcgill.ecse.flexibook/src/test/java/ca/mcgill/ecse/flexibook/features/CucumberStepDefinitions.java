@@ -42,6 +42,8 @@ public class CucumberStepDefinitions {
 	private String appointmentDate;
 	private String appointmentName;
 	private String appointmentTime;
+	private boolean appointmentHasStarted = false;
+	private boolean appointmentHasEnded = false;
 
 
 	/**
@@ -1906,10 +1908,11 @@ public class CucumberStepDefinitions {
 	public void makesAAppointmentForTheDateAndTimeAt(String customer, String service, String date, String time, String systemTime) {
     	try{
     		SystemTime.setTime(systemTime);
-    		FlexiBookController.makeAppointment(customer,date,time,service,null);
 			appointmentDate=date;
 			appointmentName=service;
 			appointmentTime= time;
+    		FlexiBookController.makeAppointment(customer,date,time,service,null);
+
 
 		}
     	catch (InvalidInputException e){
@@ -2114,6 +2117,7 @@ public class CucumberStepDefinitions {
 		Appointment a = getAppointment(null, date.toString(), time.toString());
 		try{
 			FlexiBookController.startAppointment(a);
+			appointmentHasStarted = true;
 		}catch(Exception e) {
 			error += e.getMessage();
 			errorCounter++;
@@ -2128,6 +2132,7 @@ public class CucumberStepDefinitions {
 		Appointment a = getAppointment(null, date.toString(), time.toString());
 		try{
 			FlexiBookController.endAppointment(a);
+			appointmentHasEnded = true;
 		}catch(Exception e) {
 			error += e.getMessage();
 			errorCounter++;
@@ -2146,7 +2151,7 @@ public class CucumberStepDefinitions {
 //Hana
 	@When("the owner attempts to end the appointment at {string}")
 	public void theOwnerAttemptsToEndTheAppointmentAt(String arg0) {
-		LocalDateTime h = LocalDateTime.parse(arg0);
+		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 		LocalDate date = h.toLocalDate();
 		LocalTime time = h.toLocalTime();
 		Appointment a = getAppointment(null, date.toString(), time.toString());
