@@ -925,7 +925,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToUpdateTheirAppointmentOnAtToAt(String customer, String type, String date, String startTime, String newDate, String newStartTime) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer,type,date,startTime,null,newStartTime,newDate,null,null);
+			FlexiBookController.updateAppointment(customer,type,newStartTime,newDate,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1000,7 +1000,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToFromTheirAppointmentOnAt(String customer, String action, String comboItem, String type, String date, String time) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer,type,date,time,null,null,null,action,comboItem);
+			FlexiBookController.updateAppointment(customer,type,null,null,action,comboItem);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1022,7 +1022,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToUpdateSAppointmentOnAtToAt(String customer1, String customer2, String type, String date, String time, String newDate, String newTime) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer1,type,date,time,type,newTime,newDate,null,null);
+			FlexiBookController.updateAppointment(customer1,type,newTime,newDate,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1906,42 +1906,157 @@ public class CucumberStepDefinitions {
 		}
 	}
 //Victoria
+	*@author Victoria Sanchez
+	*@param customer
+	*@param service
+	*@param systemTime
+	*/
+
 	@When("{string} attempts to change the service in the appointment to {string} at {string}")
-	public void attemptsToChangeTheServiceInTheAppointmentToAt(String arg0, String arg1, String arg2) {
+	public void attemptsToChangeTheServiceInTheAppointmentToAt(String customer, String service, String systemTime) {
+		try {
+			SystemTime.setTime(arg2);
+			FlexiBookController.updateAppointment(customer, appointmentName, appointmentDate, appointmentTime, service, null,null, null, null));
+		}
+		catch(InvalidInputException e){
+			error +=e;
+			errorCounter++;
+		}
+		appointmentName=service;
 	}
-//Victoria
+	/**
+	*@author Victoria Sanchez
+	*/
+
 	@Then("the appointment shall be booked")
 	public void theAppointmentShallBeBooked() {
+		AssertTrue(getAppointment(appointmentName, appointmentDate, appointmentTime)!=null);
 	}
-//Victoria
+	/**
+	*@author Victoria Sanchez
+	*@param arg0
+	*/
+
 	@Then("the service in the appointment shall be {string}")
 	public void theServiceInTheAppointmentShallBe(String arg0) {
+		AssertTrue(getAppointment(appointmentName, appointmentDate, appointmentTime).getBookableService().getName().equals(arg0));	
 	}
-//Victoria
+	/*
+	 * @author Victoria Sanchez
+	 * @param arg0
+	 * @param arg1
+	 * @param arg2
+	 */
+
 	@Then("the appointment shall be for the date {string} with start time {string} and end time {string}")
 	public void theAppointmentShallBeForTheDateWithStartTimeAndEndTime(String arg0, String arg1, String arg2) {
+		Date sDate = Date.valueOf(LocalDate.parse(arg0, DateTimeFormatter.ofPattern("uuuu-MM-dd")));
+		Time sTime;
+		if (arg1.length() == 4) {
+			sTime = Time.valueOf(LocalTime.parse(arg1, DateTimeFormatter.ofPattern("k:mm")));
+		} else {
+			sTime = Time.valueOf(LocalTime.parse(arg1, DateTimeFormatter.ofPattern("kk:mm")));
+
+		}
+		Time bTime;
+		if (arg2.length() == 4) {
+			bTime = Time.valueOf(LocalTime.parse(arg2, DateTimeFormatter.ofPattern("k:mm")));
+		} else {
+			bTime = Time.valueOf(LocalTime.parse(arg2, DateTimeFormatter.ofPattern("kk:mm")));
+
+		}
+		AssertTrue(getAppointment(appointmentName, appointmentDate,appointmentTime).getTimeSlot().getStartDate().equals(sDate));
+		AssertTrue(getAppointment(appointmentName, appointmentDate,appointmentTime).getTimeSlot().getStartTime().equals(sTime));
+		AssertTrue(getAppointment(appointmentName, appointmentDate,appointmentTime).getTimeSlot().getEndTime().equals(bTime));
+		
+		
 	}
-//Cesar
+	 /**
+	 * @author cesar
+	 * @param arg0
+	 * checks if the username of the appointment is equals to the username given
+	 */
 	@Then("the username associated with the appointment shall be {string}")
 	public void theUsernameAssociatedWithTheAppointmentShallBe(String arg0) {
+		userApp = flexiBook.getAppointments();
+		boolean test = false;
+		
+		for (Appointment app : userApp) {
+			if(app.getCustomer().getUsername().equals(arg0)) {
+				test = true;
+			}
+		}
+		assertTrue(test);
+		
 	}
-//Cesar
+	
+	/**
+	 * @author cesar
+	 * @param arg0
+	 * @param arg1
+	 * checks if the number of noShows for a customer is correct
+	 */
 	@Then("the user {string} shall have {int} no-show records")
 	public void theUserShallHaveNoShowRecords(String arg0, int arg1) {
+		Customer cust=null;
+		
+		for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+			if (customer.getUsername() == arg0) {
+				cust = customer;
+			}
+
+		}
+		assertEquals(cust.getNoShows(), arg1);
+		
 	}
-//Cesar
+	
+	/**
+	 * @author cesar
+	 * @param arg0
+	 * checks if the number of appointments is correct
+	 */
 	@Then("the system shall have {int} appointments")
 	public void theSystemShallHaveAppointments(int arg0) {
+		numAppt = flexiBook.getAppointments().size();
+		
+		assertEquals(numAppt, arg0);
+		
 	}
-//Cesar
+	/**
+	 * @author cesar
+	 * @param arg0
+	 * @param arg1
+	 * @param arg2
+	 * @param arg3
+	 */
 	@When("{string} attempts to update the date to {string} and time to {string} at {string}")
 	public void attemptsToUpdateTheDateToAndTimeToAt(String arg0, String arg1, String arg2, String arg3) {
+		
+		try{
+			Customer cust=null;
+			for (Customer customer : FlexiBookApplication.getFlexiBook().getCustomers()) {
+				if (customer.getUsername() == arg0) {
+					cust = customer;
+				}
+
+			}
+			FlexiBookController.updateAppointment(cust.getUsername(),null,arg2,arg1,null,null);
+		}
+		catch(InvalidInputException e){
+			error+=e.getMessage();
+			errorCounter++;
+		}
+		
 	}
 //Florence
 	@When("{string} attempts to cancel the appointment at {string}")
 	public void attemptsToCancelTheAppointmentAt(String arg0, String arg1) {
 	}
 
+	/**
+	 * @author Tomasz Mroz
+	 * @param size
+	 */
 	@Then("the system shall have {int} appointment")
 	public void theSystemShallHaveAppointment(int size) {
 		assertEquals(flexiBook.getAppointments().size(),size);
@@ -1982,4 +2097,23 @@ public class CucumberStepDefinitions {
 	@When("the owner attempts to end the appointment at {string}")
 	public void theOwnerAttemptsToEndTheAppointmentAt(String arg0) {
 	}
+
+private Appointment getAppointment(String name, String date, String time) {
+	Date sDate = Date.valueOf(LocalDate.parse(date, DateTimeFormatter.ofPattern("uuuu-MM-dd")));
+	Time sTime;
+	if (time.length() == 4) {
+			sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("k:mm")));
+		} else {
+			sTime = Time.valueOf(LocalTime.parse(time, DateTimeFormatter.ofPattern("kk:mm")));
+
+		}
+		
+		List<Appointment> appointments = flexiBook.getAppointments();
+		for (Appointment a: appointments) {
+			if(a.getTimeSlot().getStartTime().equals(sTime) && a.getTimeSlot().getStartDate().equals(sDate) && a.getBookableService().getName().equals(name)) {
+				return a;
+			}
+		}
+		return null;
+	} 
 }
