@@ -1927,7 +1927,6 @@ public class FlexiBookController {
 		}
 		public static void registerNoShow(String date,String time){
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-			//LocalDateh = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
 			Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
 			Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
 			
@@ -1939,8 +1938,6 @@ public class FlexiBookController {
 					apt = a;
 				}
 			}
-			int i = apt.getCustomer().getNoShows();
-			apt.getCustomer().setNoShows(i +1);
-			apt.delete();
+			apt.updateNoShow(apt.getCustomer());
 		}
 }
