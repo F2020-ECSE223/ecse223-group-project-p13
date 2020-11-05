@@ -943,9 +943,9 @@ public class FlexiBookController {
 				Appointment appt = null;
 				for (Appointment a : flexibook.getAppointments()) {
 					if (a.getCustomer().getUsername().equals(customer)) {
-						if (a.getBookableService().getName().equals(serviceType)) {
-							appt = a;
-						}
+						//if (a.getBookableService().getName().equals(serviceType)) {
+						appt = a;
+						//}
 					}
 				}
 				if (customer.equals(flexibook.getOwner().getUsername())) {
@@ -1015,13 +1015,8 @@ public class FlexiBookController {
 
 
 					//Updating appointment
-
-					Appointment newAppt = new Appointment((Customer) User.getWithUsername(customer), BookableService.getWithName(serviceType),
-							new TimeSlot(sDate, sTime, sDate, eTime, flexibook), flexibook);
-
-					flexibook.removeAppointment(appt);
-					appt.delete();
-
+					appt.updateDate(new TimeSlot(sDate, sTime, sDate, eTime, flexibook));
+					FlexiBookPersistence.save(flexibook);
 					throw new InvalidInputException("successful");
 
 
@@ -1029,7 +1024,11 @@ public class FlexiBookController {
 				} else if (newTime == null && newDate == null) {
 					BookableService serv = appt.getBookableService();
 					if (serv instanceof Service) {
-						appt.updateService(((Service)serv));
+						Service s = (Service) BookableService.getWithName(newComboItem);
+						appt.updateService(s);
+						Time start = appt.getTimeSlot().getStartTime();
+						Time end = Time.valueOf(start.toLocalTime().plusMinutes(s.getDuration()));
+						appt.getTimeSlot().setEndTime(end);
 						FlexiBookPersistence.save(flexibook);
 					} else {
 						ServiceCombo name = (ServiceCombo) serv;
@@ -1905,11 +1904,7 @@ public class FlexiBookController {
 		public static void endAppointment(Appointment appt){
 			appt.toggleEnded();
 		}
+		public static void registerNoShow(String dateTime){
+
+		}
 }
-
-
-
-
-
-
-

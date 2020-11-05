@@ -2,8 +2,8 @@ class Appointment{
     boolean isDayOf= false;
     existStatus{
         Before{
-          	toggleStart[isDayOf()] -> InProgress;
-            toggleCancel[!isDayOf()] -> Final;
+          	toggleStart[getIsDayOf()] -> InProgress;
+            toggleCancel[!getIsDayOf()] -> Final;
           updateDate(TimeSlot timeslot)/{
               acceptDateUpdate(timeslot);
           }->Before;
