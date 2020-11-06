@@ -6,6 +6,7 @@ package ca.mcgill.ecse.flexibook.application;
 import ca.mcgill.ecse.flexibook.model.FlexiBook;
 import ca.mcgill.ecse.flexibook.model.User;
 import ca.mcgill.ecse.flexibook.persistence.FlexiBookPersistence;
+import ca.mcgill.ecse.flexibook.view.FlexiBookPage;
 
 public class FlexiBookApplication {
 	private static FlexiBook flexibook ;
@@ -15,7 +16,13 @@ public class FlexiBookApplication {
     }
 	
     public static void main(String[] args) {
-        System.out.println(new FlexiBookApplication().getGreeting());
+        // start UI
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new FlexiBookPage().setVisible(true);
+            }
+        });
+        //System.out.println(new FlexiBookApplication().getGreeting());
     }
     	
 
