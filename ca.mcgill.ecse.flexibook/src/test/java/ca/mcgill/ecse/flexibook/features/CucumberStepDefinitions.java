@@ -2077,7 +2077,11 @@ public class CucumberStepDefinitions {
 		}
 		
 	}
-//Florence
+	/**
+	 * @author Florence Yared
+	 * @param user
+	 * @param dateTime
+	 */
 	@When("{string} attempts to cancel the appointment at {string}")
 	public void attemptsToCancelTheAppointmentAt(String user, String dateTime) {
 		LocalDateTime h = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
@@ -2106,7 +2110,14 @@ public class CucumberStepDefinitions {
 	public void theSystemShallHaveAppointment(int size) {
 		assertEquals(flexiBook.getAppointments().size(),size);
 	}
-//Florence
+	/**
+	 * @author Florence Yared
+	 * @param user
+	 * @param combo
+	 * @param aptDate
+	 * @param aptTime
+	 * @param systemTime
+	 */
 	@When("{string} makes a {string} appointment without choosing optional services for the date {string} and time {string} at {string}")
 	public void makesAAppointmentWithoutChoosingOptionalServicesForTheDateAndTimeAt(String user,String combo,  String aptDate,  String aptTime,String systemTime) {
 		try{
@@ -2147,7 +2158,10 @@ public class CucumberStepDefinitions {
 		}
 		assertEquals(opt.substring(0,opt.length()-1),arg0);
 	}
-//Florence
+	/**
+	 * @author Florence Yared
+	 * @param arg0
+	 */
 	@When("the owner starts the appointment at {string}")
 	public void theOwnerStartsTheAppointmentAt(String arg0) {
 		SystemTime.setTime(arg0);
@@ -2160,7 +2174,10 @@ public class CucumberStepDefinitions {
 			errorCounter++;
 		}
 	}
-//Florence
+	/**
+	 * @author Florence Yared
+	 * @param arg0
+	 */
 	@When("the owner ends the appointment at {string}")
 	public void theOwnerEndsTheAppointmentAt(String arg0) {
 		LocalDateTime h = LocalDateTime.parse(arg0,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
