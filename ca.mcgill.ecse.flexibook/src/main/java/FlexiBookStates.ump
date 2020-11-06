@@ -14,7 +14,7 @@ class Appointment{
                 acceptNoShow(c);
             }->Final;
             addToServiceCombo(ComboItem c)/{
-                acceptService(c);
+                addService(c);
             }->Before;
         }
         InProgress{
