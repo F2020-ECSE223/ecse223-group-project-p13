@@ -2143,9 +2143,7 @@ public class CucumberStepDefinitions {
 		Appointment a = getAppointment(null,appointmentDate,appointmentTime);
 		String opt = "";
 		for(ComboItem c:a.getChosenItems()){
-			if(c.getMandatory()){
-				opt+=c.getService().getName()+",";
-			}
+			opt+=c.getService().getName()+",";
 		}
 		assertEquals(opt.substring(0,opt.length()-1),arg0);
 	}

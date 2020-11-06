@@ -965,6 +965,10 @@ public class FlexiBookController {
 						//}
 					}
 				}
+				if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(appt.getTimeSlot().getStartDate()) &&
+						!appt.getExistStatusFullName().equals("InProgress")){
+					return;
+				}
 				if (customer.equals(flexibook.getOwner().getUsername())) {
 					throw new InvalidInputException("Error: An owner cannot update a customer's appointment ");
 				}
@@ -1053,8 +1057,10 @@ public class FlexiBookController {
 							Time start = appt.getTimeSlot().getStartTime();
 							Time end = Time.valueOf(start.toLocalTime().plusMinutes(s.getDuration()));
 							for (Appointment r : flexibook.getAppointments()) {
-								if(r.getTimeSlot().getStartTime().compareTo(start) >=0 && r.getTimeSlot().getStartTime().compareTo(end) <= 0){
-									throw new InvalidInputException("unsuccessful");
+								if(!(r == appt)){
+									if(r.getTimeSlot().getStartDate().equals(appt.getTimeSlot().getStartDate()) && r.getTimeSlot().getStartTime().compareTo(end) < 0){
+										throw new InvalidInputException("unsuccessful");
+									}
 								}
 							}
 							appt.updateService(s);
@@ -1064,7 +1070,7 @@ public class FlexiBookController {
 					} else {
 						ServiceCombo name = (ServiceCombo) serv;
 						//if action is add
-						if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
+						if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate())) || appt.getExistStatusFullName().equals("InProgress")){
 							if (action != null && action.equals("add")) {
 								int counter = 0;
 								for (ComboItem c : appt.getChosenItems()) {
@@ -1075,15 +1081,33 @@ public class FlexiBookController {
 						int cycle = name.getServices().size();
 						for (int i = 0; i < cycle; i++) {
 							counter += name.getServices().get(i).getService().getDuration();
-							if (((Service) BookableService.getWithName(newComboItem)).getDuration() < counter) {
+							if (((Service) BookableService.getWithName(newComboItem)).getDuration() > counter) {
 								throw new InvalidInputException("unsuccessful");
 							}
 						}
-						//add chosenItem
-						appt.addChosenItem(new ComboItem(false,((Service)BookableService.getWithName(newComboItem)),name));
+						ComboItem combo = null;
+						for(ComboItem c:((ServiceCombo) serv).getServices()){
+							if(c.getService().getName().equals(newComboItem)){
+								combo = c;
+							}
+						}
+						int placement = ((ServiceCombo) serv).indexOfService(combo);
+						/*for(int i = 0; i<appt.getChosenItems().size()-1;i++){
+							String cur = appt.getChosenItems().get(i).getService().getName();
+							String next = appt.getChosenItems().get(i+1).getService().getName();
+							for(ComboItem c: ((ServiceCombo) serv).getServices()){
+								if()
+							}
+						}*/
+						if(placement >=appt.getChosenItems().size()){
+							placement = appt.getChosenItems().size() -1;
+						}
+						appt.addChosenItemAt(combo,placement);
+						Time start = appt.getTimeSlot().getEndTime();
+						Time end = Time.valueOf(start.toLocalTime().plusMinutes(((Service)BookableService.getWithName(newComboItem)).getDuration()));
+						appt.getTimeSlot().setEndTime(end);
 						FlexiBookPersistence.save(flexibook);
 						throw new InvalidInputException("successful");
-
 							}
 
 							//if action is remove
@@ -1108,8 +1132,8 @@ public class FlexiBookController {
 						}
 					}
 				}
-
-			} catch (RuntimeException e) {
+			}
+			catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}

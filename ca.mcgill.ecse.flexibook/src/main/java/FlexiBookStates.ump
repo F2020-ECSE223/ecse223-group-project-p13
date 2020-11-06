@@ -13,6 +13,9 @@ class Appointment{
             updateNoShow(Customer c)/{
                 acceptNoShow(c);
             }->Final;
+            addToServiceCombo(ComboItem c)/{
+                acceptService(c);
+            }->Before;
         }
         InProgress{
             toggleEnded->Final;
@@ -24,6 +27,9 @@ class Appointment{
             }-> InProgress;
             updateNoShow(Customer c)/{
                 rejectNoShow();
+            }->InProgress;
+            addToServiceCombo(ComboItem c)/{
+                addService(c);
             }->InProgress;
         }
     }
@@ -59,6 +65,9 @@ class Appointment{
         int i = c.getNoShows();
         c.setNoShows(i + 1);
         this.delete();
+    }
+    private addService(ComboItem c){
+        this.addChosenItem(c);
     }
 
 }
