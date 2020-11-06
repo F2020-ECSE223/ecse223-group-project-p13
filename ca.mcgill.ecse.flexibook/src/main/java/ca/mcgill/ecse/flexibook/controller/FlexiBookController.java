@@ -1953,12 +1953,23 @@ public class FlexiBookController {
 
 
 		}
+
+	/**
+	 * @author Tomasz Mroz
+	 * @param appt
+	 */
 		public static void startAppointment(Appointment appt){
 			if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(appt.getTimeSlot().getStartDate())){
 				appt.setIsDayOf(true);
 			}
 			appt.toggleStart();
 		}
+
+	/**
+	 * @author Tomasz Mroz
+	 * @param appt
+	 * @throws InvalidInputException
+	 */
 		public static void endAppointment(Appointment appt) throws InvalidInputException {
 			try{
 				appt.toggleEnded();
