@@ -1675,6 +1675,7 @@ public class FlexiBookController {
 					TimeSlot vacation = new TimeSlot(c, a, d, b, flexiBook);
 					flexiBook.getBusiness().addVacation(vacation);
 				}
+				FlexiBookPersistence.save(flexiBook);
 			}catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1947,6 +1948,7 @@ public class FlexiBookController {
 					business.removeHoliday(temp);
 					temp.delete();
 				}
+				FlexiBookPersistence.save(flexiBook);
 			}catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
 			}
@@ -1971,6 +1973,12 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
+	/**
+	 * Author: Florence Yared
+	 * @param date
+	 * @param time
+	 * @throws IllegalAccessException
+	 */
 		public static void registerNoShow(String date,String time) throws IllegalAccessException {
 			try{
 				FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
@@ -1987,6 +1995,7 @@ public class FlexiBookController {
 				}
 				if(apt != null){
 					apt.updateNoShow(apt.getCustomer());
+					FlexiBookPersistence.save(flexiBook);
 				}
 			}
 			catch (RuntimeException e){
