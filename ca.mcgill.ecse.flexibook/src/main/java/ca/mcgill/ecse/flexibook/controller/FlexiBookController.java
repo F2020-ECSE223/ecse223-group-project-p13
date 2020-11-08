@@ -134,131 +134,7 @@ public class FlexiBookController {
 		}
 	}
 
-	/**
-	 * @param  date
-	 * @return List<TOAppointmentCalendarItem>
-	 * @throws ParseException
-	 * @throws InvalidInputException
-	 * @author Victoria Sanchez
-	 */
-	public static List<TOAppointmentCalendarItem> getAvailableAppointmentCalendarWeek(String date) throws ParseException, InvalidInputException {
-		List<TOAppointmentCalendarItem> t1 = getAvailableAppointmentCalendarDay(date);
-		SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
-		java.util.Date d1;
-		d1 = s1.parse(date);
-		java.sql.Date sqlDate = new Date(d1.getTime());
-		Calendar newC = Calendar.getInstance();
-		newC.setTime(s1.parse(date));
-		newC.add(Calendar.DAY_OF_MONTH, 1);
-		String Date2 = s1.format(newC.getTime());
-		List<TOAppointmentCalendarItem> t2 = getAvailableAppointmentCalendarDay(Date2);
-
-
-		Calendar newC2 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 2);
-		String Date3 = s1.format(newC2.getTime()); //day 3
-		List<TOAppointmentCalendarItem> t3 = getAvailableAppointmentCalendarDay(Date3);
-
-
-		Calendar newC3 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 3);
-		String Date4 = s1.format(newC2.getTime());
-		List<TOAppointmentCalendarItem> t4 = getAvailableAppointmentCalendarDay(Date4);
-
-
-		Calendar newC4 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 4);
-		String Date5 = s1.format(newC2.getTime());  //day5
-		List<TOAppointmentCalendarItem> t5 = getAvailableAppointmentCalendarDay(Date5);
-
-
-		Calendar newC5 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 5);
-		String Date6 = s1.format(newC2.getTime());
-		List<TOAppointmentCalendarItem> t6 = getAvailableAppointmentCalendarDay(Date6);
-
-		Calendar newC6 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 6);
-		String Date7 = s1.format(newC2.getTime());  //day7
-		List<TOAppointmentCalendarItem> t7 = getAvailableAppointmentCalendarDay(Date7);
-
-
-		t1.addAll(t2);
-		t1.addAll(t3);
-		t1.addAll(t4);
-		t1.addAll(t5);
-		t1.addAll(t6);
-		t1.addAll(t7);
-
-		return t1;
-
-	}
-
-	/**
-	 * @param  date
-	 * @return List<TOAppointmentCalendarItem>
-	 * @throws ParseException
-	 * @throws InvalidInputException
-	 * @author Victoria Sanchez
-	 */
-	public static List<TOAppointmentCalendarItem> getUnavailableAppointmentCalendarWeek(String date) throws ParseException, InvalidInputException {
-		List<TOAppointmentCalendarItem> t1 = getUnavailableAppointmentCalendar(date);
-		SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
-		java.util.Date d1;
-		d1 = s1.parse(date);
-		java.sql.Date sqlDate = new Date(d1.getTime());
-		Calendar newC = Calendar.getInstance();
-		newC.setTime(s1.parse(date));
-		newC.add(Calendar.DAY_OF_MONTH, 1);
-		String Date2 = s1.format(newC.getTime());
-		List<TOAppointmentCalendarItem> t2 = getUnavailableAppointmentCalendar(Date2);
-
-
-		Calendar newC2 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 2);
-		String Date3 = s1.format(newC2.getTime()); //day 3
-		List<TOAppointmentCalendarItem> t3 = getUnavailableAppointmentCalendar(Date3);
-
-
-		Calendar newC3 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 3);
-		String Date4 = s1.format(newC2.getTime());
-		List<TOAppointmentCalendarItem> t4 = getUnavailableAppointmentCalendar(Date4);
-
-
-		Calendar newC4 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 4);
-		String Date5 = s1.format(newC2.getTime());  //day5
-		List<TOAppointmentCalendarItem> t5 = getUnavailableAppointmentCalendar(Date5);
-
-		Calendar newC5 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 5);
-		String Date6 = s1.format(newC2.getTime());
-		List<TOAppointmentCalendarItem> t6 = getUnavailableAppointmentCalendar(Date6);//day6
-
-		Calendar newC6 = Calendar.getInstance();
-		newC2.setTime(s1.parse(date));
-		newC2.add(Calendar.DAY_OF_MONTH, 6);
-		String Date7 = s1.format(newC2.getTime());  //day7
-		List<TOAppointmentCalendarItem> t7 = getUnavailableAppointmentCalendar(Date7);
-
-		t1.addAll(t2);
-		t1.addAll(t3);
-		t1.addAll(t4);
-		t1.addAll(t5);
-		t1.addAll(t6);
-		t1.addAll(t7);
-		return t1;
-	}
+	
 			/**
 		 * @author cesar
 		 * @param aUsername
@@ -454,132 +330,73 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-	
-			/**
-		 * this method returns the available timeslots for a given day
-		 * @author Victoria Sanchez
-		 * @param date
-		 * @return appointments
-		 * @throws ParseException
-		 */
-
+	/**
+	*this method return appointment calendar for a given week
+	**/
 		
-		public static List<TOAppointmentCalendarItem> getAvailableAppointmentCalendarDay (String date) throws
-		InvalidInputException, ParseException {
+	public static List<TOAppointmentCalendarItem> getAppointmentCalendarWeek(String date) throws ParseException, InvalidInputException {
+			List<TOAppointmentCalendarItem> t1 = getAppointmentCalendar(date);
 			SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
 			java.util.Date d1;
 			d1 = s1.parse(date);
 			java.sql.Date sqlDate = new Date(d1.getTime());
-			LocalDate date1 = LocalDate.parse(date);
-			checkDate(date1);
-			DayOfWeek dayOfWeek = date1.getDayOfWeek();
-			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
-			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
-			int count = 0;
-			for (BusinessHour b : flexibook.getBusiness().getBusinessHours()) {
-				if (b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					count++;
-				}
-			}
-			if (count == 0) {
-				return calendar;
-			}
+			Calendar newC = Calendar.getInstance();
+			newC.setTime(s1.parse(date));
+			newC.add(Calendar.DAY_OF_MONTH, 1);
+			String Date2 = s1.format(newC.getTime());
+			List<TOAppointmentCalendarItem> t2 = getAppointmentCalendar(Date2);
 
 
-			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
-			for (Appointment a : flexibook.getAppointments()) {
-				if (a.getTimeSlot().getStartDate().equals(sqlDate)) {
-					DayAppointments.add(a);
-				}
-			}
-			ArrayList<TimeSlot> holidaySlots = new ArrayList<TimeSlot>();
-			for (TimeSlot t : flexibook.getBusiness().getHolidays()) {
-				if (t.getStartDate().equals(sqlDate) || t.getEndDate().equals(sqlDate)) {
-					holidaySlots.add(t);
-				}
-			}
-			for (TimeSlot t : flexibook.getBusiness().getVacation()) {
-				if (t.getStartDate().equals(sqlDate) || t.getEndDate().equals(sqlDate)) {
-					holidaySlots.add(t);
-				}
-			}
+			Calendar newC2 = Calendar.getInstance();
+			newC2.setTime(s1.parse(date));
+			newC2.add(Calendar.DAY_OF_MONTH, 2);
+			String Date3 = s1.format(newC2.getTime()); //day 3
+			List<TOAppointmentCalendarItem> t3 = getAppointmentCalendar(Date3);
 
-			if (DayAppointments.isEmpty() && holidaySlots.isEmpty()) {
-				for (BusinessHour b1 : flexibook.getBusiness().getBusinessHours()) {
-					if (b1.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-						TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, b1.getStartTime(), b1.getEndTime());
-						calendar.add(newT);
-						return calendar;
-					}
 
-				}
-			}
+			Calendar newC3 = Calendar.getInstance();
+			newC2.setTime(s1.parse(date));
+			newC2.add(Calendar.DAY_OF_MONTH, 3);
+			String Date4 = s1.format(newC2.getTime());
+			List<TOAppointmentCalendarItem> t4 = getAppointmentCalendar(Date4);
 
-			sortDailyAppointments(DayAppointments);
 
-			for (BusinessHour b1 : flexibook.getBusiness().getBusinessHours()) {
-				if (b1.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					for (Appointment a : DayAppointments) { //going through appointments
-						for (ComboItem s : a.getChosenItems()) {
-							if (s.getService().getDowntimeDuration() != 0) {
-								Calendar newC = Calendar.getInstance();
-								newC.setTime(a.getTimeSlot().getStartTime());
-								newC.add(Calendar.MINUTE, s.getService().getDowntimeStart());
-								Time newT1 = (Time) newC.getTime();
-								Calendar newCEnd = Calendar.getInstance();
-								newCEnd.setTime(a.getTimeSlot().getStartTime());
-								newCEnd.add(Calendar.MINUTE, s.getService().getDowntimeStart() + s.getService().getDowntimeDuration());
-								Time newT2 = (Time) newCEnd.getTime();
-								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, newT1, newT2);
-								calendar.add(newT);
-							}
-						}
-						int indexA = DayAppointments.indexOf(a);
-						if (indexA == 0) {
-							if (!a.getTimeSlot().getStartTime().equals(b1.getStartTime())) {
-								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, b1.getStartTime(), a.getTimeSlot().getStartTime());
-								TOAppointmentCalendarItem newT2 = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getEndTime(), DayAppointments.get(indexA + 1).getTimeSlot().getStartTime());
-								calendar.add(newT);
-								calendar.add(newT2);
-							if(DayAppointments.size()==1) {
-								TOAppointmentCalendarItem availableTime1= new TOAppointmentCalendarItem(sqlDate,b1.getStartTime(),a.getTimeSlot().getStartTime());
-								TOAppointmentCalendarItem availableTime= new TOAppointmentCalendarItem(sqlDate,a.getTimeSlot().getStartTime(),b1.getEndTime());
-								calendar.add(availableTime1);
-								calendar.add(availableTime);
-							}
-							}if(DayAppointments.size()==1) {
-								TOAppointmentCalendarItem app2= new TOAppointmentCalendarItem(sqlDate,a.getTimeSlot().getEndTime(),b1.getEndTime());
-							}
-							else {
-								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getEndTime(), DayAppointments.get(indexA + 1).getTimeSlot().getStartTime());
-								calendar.add(newT);
-							}
-						}
-						if (indexA + 1 == DayAppointments.size()) {
-							if (a.getTimeSlot().getEndTime().equals(b1.getEndTime())) {
-								return calendar;
-							} else {
-								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getEndTime(), b1.getEndTime());
-								calendar.add(newT);
-							}
-						} else {
-							TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getEndTime(), DayAppointments.get(indexA + 1).getTimeSlot().getStartTime());
-							calendar.add(newT);
-						}
-					}
-				}
-			}
-			return calendar;
+			Calendar newC4 = Calendar.getInstance();
+			newC2.setTime(s1.parse(date));
+			newC2.add(Calendar.DAY_OF_MONTH, 4);
+			String Date5 = s1.format(newC2.getTime());  //day5
+			List<TOAppointmentCalendarItem> t5 = getAppointmentCalendar(Date5);
+
+			Calendar newC5 = Calendar.getInstance();
+			newC2.setTime(s1.parse(date));
+			newC2.add(Calendar.DAY_OF_MONTH, 5);
+			String Date6 = s1.format(newC2.getTime());
+			List<TOAppointmentCalendarItem> t6 = getAppointmentCalendar(Date6);//day6
+
+			Calendar newC6 = Calendar.getInstance();
+			newC2.setTime(s1.parse(date));
+			newC2.add(Calendar.DAY_OF_MONTH, 6);
+			String Date7 = s1.format(newC2.getTime());  //day7
+			List<TOAppointmentCalendarItem> t7 = getAppointmentCalendar(Date7);
+
+			t1.addAll(t2);
+			t1.addAll(t3);
+			t1.addAll(t4);
+			t1.addAll(t5);
+			t1.addAll(t6);
+			t1.addAll(t7);
+			
+			return t1;
 		}
 
 		/**
-		 * this method returns unavailable timeslots for a given day
+		 * this method returns timeslots for a given day
 		 * @param date
 		 * @return List<TOAppointmentCalendarItem>
 		 * @throws InvalidInputException
 		 * @throws ParseException
 		 */
-		public static List<TOAppointmentCalendarItem> getUnavailableAppointmentCalendar (String date) throws
+		public static List<TOAppointmentCalendarItem> getAppointmentCalendar (String date) throws
 			InvalidInputException, ParseException, ParseException {
 			SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
 			java.util.Date d1;
@@ -590,91 +407,90 @@ public class FlexiBookController {
 			DayOfWeek dayOfWeek = date1.getDayOfWeek();
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
-			int count = 0;
-			for (BusinessHour b : flexibook.getBusiness().getBusinessHours()) {
-				if (b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					count++;
+
+
+			for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
+				if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
+					TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true);
+					calendar.add(t0);
 				}
 			}
-			if (count == 0) {
-				return calendar;
+			for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
+				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+					addTO(calendar, t, "holiday");
+				}
 			}
-
-
+			for(TimeSlot t: flexibook.getBusiness().getVacation()) {
+				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+					addTO(calendar,t,"vacation");
+				}
+			}
 			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
 			for (Appointment a : flexibook.getAppointments()) {
 				if (a.getTimeSlot().getStartDate().equals(sqlDate)) {
-					DayAppointments.add(a);
-				}
-			}
-			ArrayList<TimeSlot> holidaySlots = new ArrayList<TimeSlot>();
-			for (TimeSlot t : flexibook.getBusiness().getHolidays()) {
-				if (t.getStartDate().equals(sqlDate) || t.getEndDate().equals(sqlDate)) {
-					holidaySlots.add(t);
-				}
-			}
-			for (TimeSlot t : flexibook.getBusiness().getVacation()) {
-				if (t.getStartDate().equals(sqlDate) || t.getEndDate().equals(sqlDate)) {
-					holidaySlots.add(t);
-				}
-			}
-
-			if (!holidaySlots.isEmpty()) {
-				for (BusinessHour b1 : flexibook.getBusiness().getBusinessHours()) {
-					if (b1.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-						TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, b1.getStartTime(), b1.getEndTime());
-						calendar.add(newT);
-						return calendar;
-					}
-
-				}
-			}
-
-			sortDailyAppointments(DayAppointments);
-			boolean added=false;
-
-			for (BusinessHour b1 : flexibook.getBusiness().getBusinessHours()) {
-				if (b1.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					for (Appointment a : DayAppointments) { //going through appointments
-						for (ComboItem s : a.getChosenItems()) { //going through service times
-							if (s.getService().getDowntimeDuration() != 0) { //if there is a service time
-								Calendar newC = Calendar.getInstance(); //create a calendar instance
-								newC.setTime(a.getTimeSlot().getStartTime()); //set the calendar instance the start time of the appointment
-								newC.add(Calendar.MINUTE, s.getService().getDowntimeStart()); //
-								Time newT1 = (Time) newC.getTime();
-								Calendar newCEnd = Calendar.getInstance();
-								newCEnd.setTime(a.getTimeSlot().getStartTime());
-								newCEnd.add(Calendar.MINUTE, s.getService().getDowntimeStart() + s.getService().getDowntimeDuration());
-								Time newT2 = (Time) newCEnd.getTime();
-
-								TOAppointmentCalendarItem newT = new TOAppointmentCalendarItem(sqlDate, a.getTimeSlot().getStartTime(), newT1);
-								TOAppointmentCalendarItem newT3= new TOAppointmentCalendarItem(sqlDate, newT2, a.getTimeSlot().getEndTime());
-								calendar.add(newT);
-								calendar.add(newT3);
-								added=true;
-							} 
-							
-						} 
-						if(!added) {
-						TOAppointmentCalendarItem app= new TOAppointmentCalendarItem(sqlDate,a.getTimeSlot().getStartTime(),a.getTimeSlot().getEndTime());
-						calendar.add(app);
+					addTO(calendar,a.getTimeSlot(),"appointment");
+					if(a.getBookableService() instanceof Service) {
+						if(((Service) a.getBookableService()).getDowntimeDuration()!=0) {
+							calendar.remove(calendar.size()-1);
+							LocalTime n1= a.getTimeSlot().getStartTime().toLocalTime();
+							LocalTime n2=n1.plusMinutes(((Service) a.getBookableService()).getDowntimeStart());
+							LocalTime n3= n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
+							Time newT= Time.valueOf(n2);
+							Time newT2= Time.valueOf(n3);
+							TOAppointmentCalendarItem t0= new TOAppointmentCalendarItem("appointment",sqlDate,a.getTimeSlot().getStartTime(), newT,false);
+							TOAppointmentCalendarItem t1= new TOAppointmentCalendarItem("appointment",sqlDate,newT,newT2 ,false);
+							TOAppointmentCalendarItem t2= new TOAppointmentCalendarItem("appointment",sqlDate,newT2,a.getTimeSlot().getEndTime() ,false);
+							calendar.add(t0);
+							calendar.add(t1);
+							calendar.add(t2);
 						}
 					}
-					
 				}
 			}
 			return calendar;
+
 		}
+				
+		
 		/**
 		 * @author Victoria Sanchez
 		 * @param list
 		 * @return List<Appointment>
 		 */
 
-		public static List<Appointment> sortDailyAppointments (List < Appointment > list) {
-			list.sort((Appointment a1, Appointment a2) -> a1.getTimeSlot().getStartTime().compareTo(a2.getTimeSlot().getStartTime()));
-			return list;
 
+		public static void addTO(List<TOAppointmentCalendarItem> calendar, TimeSlot time, String description) {
+			for(TOAppointmentCalendarItem item: calendar) {
+				if(item.getAvailable()) {
+				if(time.getStartTime().after(item.getStartTime())&& time.getEndTime().before(item.getEndTime())) {
+					calendar.remove(item);
+					TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available",item.getDate(),item.getStartTime(),time.getStartTime(), true);
+					TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false );
+					TOAppointmentCalendarItem item3= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true);
+					calendar.add(item1);
+					calendar.add(item2);
+					calendar.add(item3);
+					}
+				if(time.getStartTime().before(item.getStartTime()) && time.getEndTime().before(item.getEndTime())) {
+					calendar.remove(item);
+					TOAppointmentCalendarItem item1=  new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false);
+					TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true);
+					calendar.add(item1);
+					calendar.add(item2);
+					}
+				if(time.getStartTime().after(item.getStartTime()) && time.getEndTime().after(item.getEndTime())) {
+					calendar.remove(item);
+					TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available", item.getDate(), item.getStartTime(), time.getStartTime(),true);
+					TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description, item.getDate(), time.getStartTime(), time.getEndTime(),false);
+					calendar.add(item1);
+					calendar.add(item2);
+					}
+				if(time.getStartTime().after(item.getEndTime()) || time.getEndTime().before(item.getStartTime())) {
+					TOAppointmentCalendarItem single= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false);
+					calendar.add(single);
+					}
+				}
+			}
 		}
 
 		/**
