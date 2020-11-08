@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
@@ -22,6 +23,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.sl.In;
+import org.checkerframework.checker.units.qual.C;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -665,8 +667,17 @@ public class CucumberStepDefinitions {
             Time sTime = Time.valueOf(LocalTime.parse(row.get(3+off),formatter));
             Time eTime = Time.valueOf(LocalTime.parse(row.get(4+off),formatter));
             TimeSlot slot = new TimeSlot(date,sTime,date,eTime,flexiBook);
-            flexiBook.addAppointment(new Appointment((Customer) Customer.getWithUsername(row.get(0)),
-                    BookableService.getWithName(row.get(1)),slot,flexiBook));
+            ServiceCombo combo = (ServiceCombo) BookableService.getWithName(row.get(1));
+            Appointment a = new Appointment((Customer) Customer.getWithUsername(row.get(0)),
+					BookableService.getWithName(row.get(1)),slot,flexiBook);
+            if(off==1){
+            	String[] args = row.get(2).split(",");
+            	for(ComboItem s: combo.getServices()){
+            		if(Arrays.asList(args).contains(s.getService().getName()) || s.getMandatory()){
+						a.addChosenItem(s);
+					}
+				}
+			}
         }
     }
 
@@ -1811,8 +1822,8 @@ public class CucumberStepDefinitions {
     @When("{string} requests the appointment calendar for the week starting on {string}")
     public void requestsTheAppointmentCalendarForTheWeekStartingOn(String arg0, String arg1) {
      try {
-	output1=FlexiBookController.getAvailableAppointmentCalendarWeek(arg1);
-	output2=FlexiBookController.getUnavailableAppointmentCalendarWeek(arg1);
+		output1=FlexiBookController.getAvailableAppointmentCalendarWeek(arg1);
+		output2=FlexiBookController.getUnavailableAppointmentCalendarWeek(arg1);
 
 	}catch(Exception e) {
 		error += e.getMessage();
@@ -1849,7 +1860,7 @@ public class CucumberStepDefinitions {
     		
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
-    		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
+    		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(2),formatter1));
     		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem(d,t1,t2);
     		input.add(n1);
     	}
