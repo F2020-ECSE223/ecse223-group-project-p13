@@ -5,7 +5,7 @@ package ca.mcgill.ecse.flexibook.controller;
 import java.sql.Date;
 import java.sql.Time;
 
-// line 11 "../../../../../TransferObjects.ump"
+// line 10 "../../../../../TransferObjects.ump"
 public class TOAppointmentCalendarItem
 {
 
@@ -14,24 +14,36 @@ public class TOAppointmentCalendarItem
   //------------------------
 
   //TOAppointmentCalendarItem Attributes
+  private String description;
   private Date date;
   private Time startTime;
   private Time endTime;
+  private boolean available;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOAppointmentCalendarItem(Date aDate, Time aStartTime, Time aEndTime)
+  public TOAppointmentCalendarItem(String aDescription, Date aDate, Time aStartTime, Time aEndTime, boolean aAvailable)
   {
+    description = aDescription;
     date = aDate;
     startTime = aStartTime;
     endTime = aEndTime;
+    available = aAvailable;
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setDescription(String aDescription)
+  {
+    boolean wasSet = false;
+    description = aDescription;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setDate(Date aDate)
   {
@@ -57,6 +69,19 @@ public class TOAppointmentCalendarItem
     return wasSet;
   }
 
+  public boolean setAvailable(boolean aAvailable)
+  {
+    boolean wasSet = false;
+    available = aAvailable;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getDescription()
+  {
+    return description;
+  }
+
   public Date getDate()
   {
     return date;
@@ -72,13 +97,20 @@ public class TOAppointmentCalendarItem
     return endTime;
   }
 
+  public boolean getAvailable()
+  {
+    return available;
+  }
+
   public void delete()
   {}
 
 
   public String toString()
   {
-    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
+    return super.toString() + "["+
+            "description" + ":" + getDescription()+ "," +
+            "available" + ":" + getAvailable()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null");

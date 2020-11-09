@@ -1822,8 +1822,7 @@ public class CucumberStepDefinitions {
     @When("{string} requests the appointment calendar for the week starting on {string}")
     public void requestsTheAppointmentCalendarForTheWeekStartingOn(String arg0, String arg1) {
      try {
-		output1=FlexiBookController.getAvailableAppointmentCalendarWeek(arg1);
-		output2=FlexiBookController.getUnavailableAppointmentCalendarWeek(arg1);
+		output1=FlexiBookController.getAppointmentCalendarWeek(arg1);
 
 	}catch(Exception e) {
 		error += e.getMessage();
@@ -1844,7 +1843,7 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem(d,t1,t2);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true);
     		input.add(n1);
     	}
  
@@ -1861,10 +1860,10 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(2),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem(d,t1,t2);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false);
     		input.add(n1);
     	}
-        assertEquals(input.size(),output2.size());
+        assertEquals(input.size(),output1.size());
     }
 /*
 *@author Victoria Sanchez
@@ -1872,8 +1871,7 @@ public class CucumberStepDefinitions {
     @When("{string} requests the appointment calendar for the day of {string}")
     public void requestsTheAppointmentCalendarForTheDayOf(String arg0, String arg1) {
         try {
-		output1=FlexiBookController.getAvailableAppointmentCalendarDay(arg1);
-		output2=FlexiBookController.getUnavailableAppointmentCalendar(arg1);
+		output1=FlexiBookController.getAppointmentCalendar(arg1);
 
 	}catch(Exception e) {
 		error += e.getMessage();

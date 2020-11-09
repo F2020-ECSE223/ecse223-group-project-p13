@@ -1,6 +1,5 @@
 package ca.mcgill.ecse.flexibook.controller;
 
-import java.rmi.ServerError;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
@@ -27,7 +26,6 @@ import ca.mcgill.ecse.flexibook.model.TimeSlot;
 import ca.mcgill.ecse.flexibook.model.User;
 import ca.mcgill.ecse.flexibook.persistence.FlexiBookPersistence;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
-import org.checkerframework.checker.units.qual.C;
 
 
 public class FlexiBookController {
@@ -397,12 +395,9 @@ public class FlexiBookController {
 		 * @throws ParseException
 		 */
 		public static List<TOAppointmentCalendarItem> getAppointmentCalendar (String date) throws
-			InvalidInputException, ParseException, ParseException {
-			SimpleDateFormat s1 = new SimpleDateFormat("yyyy-MM-dd");
-			java.util.Date d1;
-			d1 = s1.parse(date);
-			java.sql.Date sqlDate = new Date(d1.getTime());
-			LocalDate date1 = LocalDate.parse(date);
+			InvalidInputException{
+			Date sqlDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			LocalDate date1 = sqlDate.toLocalDate();
 			checkDate(date1);
 			DayOfWeek dayOfWeek = date1.getDayOfWeek();
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
@@ -426,35 +421,54 @@ public class FlexiBookController {
 				}
 			}
 			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
+			int start = 0;
+			int duration = 0;
 			for (Appointment a : flexibook.getAppointments()) {
 				if (a.getTimeSlot().getStartDate().equals(sqlDate)) {
-					addTO(calendar,a.getTimeSlot(),"appointment");
-					if(a.getBookableService() instanceof Service) {
-						if(((Service) a.getBookableService()).getDowntimeDuration()!=0) {
-							calendar.remove(calendar.size()-1);
-							LocalTime n1= a.getTimeSlot().getStartTime().toLocalTime();
-							LocalTime n2=n1.plusMinutes(((Service) a.getBookableService()).getDowntimeStart());
-							LocalTime n3= n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
-							Time newT= Time.valueOf(n2);
-							Time newT2= Time.valueOf(n3);
-							TOAppointmentCalendarItem t0= new TOAppointmentCalendarItem("appointment",sqlDate,a.getTimeSlot().getStartTime(), newT,false);
-							TOAppointmentCalendarItem t1= new TOAppointmentCalendarItem("appointment",sqlDate,newT,newT2 ,false);
-							TOAppointmentCalendarItem t2= new TOAppointmentCalendarItem("appointment",sqlDate,newT2,a.getTimeSlot().getEndTime() ,false);
+					addTO(calendar, a.getTimeSlot(), "appointment");
+					if (a.getBookableService() instanceof Service) {
+						if (((Service) a.getBookableService()).getDowntimeDuration() != 0) {
+							calendar.remove(calendar.size() - 1);
+							LocalTime n1 = a.getTimeSlot().getStartTime().toLocalTime();
+							LocalTime n2 = n1.plusMinutes(((Service) a.getBookableService()).getDowntimeStart());
+							LocalTime n3 = n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
+							Time newT = Time.valueOf(n2);
+							Time newT2 = Time.valueOf(n3);
+							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), newT, false);
+							TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("appointment", sqlDate, newT, newT2, false);
+							TOAppointmentCalendarItem t2 = new TOAppointmentCalendarItem("appointment", sqlDate, newT2, a.getTimeSlot().getEndTime(), false);
 							calendar.add(t0);
 							calendar.add(t1);
 							calendar.add(t2);
 						}
+					} else {
+						for (ComboItem s : a.getChosenItems()) { //going through service times
+							if (s.getService().getDowntimeDuration() != 0) { //if there is a service time
+								start = s.getService().getDowntimeStart();
+								duration += s.getService().getDowntimeDuration();
+								if (start != 0) {
+									Time startTime = a.getTimeSlot().getStartTime();
+									Time durationStart = Time.valueOf(startTime.toLocalTime().plusMinutes(start));
+									Time durationEnd = Time.valueOf(durationStart.toLocalTime().plusMinutes(duration));
+									Time endTime = a.getTimeSlot().getEndTime();
+									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), startTime, durationStart,false));
+									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), durationEnd, endTime,false));
+								} else {
+									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(),false));
+								}
+
+							}
+						}
+						start = 0;
 					}
 				}
 			}
 			return calendar;
-
 		}
 				
 		
 		/**
 		 * @author Victoria Sanchez
-		 * @param list
 		 * @return List<Appointment>
 		 */
 

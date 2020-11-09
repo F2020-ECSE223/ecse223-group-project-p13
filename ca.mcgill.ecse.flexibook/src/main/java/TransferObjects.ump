@@ -1,17 +1,18 @@
 namespace ca.mcgill.ecse.flexibook.controller;
 
-class TOBusinessInfo
-{
-  name;
-  address;
-  phoneNumber;
-  email;
+class TOBusinessInfo{
+    name;
+    address;
+    phoneNumber;
+    email;
 }
 
 class TOAppointmentCalendarItem{
-  Date date;
-  Time startTime;
-  Time endTime;
+    String description;
+    Date date;
+    Time startTime;
+    Time endTime;
+    boolean available;
 }
 
 
