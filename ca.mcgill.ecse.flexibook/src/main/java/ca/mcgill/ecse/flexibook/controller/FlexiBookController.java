@@ -476,32 +476,32 @@ public class FlexiBookController {
 		public static void addTO(List<TOAppointmentCalendarItem> calendar, TimeSlot time, String description) {
 			for(TOAppointmentCalendarItem item: calendar) {
 				if(item.getAvailable()) {
-				if(time.getStartTime().after(item.getStartTime())&& time.getEndTime().before(item.getEndTime())) {
-					calendar.remove(item);
-					TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available",item.getDate(),item.getStartTime(),time.getStartTime(), true);
-					TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false );
-					TOAppointmentCalendarItem item3= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true);
-					calendar.add(item1);
-					calendar.add(item2);
-					calendar.add(item3);
+					if(time.getStartTime().after(item.getStartTime())&& time.getEndTime().before(item.getEndTime())) {
+						calendar.remove(item);
+						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available",item.getDate(),item.getStartTime(),time.getStartTime(), true);
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false );
+						TOAppointmentCalendarItem item3= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true);
+						calendar.add(item1);
+						calendar.add(item2);
+						calendar.add(item3);
 					}
-				if(time.getStartTime().before(item.getStartTime()) && time.getEndTime().before(item.getEndTime())) {
-					calendar.remove(item);
-					TOAppointmentCalendarItem item1=  new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false);
-					TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true);
-					calendar.add(item1);
-					calendar.add(item2);
+					if(time.getStartTime().before(item.getStartTime()) && time.getEndTime().before(item.getEndTime())) {
+						calendar.remove(item);
+						TOAppointmentCalendarItem item1=  new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false);
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true);
+						calendar.add(item1);
+						calendar.add(item2);
 					}
-				if(time.getStartTime().after(item.getStartTime()) && time.getEndTime().after(item.getEndTime())) {
-					calendar.remove(item);
-					TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available", item.getDate(), item.getStartTime(), time.getStartTime(),true);
-					TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description, item.getDate(), time.getStartTime(), time.getEndTime(),false);
-					calendar.add(item1);
-					calendar.add(item2);
+					if(time.getStartTime().after(item.getStartTime()) && time.getEndTime().after(item.getEndTime())) {
+						calendar.remove(item);
+						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available", item.getDate(), item.getStartTime(), time.getStartTime(),true);
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description, item.getDate(), time.getStartTime(), time.getEndTime(),false);
+						calendar.add(item1);
+						calendar.add(item2);
 					}
-				if(time.getStartTime().after(item.getEndTime()) || time.getEndTime().before(item.getStartTime())) {
-					TOAppointmentCalendarItem single= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false);
-					calendar.add(single);
+					if(time.getStartTime().after(item.getEndTime()) || time.getEndTime().before(item.getStartTime())) {
+						TOAppointmentCalendarItem single= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false);
+						calendar.add(single);
 					}
 				}
 			}
@@ -1858,13 +1858,26 @@ public class FlexiBookController {
 
 	/**
 	 * @author Tomasz Mroz
-	 * @param appt
-	 */
-		public static void startAppointment(Appointment appt){
-			if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(appt.getTimeSlot().getStartDate())){
-				appt.setIsDayOf(true);
+	 * */
+		public static void startAppointment(TOAppointmentCalendarItem timeSlot) throws InvalidInputException {
+			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+			Appointment appt = null;
+			for(Appointment a:flexiBook.getAppointments()){
+				if(a.getTimeSlot().getStartDate().equals(timeSlot.getDate())){
+					if(timeSlot.getStartTime().equals(a.getTimeSlot().getStartTime())){
+						appt = a;
+					}
+				}
 			}
-			appt.toggleStart();
+			if(appt != null){
+				if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(timeSlot.getDate())){
+					appt.setIsDayOf(true);
+				}
+				appt.toggleStart();
+			}
+			else{
+				throw new InvalidInputException("Appointment Does Not Exist");
+			}
 		}
 
 	/**

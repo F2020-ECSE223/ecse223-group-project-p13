@@ -2176,7 +2176,7 @@ public class CucumberStepDefinitions {
 		SystemTime.setTime(arg0);
 		Appointment a = getAppointment(null, appointmentDate, appointmentTime);
 		try{
-			FlexiBookController.startAppointment(a);
+			//FlexiBookController.startAppointment(a);
 			appointmentHasStarted = true;
 		}catch(Exception e) {
 			error += e.getMessage();
