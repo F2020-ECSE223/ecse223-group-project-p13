@@ -121,12 +121,14 @@ public class FlexiBookPage extends Application {
 
         //Appointment Calendar
         change = new HBox();
+        HBox  calendar =new HBox();
+        change.getChildren().add(calendar);
         change.setStyle("-fx-background-color: #B0DDE4;");
         VBox months = new VBox(20);
         months.setAlignment(Pos.CENTER);
         months.setStyle("-fx-background-color: #E2F0F9");
         months.setPadding(new Insets(20));
-        change.getChildren().add(months);
+        calendar.getChildren().add(months);
 
         JFXButton januaryButton = new JFXButton("January");
         januaryButton.setOnAction(this::switchMonth);
@@ -175,24 +177,70 @@ public class FlexiBookPage extends Application {
         JFXButton decemberButton = new JFXButton("December");
         decemberButton.setOnAction(this::switchMonth);
         decemberButton.getStyleClass().add("calendar-button");
-        buttons.getChildren().add(decemberButton);
+        months.getChildren().add(decemberButton);
 
         VBox calendarMain = new VBox();
-        change.getChildren().add(calendarMain);
+        calendar.getChildren().add(calendarMain);
         HBox calendarTop = new HBox();
         calendarTop.setStyle("-fx-background-color: #E2F0F9");
+        HBox.setHgrow(calendarTop, Priority.ALWAYS);
 
         calendarMonth = new Label("November");
         calendarMain.setPrefSize(200,200);
         calendarMonth.getStyleClass().add("user-text");
         calendarTop.getChildren().add(calendarMonth);
 
+        Region middle = new Region();
+        middle.setMaxWidth(Double.MAX_VALUE);
+        calendarTop.getChildren().add(middle);
+
+        Label calendarYear = new Label(String.valueOf(LocalDate.now().getYear()));
+        calendarYear.setPrefSize(200,200);
+        calendarYear.getStyleClass().add("user-text");
+        calendarTop.getChildren().add(calendarYear);
+
+
+
         calendarMain.getChildren().add(calendarTop);
+
+
+        HBox calendarDays = new HBox();
+        calendarDays.setAlignment(Pos.BASELINE_RIGHT);
+        Label sundayLabel = new Label("Sun");
+        sundayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(sundayLabel);
+        Label mondayLabel = new Label("Mon");
+        mondayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(mondayLabel);
+        Label tuesdayLabel = new Label("Tue");
+        tuesdayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(tuesdayLabel);
+        Label wednesdayLabel = new Label("Wed");
+        wednesdayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(wednesdayLabel);
+        Label thursdayLabel = new Label("Thu");
+        thursdayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(thursdayLabel);
+        Label fridayLabel = new Label("Fri");
+        fridayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(fridayLabel);
+        Label saturdayLabel = new Label("Sat");
+        saturdayLabel.getStyleClass().add("user-text");
+        calendarDays.getChildren().add(saturdayLabel);
+        calendarMain.getChildren().add(calendarDays);
+
+        calendarMain.setAlignment(Pos.CENTER);
         GridPane days = new GridPane();
         for(int i =0; i<7;i++){
             for(int j = 0; j< 6; j++){
-                CalendarEntry calendarEntry = new CalendarEntry();
+                CalendarEntry calendarEntry = new CalendarEntry("1");
                 calendarEntry.setDate(LocalDate.now());
+                calendarEntry.setPrefSize(50,50);
+                calendarEntry.setMinWidth(100);
+                calendarEntry.setMinHeight(100);
+                calendarEntry.setStyle("-fx-background-color: #FFFFFF");
+                calendarEntry.getStyleClass().add("calendar-cell");
+                calendarEntry.setAlignment(Pos.TOP_LEFT);
                 days.add(calendarEntry,i,j);
             }
         }
@@ -323,10 +371,10 @@ public class FlexiBookPage extends Application {
         }
     }
 
-    private class CalendarEntry extends AnchorPane{
+    private class CalendarEntry extends JFXButton{
         LocalDate date;
-        CalendarEntry(Node... children){
-            super(children);
+        CalendarEntry(String date){
+            super(date);
         }
 
         public LocalDate getDate() {
