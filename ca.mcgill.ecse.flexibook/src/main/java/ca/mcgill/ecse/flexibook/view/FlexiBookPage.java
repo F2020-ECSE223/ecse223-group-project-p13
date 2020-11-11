@@ -1,40 +1,25 @@
 package ca.mcgill.ecse.flexibook.view;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
-import com.google.common.net.UrlEscapers;
 import com.jfoenix.controls.*;
-import com.jfoenix.validation.RequiredFieldValidator;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalDate;
 
 public class FlexiBookPage extends Application {
     private String error;
@@ -65,19 +50,26 @@ public class FlexiBookPage extends Application {
         BorderPane border = new BorderPane();
         //VBox vBox = new VBox(100);
         //vBox.setPadding(new Insets(100));
-        Label welcome = new Label("Welcome, ");
+        Label welcome = new Label("Welcome, User");
         HBox top = new HBox();
         border.setTop(top);
-        HBox filler = new HBox();
-        top.getChildren().add(filler);
-        HBox.setHgrow(filler,Priority.ALWAYS);
+        top.setAlignment(Pos.BASELINE_RIGHT);
         top.getChildren().add(welcome);
         welcome.getStyleClass().add("user-text");
 
-        VBox center = new VBox();
+        VBox center = new VBox(70);
         border.setCenter(center);
+        center.setAlignment(Pos.TOP_CENTER);
+        Image image = new Image("/img/newLogo.png");
+        ImageView view = new ImageView(image);
+        view.setPreserveRatio(true);
+        view.setFitHeight(200);
+        center.getChildren().add(view);
 
-        HBox buttons = new HBox(100);
+        HBox buttons = new HBox(50);
+
+        buttons.setAlignment(Pos.CENTER);
+
         FontIcon appointmentIcon = new FontIcon("eli-calendar");
         FontIcon accountIcon = new FontIcon("dashicons-businessperson");
         FontIcon businessIcon = new FontIcon("icm-briefcase");
@@ -91,33 +83,28 @@ public class FlexiBookPage extends Application {
 
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
-        appointmentButton.setOnAction(e->{
-            int i;
-        });
+        appointmentButton.setOnAction(e->switchToAppointment());
+        appointmentButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(appointmentButton);
 
         JFXButton accountButton = new JFXButton("Account",accountIcon);
         accountButton.setContentDisplay(ContentDisplay.TOP);
-        accountButton.setOnAction(e->{
-            int i;
-        });
-        accountButton.getStyleClass().add("icon");
+        accountButton.setOnAction(e->switchToAccount());
+        accountButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(accountButton);
 
         JFXButton businessButton = new JFXButton("Business",businessIcon);
         businessButton.setContentDisplay(ContentDisplay.TOP);
-        businessButton.setOnAction(e->{
-            int i;
-        });
-        businessButton.getStyleClass().add("icon");
+        businessButton.setOnAction(e->switchToBusiness());
+        businessButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(businessButton);
 
-        JFXButton serviceButton = new JFXButton("service",serviceIcon);
+        JFXButton serviceButton = new JFXButton("Service",serviceIcon);
         serviceButton.setContentDisplay(ContentDisplay.TOP);
-        serviceButton.setOnAction(e->{
-            int i;
-        });
+        serviceButton.setOnAction(e->switchToServices());
+        serviceButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(serviceButton);
+
 
         center.getChildren().add(buttons);
 
@@ -164,6 +151,7 @@ public class FlexiBookPage extends Application {
         border.setStyle("-fx-background-color: #B0DDE4;");
         mainStage.setScene(ownerHomeScreen);
         ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        border.requestFocus();
     }
 
     private void refreshData(){
@@ -193,4 +181,9 @@ public class FlexiBookPage extends Application {
             error = e.getMessage();
         }
     }
+    private void switchToAppointment(){}
+    private void switchToBusiness(){}
+    private void switchToServices(){}
+    private void switchToAccount(){}
+
 }
