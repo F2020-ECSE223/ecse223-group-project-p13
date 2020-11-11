@@ -13,7 +13,7 @@
     -fx-pref-width: 200;
     -fx-text-fill: #286FB4;
 }
-.icon{
+.icon-main-menu{
     -fx-icon-size: 100px;
     -fx-icon-color: #286FB4;
     -fx-text-size: 50em;
@@ -53,7 +53,18 @@
     -jfx-rippler-fill: #ffffff;
 }
 .calendar-holiday{
-    -fx-background-color: #286FB480;
-
+    -fx-background-color: #286FB4;
 }
 .calendar-appointment{}
+.icon-calendar{
+    -fx-icon-size: 20px;
+    -fx-icon-color: #286FB4;
+    -fx-text-size: 50em;
+}
+.icon-calendar-button{
+    -jfx-button-type: RAISED;
+    -fx-background-color: #E2F0F9;
+    -fx-pref-width: 30;
+    -fx-text-fill: #ffffff;
+    -jfx-rippler-fill: #ffffff;
+}

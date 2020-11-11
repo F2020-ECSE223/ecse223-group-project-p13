@@ -41,6 +41,7 @@ public class FlexiBookPage extends Application {
     private Scene makeAppointment;*/
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
     LocalDate renderDate;
+    Label calendarYear;
 
 
 
@@ -85,10 +86,10 @@ public class FlexiBookPage extends Application {
         FontIcon businessIcon = new FontIcon("icm-briefcase");
         FontIcon serviceIcon = new FontIcon("ion4-ios-list-box");
 
-        appointmentIcon.getStyleClass().add("icon");
-        accountIcon.getStyleClass().add("icon");
-        businessIcon.getStyleClass().add("icon");
-        serviceIcon.getStyleClass().add("icon");
+        appointmentIcon.getStyleClass().add("icon-main-menu");
+        accountIcon.getStyleClass().add("icon-main-menu");
+        businessIcon.getStyleClass().add("icon-main-menu");
+        serviceIcon.getStyleClass().add("icon-main-menu");
 
 
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
@@ -233,23 +234,40 @@ public class FlexiBookPage extends Application {
         calendar.getChildren().add(calendarMain);
         HBox calendarTop = new HBox();
         calendarTop.setStyle("-fx-background-color: #E2F0F9");
-        HBox.setHgrow(calendarTop, Priority.ALWAYS);
+        //HBox.setHgrow(calendarTop, Priority.ALWAYS);
 
         Label calendarMonth = new Label(renderDate.getMonth().toString());
-        calendarMain.setPrefSize(200,200);
+        calendarMain.setPrefSize(200,100);
         calendarMonth.getStyleClass().add("user-text");
         calendarTop.getChildren().add(calendarMonth);
+        AnchorPane.setLeftAnchor(calendarMonth,0.0);
 
-        Region middle = new Region();
-        middle.setMaxWidth(Double.MAX_VALUE);
-        calendarTop.getChildren().add(middle);
+        FontIcon leftArrow = new FontIcon("fth-arrow-left-circle");
+        leftArrow.getStyleClass().add("icon-calendar");
+        FontIcon rightArrow = new FontIcon("fth-arrow-right-circle");
+        rightArrow.getStyleClass().add("icon-calendar");
 
-        Label calendarYear = new Label(String.valueOf(LocalDate.now().getYear()));
-        calendarYear.setPrefSize(200,200);
+        JFXButton leftArrowButton = new JFXButton("",leftArrow);
+        leftArrowButton.setContentDisplay(ContentDisplay.TOP);
+        leftArrowButton.setOnAction(e-> {
+            renderDate= renderDate.minusYears(1);
+            updateDate();
+        });
+        leftArrowButton.getStyleClass().add("icon-calendar-button");
+        calendarTop.getChildren().add(leftArrowButton);
+
+        calendarYear = new Label(String.valueOf(renderDate.getYear()));
         calendarYear.getStyleClass().add("user-text");
         calendarTop.getChildren().add(calendarYear);
 
-
+        JFXButton rightArrowButton = new JFXButton("",rightArrow);
+        rightArrowButton.setContentDisplay(ContentDisplay.TOP);
+        rightArrowButton.setOnAction(e-> {
+            renderDate= renderDate.plusYears(1);
+            updateDate();
+        });
+        rightArrowButton.getStyleClass().add("icon-calendar-button");
+        calendarTop.getChildren().add(rightArrowButton);
 
         calendarMain.getChildren().add(calendarTop);
 
@@ -333,7 +351,9 @@ public class FlexiBookPage extends Application {
     }
     private void switchToAccount(){}
     private void updateDate(){
-
+        listDays.get(15).getStyleClass().add("calendar-holiday");
+        listDays.get(15).setStyle("-fx-background-color: #e0163e");
+        calendarYear.setText(String.valueOf(renderDate.getYear()));
         LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
         while (!calendarDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             calendarDate = calendarDate.minusDays(1);
