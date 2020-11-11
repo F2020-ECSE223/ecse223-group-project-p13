@@ -35,6 +35,7 @@ public class FlexiBookPage extends Application {
     private Stage mainStage;
     Scene ownerHomeScreen;
     HBox change;
+    Scene customerHomeScreen;
     /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
     private Scene businessInfo;
     private Scene Services;
@@ -118,6 +119,53 @@ public class FlexiBookPage extends Application {
 
         center.getChildren().add(buttons);
 
+        //Customer Home Page
+        BorderPane customerScreenBorderPane = new BorderPane();
+        Label welcome1 = new Label("Welcome, User");
+        HBox top1 = new HBox();
+        customerScreenBorderPane.setTop(top1);
+        top1.setAlignment(Pos.BASELINE_RIGHT);
+        top1.getChildren().add(welcome1);
+        welcome.getStyleClass().add("user-text");
+
+        VBox center1 = new VBox(120);
+        customerScreenBorderPane.setCenter(center1);
+        center1.setAlignment(Pos.TOP_CENTER);
+        Image image1 = new Image("/img/newLogo.png");
+        ImageView view1 = new ImageView(image1);
+        view1.setPreserveRatio(true);
+        view1.setFitHeight(200);
+        center1.getChildren().add(view1);
+
+        HBox buttons1 = new HBox(75);
+
+        buttons1.setAlignment(Pos.CENTER);
+
+        FontIcon appointmentIcon1 = new FontIcon("eli-calendar");
+        FontIcon accountIcon1 = new FontIcon("dashicons-businessperson");
+        FontIcon businessIcon1 = new FontIcon("icm-briefcase");
+        FontIcon serviceIcon1 = new FontIcon("ion4-ios-list-box");
+
+        appointmentIcon.getStyleClass().add("icon");
+        accountIcon.getStyleClass().add("icon");
+        businessIcon.getStyleClass().add("icon");
+        serviceIcon.getStyleClass().add("icon");
+
+
+        JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
+        appointmentButton1.setContentDisplay(ContentDisplay.TOP);
+        appointmentButton1.setOnAction(e->switchToCustomerAppointment());
+        appointmentButton1.getStyleClass().add("main-menu-button");
+        buttons1.getChildren().add(appointmentButton);
+
+        JFXButton accountButton1 = new JFXButton("Account",accountIcon1);
+        accountButton1.setContentDisplay(ContentDisplay.TOP);
+        accountButton1.setOnAction(e->switchToAccount());
+        accountButton1.getStyleClass().add("main-menu-button");
+        buttons1.getChildren().add(accountButton);
+
+
+        center1.getChildren().add(buttons1);
 
         //Appointment Calendar
         change = new HBox();
@@ -284,10 +332,15 @@ public class FlexiBookPage extends Application {
 
 
         ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
+        customerHomeScreen = new Scene(customerScreenBorderPane,1440,810,colors[3]);
         mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         mainStage.setScene(ownerHomeScreen);
+        mainStage.setScene(customerHomeScreen);
         ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        customerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         mainScreenBorderPane.requestFocus();
+        customerScreenBorderPane.requestFocus();
     }
 
     private void refreshData(){
@@ -320,6 +373,11 @@ public class FlexiBookPage extends Application {
     private void switchToAppointment(){
         ownerHomeScreen.setRoot(change);
     }
+
+    private void switchToCustomerAppointment(){
+        customerHomeScreen.setRoot(change);
+    }
+
     private void switchToBusiness(){
         //mainStage.setScene(businessInfo);
     }
