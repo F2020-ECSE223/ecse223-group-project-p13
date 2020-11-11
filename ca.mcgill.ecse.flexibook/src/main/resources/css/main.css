@@ -45,3 +45,10 @@
     -fx-border-color:#D3D3D3;
     -fx-border-width: 1 1 1 1;
 }
+.not-in-month{
+    -fx-background-color: rgba(220, 20, 60, 0.5);
+}
+.calendar-holiday{
+    -fx-background-color: #286FB480;
+}
+.calendar-appointment{}
