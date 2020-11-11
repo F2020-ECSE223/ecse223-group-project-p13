@@ -16,6 +16,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
@@ -34,6 +36,8 @@ public class FlexiBookPage extends Application {
     private Stage mainStage;
     Scene ownerHomeScreen;
     HBox ownerAppointmentCalendar;
+    TextField textUserName;
+    PasswordField pf;
     /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
     private Scene businessInfo;
     private Scene Services;
@@ -66,6 +70,10 @@ public class FlexiBookPage extends Application {
         top.setAlignment(Pos.BASELINE_RIGHT);
         top.getChildren().add(welcome);
         welcome.getStyleClass().add("user-text");
+        
+        HBox bottom = new HBox();
+        mainScreenBorderPane.setBottom(bottom);
+        bottom.setAlignment(Pos.BASELINE_RIGHT);
 
         VBox center = new VBox(70);
         mainScreenBorderPane.setCenter(center);
@@ -84,18 +92,34 @@ public class FlexiBookPage extends Application {
         FontIcon accountIcon = new FontIcon("dashicons-businessperson");
         FontIcon businessIcon = new FontIcon("icm-briefcase");
         FontIcon serviceIcon = new FontIcon("ion4-ios-list-box");
+        FontIcon loginIcon = new FontIcon("dashicons-admin-users");
+        FontIcon logoutIcon= new FontIcon("dashicons-exit");
+        FontIcon signUp= new FontIcon("dashicons-edit");
 
         appointmentIcon.getStyleClass().add("icon");
         accountIcon.getStyleClass().add("icon");
         businessIcon.getStyleClass().add("icon");
         serviceIcon.getStyleClass().add("icon");
+        loginIcon.getStyleClass().add("icon");
+        logoutIcon.getStyleClass().add("icon");
+        signUp.getStyleClass().add("icon");
 
-
+        JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
+        logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
+        logoutButton.getStyleClass().add("main-menu-button");
+        logoutButton.setOnAction(e->logout());
+        bottom.getChildren().add(logoutButton);
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
         appointmentButton.setOnAction(e->switchToAppointment());
         appointmentButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(appointmentButton);
+        
+        JFXButton loginButton = new JFXButton("LogIn", loginIcon);
+        loginButton.setContentDisplay(ContentDisplay.TOP);
+        loginButton.setOnAction(e->switchToHomeScreen());
+        loginButton.getStyleClass().add("main-menu-button");
+        buttons.getChildren().add(loginButton);
 
         JFXButton accountButton = new JFXButton("Account",accountIcon);
         accountButton.setContentDisplay(ContentDisplay.TOP);
@@ -159,13 +183,76 @@ public class FlexiBookPage extends Application {
         jfxCombo.getItems().add(new Label("service 4"));
         jfxCombo.setPromptText("Select Service");
         mainScreenBorderPane.setRight(jfxCombo);*/
+        change2= new HBox();
+        change2.setPadding(new Insets(200,200,200,200));
+        change2.setStyle("-fx-background-color: #B0DDE4");
+        GridPane gridP= new GridPane();
+        gridP.setHgap(100);
+        gridP.setVgap(100);
+        Label lblUserName = new Label("Username");
+        textUserName= new TextField();
+        Label lblPassword= new Label("Password");
+        pf=  new PasswordField();
+        JFXButton btonLogin= new JFXButton("Login",loginIcon);
+        btonLogin.setOnAction(e->login());
+        final Label lblMessage= new Label();
 
+        GridPane temp= new GridPane();
+        temp.setAlignment(Pos.CENTER);
+        temp.setPadding(new Insets(100,100,100,100));
+
+        gridP.add(lblUserName,0,0);
+        gridP.add(textUserName,1,0);
+        gridP.add(lblPassword,0,1);
+        gridP.add(pf,1,1);
+        gridP.add(btonLogin, 1,2 );
+        gridP.add(lblMessage,1,2);
+        gridP.setAlignment(Pos.CENTER_LEFT);
+
+        GridPane gridP2= new GridPane();
+        gridP2.setVgap(100);
+        gridP2.setHgap(100);
+        Label lblUserName1 = new Label("Enter a Username");
+        final TextField textUserName1= new TextField();
+        Label lblPassword1= new Label("Enter a Password");
+        final PasswordField pf1=  new PasswordField();
+        JFXButton btonLogin1= new JFXButton("SignUp",signUp);
+        final Label lblMessage1= new Label();
+        gridP2.add(lblUserName1,0,0);
+        gridP2.add(textUserName1,1,0);
+        gridP2.add(lblPassword1,0,1);
+        gridP2.add(pf1,1,1);
+        gridP2.add(btonLogin1, 1,2 );
+        gridP2.add(lblMessage1,1,2);
+        gridP2.setAlignment(Pos.CENTER_RIGHT);
+
+        change2.getChildren().add(gridP);
+        change2.getChildren().add(temp);
+        change2.getChildren().add(gridP2);
 
         ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
         mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         mainStage.setScene(ownerHomeScreen);
         ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         mainScreenBorderPane.requestFocus();
+    }
+    private void logout() {
+        try{
+            FlexiBookController.logout();
+            ownerHomeScreen.setRoot(change2);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+    }
+     private void login() {
+        try{
+            FlexiBookController.login(textUserName.getText(),pf.getText());
+            mainStage.setScene(ownerHomeScreen);
+        }
+        catch(InvalidInputException e){
+            e.getMessage();
+        }
     }
 
     private void refreshData(){
@@ -330,6 +417,9 @@ public class FlexiBookPage extends Application {
     }
     private void switchToServices(){
 
+    }
+    private void switchToHomeScreen(){
+    ownerHomeScreen.setRoot(change2);
     }
     private void switchToAccount(){}
     private void updateDate(){
