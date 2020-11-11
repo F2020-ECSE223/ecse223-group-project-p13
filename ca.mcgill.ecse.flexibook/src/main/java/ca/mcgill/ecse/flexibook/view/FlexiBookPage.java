@@ -10,10 +10,10 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 //import java.awt.*;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 
 public class FlexiBookPage extends Application {
     private String error;
@@ -30,6 +31,8 @@ public class FlexiBookPage extends Application {
     JFXButton startButton;
     //private CardLayout mainLayout;
     private Stage mainStage;
+
+
 
     public void start(Stage s){
         mainStage = s;
@@ -77,34 +80,36 @@ public class FlexiBookPage extends Application {
         password.setPromptText("Password");
         vBox.getChildren().add(password);
 
+        HBox tilePane = new HBox();
+        border.setBottom(tilePane);
+        JFXDatePicker datePicker = new JFXDatePicker();
+        datePicker.setOnAction(ActionEvent-> {
+            LocalDate date = datePicker.getValue();
+            System.out.println("Selected date: " + date);
+
+        });
+        datePicker.setDefaultColor(Color.valueOf("#286FB4"));
+        tilePane.getChildren().add(datePicker);
+
+        JFXComboBox<Label> jfxCombo = new JFXComboBox<Label>();
+        jfxCombo.getItems().add(new Label("service 1"));
+        jfxCombo.getItems().add(new Label("service 2"));
+        jfxCombo.getItems().add(new Label("service 3"));
+        jfxCombo.getItems().add(new Label("service 4"));
+        jfxCombo.setPromptText("Select Service");
+        border.setRight(jfxCombo);
 
 
         Scene appointment = new Scene(border,960,540,colors[3]);
         border.setStyle("-fx-background-color: #B0DDE4;");
         mainStage.setScene(appointment);
         appointment.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-
-        //startButton.set(colors[2]);
-        //startButton.setBackground(colors[0]);
-        //startButton.setFont(new Font(Font.MONOSPACED,Font.BOLD,14));
-        //startButton.setBounds(0,50,200,100);
-        //startButton.addActionListener(this::startAppointmentEvent);
-
-        //endButton = new JButton("End Appointment");
-        /*endButton.setForeground(colors[2]);
-        endButton.setBackground(colors[0]);
-        endButton.setFont(new Font(Font.MONOSPACED,Font.BOLD,14));
-        endButton.setBounds(0,50,200,100);
-        endButton.addActionListener(this::endAppointmentEvent);*?
-        alt.add(endButton);
-        main.add(alt,"alt");
-        mainLayout.show(main,"appointment");
-        //pack();*/
     }
 
     private void refreshData(){
 
     }
+
     private void startAppointmentEvent(ActionEvent event){
         error = null;
         startButton.setText("End Appointment");
