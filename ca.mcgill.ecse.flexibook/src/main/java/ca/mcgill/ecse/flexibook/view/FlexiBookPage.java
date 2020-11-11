@@ -8,7 +8,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -20,10 +19,10 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
-import javax.swing.*;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class FlexiBookPage extends Application {
     private String error;
@@ -36,12 +35,14 @@ public class FlexiBookPage extends Application {
     Scene ownerHomeScreen;
     HBox change;
     Scene customerHomeScreen;
+    HBox ownerAppointmentCalendar;
     /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
     private Scene businessInfo;
     private Scene Services;
     private Scene Account;
     private Scene makeAppointment;*/
     Label calendarMonth;
+    ArrayList<CalendarEntry> listDays = new ArrayList<>();
 
 
 
@@ -168,10 +169,60 @@ public class FlexiBookPage extends Application {
         center1.getChildren().add(buttons1);
 
         //Appointment Calendar
-        change = new HBox();
+        ownerAppointmentCalendar = new HBox();
+        ownerAppointmentCalendar.getChildren().add(setCalendar());
+        ownerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
+
+        //Box hBox = new HBox(50);
+        /*//hBox.getChildren().add(padderRegion);
+        hBox.getChildren().add(startButton);
+        //hBox.getChildren().add(vBox);
+        mainScreenBorderPane.setTop(hBox);
+        mainScreenBorderPane.setCenter(vBox);
+
+        JFXTextField username = new JFXTextField();
+        username.setLabelFloat(true);
+        username.setPromptText("Username");
+        vBox.getChildren().add(username);
+
+        JFXPasswordField password = new JFXPasswordField();
+        password.setLabelFloat(true);
+        password.setPromptText("Password");
+        vBox.getChildren().add(password);*/
+
+        /*HBox tilePane = new HBox();
+        mainScreenBorderPane.setBottom(tilePane);
+        JFXDatePicker datePicker = new JFXDatePicker();
+        datePicker.setOnAction(ActionEvent-> {
+            LocalDate date = datePicker.getValue();
+            System.out.println("Selected date: " + date);
+
+        });
+        datePicker.setDefaultColor(Color.valueOf("#286FB4"));
+        tilePane.getChildren().add(datePicker);
+
+        JFXComboBox<Label> jfxCombo = new JFXComboBox<Label>();
+        jfxCombo.getItems().add(new Label("service 1"));
+        jfxCombo.getItems().add(new Label("service 2"));
+        jfxCombo.getItems().add(new Label("service 3"));
+        jfxCombo.getItems().add(new Label("service 4"));
+        jfxCombo.setPromptText("Select Service");
+        mainScreenBorderPane.setRight(jfxCombo);*/
+
+
+        ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
+        mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        mainStage.setScene(ownerHomeScreen);
+        ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        mainScreenBorderPane.requestFocus();
+    }
+
+    private void refreshData(){
+
+    }
+    private HBox setCalendar(){
         HBox  calendar =new HBox();
-        change.getChildren().add(calendar);
-        change.setStyle("-fx-background-color: #B0DDE4;");
+
         VBox months = new VBox(20);
         months.setAlignment(Pos.CENTER);
         months.setStyle("-fx-background-color: #E2F0F9");
@@ -279,8 +330,8 @@ public class FlexiBookPage extends Application {
 
         calendarMain.setAlignment(Pos.CENTER);
         GridPane days = new GridPane();
-        for(int i =0; i<7;i++){
-            for(int j = 0; j< 6; j++){
+        for(int i =0; i<6;i++){
+            for(int j = 0; j< 7; j++){
                 CalendarEntry calendarEntry = new CalendarEntry("1");
                 calendarEntry.setDate(LocalDate.now());
                 calendarEntry.setPrefSize(50,50);
@@ -289,64 +340,13 @@ public class FlexiBookPage extends Application {
                 calendarEntry.setStyle("-fx-background-color: #FFFFFF");
                 calendarEntry.getStyleClass().add("calendar-cell");
                 calendarEntry.setAlignment(Pos.TOP_LEFT);
-                days.add(calendarEntry,i,j);
+                listDays.add(calendarEntry);
+                days.add(calendarEntry,j,i);
             }
         }
         calendarMain.getChildren().add(days);
-
-        //Box hBox = new HBox(50);
-        /*//hBox.getChildren().add(padderRegion);
-        hBox.getChildren().add(startButton);
-        //hBox.getChildren().add(vBox);
-        mainScreenBorderPane.setTop(hBox);
-        mainScreenBorderPane.setCenter(vBox);
-
-        JFXTextField username = new JFXTextField();
-        username.setLabelFloat(true);
-        username.setPromptText("Username");
-        vBox.getChildren().add(username);
-
-        JFXPasswordField password = new JFXPasswordField();
-        password.setLabelFloat(true);
-        password.setPromptText("Password");
-        vBox.getChildren().add(password);*/
-
-        /*HBox tilePane = new HBox();
-        mainScreenBorderPane.setBottom(tilePane);
-        JFXDatePicker datePicker = new JFXDatePicker();
-        datePicker.setOnAction(ActionEvent-> {
-            LocalDate date = datePicker.getValue();
-            System.out.println("Selected date: " + date);
-
-        });
-        datePicker.setDefaultColor(Color.valueOf("#286FB4"));
-        tilePane.getChildren().add(datePicker);
-
-        JFXComboBox<Label> jfxCombo = new JFXComboBox<Label>();
-        jfxCombo.getItems().add(new Label("service 1"));
-        jfxCombo.getItems().add(new Label("service 2"));
-        jfxCombo.getItems().add(new Label("service 3"));
-        jfxCombo.getItems().add(new Label("service 4"));
-        jfxCombo.setPromptText("Select Service");
-        mainScreenBorderPane.setRight(jfxCombo);*/
-
-
-        ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
-        customerHomeScreen = new Scene(customerScreenBorderPane,1440,810,colors[3]);
-        mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        mainStage.setScene(ownerHomeScreen);
-        mainStage.setScene(customerHomeScreen);
-        ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-        customerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-        mainScreenBorderPane.requestFocus();
-        customerScreenBorderPane.requestFocus();
+    return calendar;
     }
-
-    private void refreshData(){
-
-    }
-
     private void startAppointmentEvent(ActionEvent event){
         error = null;
         startButton.setText("End Appointment");
@@ -371,7 +371,8 @@ public class FlexiBookPage extends Application {
         }
     }
     private void switchToAppointment(){
-        ownerHomeScreen.setRoot(change);
+        ownerHomeScreen.setRoot(ownerAppointmentCalendar);
+        updateDate(LocalDate.now());
     }
 
     private void switchToCustomerAppointment(){
@@ -385,6 +386,21 @@ public class FlexiBookPage extends Application {
 
     }
     private void switchToAccount(){}
+    private void updateDate(LocalDate date){
+
+        LocalDate calendarDate = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+        while (!calendarDate.getDayOfWeek().toString().equals("SUNDAY") ) {
+            calendarDate = calendarDate.minusDays(1);
+        }
+        for(CalendarEntry c:listDays){
+            c.setDate(calendarDate);
+            c.setText(String.valueOf(calendarDate.getDayOfMonth()));
+            calendarDate = calendarDate.plusDays(1);
+            if(!c.getDate().getMonth().equals(date.getMonth())){
+                c.getStyleClass().add("not-in-month");
+            }
+        }
+    }
     private void switchMonth(ActionEvent e){
         if(e.getTarget() instanceof  JFXButton){
             String message = ((JFXButton)e.getTarget()).getText();
