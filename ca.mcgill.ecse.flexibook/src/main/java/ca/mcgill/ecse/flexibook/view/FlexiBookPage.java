@@ -6,7 +6,9 @@ import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -18,8 +20,10 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
+import javax.swing.*;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 
 public class FlexiBookPage extends Application {
     private String error;
@@ -29,6 +33,14 @@ public class FlexiBookPage extends Application {
     JFXButton startButton;
     //private CardLayout mainLayout;
     private Stage mainStage;
+    Scene ownerHomeScreen;
+    HBox change;
+    /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
+    private Scene businessInfo;
+    private Scene Services;
+    private Scene Account;
+    private Scene makeAppointment;*/
+    Label calendarMonth;
 
 
 
@@ -46,19 +58,17 @@ public class FlexiBookPage extends Application {
         Region padderRegion = new Region();
         padderRegion.prefWidthProperty().setValue(250);*/
 
-
-        BorderPane border = new BorderPane();
-        //VBox vBox = new VBox(100);
-        //vBox.setPadding(new Insets(100));
+        //Main Screen
+        BorderPane mainScreenBorderPane = new BorderPane();
         Label welcome = new Label("Welcome, User");
         HBox top = new HBox();
-        border.setTop(top);
+        mainScreenBorderPane.setTop(top);
         top.setAlignment(Pos.BASELINE_RIGHT);
         top.getChildren().add(welcome);
         welcome.getStyleClass().add("user-text");
 
         VBox center = new VBox(70);
-        border.setCenter(center);
+        mainScreenBorderPane.setCenter(center);
         center.setAlignment(Pos.TOP_CENTER);
         Image image = new Image("/img/newLogo.png");
         ImageView view = new ImageView(image);
@@ -109,13 +119,91 @@ public class FlexiBookPage extends Application {
         center.getChildren().add(buttons);
 
 
+        //Appointment Calendar
+        change = new HBox();
+        change.setStyle("-fx-background-color: #B0DDE4;");
+        VBox months = new VBox(20);
+        months.setAlignment(Pos.CENTER);
+        months.setStyle("-fx-background-color: #E2F0F9");
+        months.setPadding(new Insets(20));
+        change.getChildren().add(months);
+
+        JFXButton januaryButton = new JFXButton("January");
+        januaryButton.setOnAction(this::switchMonth);
+        januaryButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(januaryButton);
+        JFXButton februaryButton = new JFXButton("February");
+        februaryButton.setOnAction(this::switchMonth);
+        februaryButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(februaryButton);
+        JFXButton marchButton = new JFXButton("March");
+        marchButton.setOnAction(this::switchMonth);
+        marchButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(marchButton);
+        JFXButton aprilButton = new JFXButton("April");
+        aprilButton.setOnAction(this::switchMonth);
+        aprilButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(aprilButton);
+        JFXButton mayButton = new JFXButton("May");
+        mayButton.setOnAction(this::switchMonth);
+        mayButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(mayButton);
+        JFXButton juneButton = new JFXButton("June");
+        juneButton.setOnAction(this::switchMonth);
+        juneButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(juneButton);
+        JFXButton julyButton = new JFXButton("July");
+        julyButton.setOnAction(this::switchMonth);
+        julyButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(julyButton);
+        JFXButton augustButton = new JFXButton("August");
+        augustButton.setOnAction(this::switchMonth);
+        augustButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(augustButton);
+        JFXButton septemberButton = new JFXButton("September");
+        septemberButton.setOnAction(this::switchMonth);
+        septemberButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(septemberButton);
+        JFXButton octoberButton = new JFXButton("October");
+        octoberButton.setOnAction(this::switchMonth);
+        octoberButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(octoberButton);
+        JFXButton novemberButton = new JFXButton("November");
+        novemberButton.setOnAction(this::switchMonth);
+        novemberButton.getStyleClass().add("calendar-button");
+        months.getChildren().add(novemberButton);
+        JFXButton decemberButton = new JFXButton("December");
+        decemberButton.setOnAction(this::switchMonth);
+        decemberButton.getStyleClass().add("calendar-button");
+        buttons.getChildren().add(decemberButton);
+
+        VBox calendarMain = new VBox();
+        change.getChildren().add(calendarMain);
+        HBox calendarTop = new HBox();
+        calendarTop.setStyle("-fx-background-color: #E2F0F9");
+
+        calendarMonth = new Label("November");
+        calendarMain.setPrefSize(200,200);
+        calendarMonth.getStyleClass().add("user-text");
+        calendarTop.getChildren().add(calendarMonth);
+
+        calendarMain.getChildren().add(calendarTop);
+        GridPane days = new GridPane();
+        for(int i =0; i<7;i++){
+            for(int j = 0; j< 6; j++){
+                CalendarEntry calendarEntry = new CalendarEntry();
+                calendarEntry.setDate(LocalDate.now());
+                days.add(calendarEntry,i,j);
+            }
+        }
+        calendarMain.getChildren().add(days);
 
         //Box hBox = new HBox(50);
         /*//hBox.getChildren().add(padderRegion);
         hBox.getChildren().add(startButton);
         //hBox.getChildren().add(vBox);
-        border.setTop(hBox);
-        border.setCenter(vBox);
+        mainScreenBorderPane.setTop(hBox);
+        mainScreenBorderPane.setCenter(vBox);
 
         JFXTextField username = new JFXTextField();
         username.setLabelFloat(true);
@@ -128,7 +216,7 @@ public class FlexiBookPage extends Application {
         vBox.getChildren().add(password);*/
 
         /*HBox tilePane = new HBox();
-        border.setBottom(tilePane);
+        mainScreenBorderPane.setBottom(tilePane);
         JFXDatePicker datePicker = new JFXDatePicker();
         datePicker.setOnAction(ActionEvent-> {
             LocalDate date = datePicker.getValue();
@@ -144,14 +232,14 @@ public class FlexiBookPage extends Application {
         jfxCombo.getItems().add(new Label("service 3"));
         jfxCombo.getItems().add(new Label("service 4"));
         jfxCombo.setPromptText("Select Service");
-        border.setRight(jfxCombo);*/
+        mainScreenBorderPane.setRight(jfxCombo);*/
 
 
-        Scene ownerHomeScreen = new Scene(border,1440,810,colors[3]);
-        border.setStyle("-fx-background-color: #B0DDE4;");
+        ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
+        mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         mainStage.setScene(ownerHomeScreen);
         ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-        border.requestFocus();
+        mainScreenBorderPane.requestFocus();
     }
 
     private void refreshData(){
@@ -181,9 +269,74 @@ public class FlexiBookPage extends Application {
             error = e.getMessage();
         }
     }
-    private void switchToAppointment(){}
-    private void switchToBusiness(){}
-    private void switchToServices(){}
+    private void switchToAppointment(){
+        ownerHomeScreen.setRoot(change);
+    }
+    private void switchToBusiness(){
+        //mainStage.setScene(businessInfo);
+    }
+    private void switchToServices(){
+
+    }
     private void switchToAccount(){}
+    private void switchMonth(ActionEvent e){
+        if(e.getTarget() instanceof  JFXButton){
+            String message = ((JFXButton)e.getTarget()).getText();
+            switch (message) {
+                case "January":
+                    calendarMonth.setText("January");
+                    break;
+                case "February":
+                    calendarMonth.setText("February");
+                    break;
+                case "March":
+                    calendarMonth.setText("March");
+                    break;
+                case "April":
+                    calendarMonth.setText("April");
+                    break;
+                case "May":
+                    calendarMonth.setText("May");
+                    break;
+                case "June":
+                    calendarMonth.setText("June");
+                    break;
+                case "July":
+                    calendarMonth.setText("July");
+                    break;
+                case "August":
+                    calendarMonth.setText("August");
+                    break;
+                case "September":
+                    calendarMonth.setText("September");
+                    break;
+                case "October":
+                    calendarMonth.setText("October");
+                    break;
+                case "November":
+                    calendarMonth.setText("November");
+                    break;
+                case "December":
+                    calendarMonth.setText("December");
+                    break;
+            }
+        }
+    }
+
+    private class CalendarEntry extends AnchorPane{
+        LocalDate date;
+        CalendarEntry(Node... children){
+            super(children);
+        }
+
+        public LocalDate getDate() {
+            return date;
+        }
+
+        public void setDate(LocalDate date) {
+            this.date = date;
+        }
+    }
+
 
 }
