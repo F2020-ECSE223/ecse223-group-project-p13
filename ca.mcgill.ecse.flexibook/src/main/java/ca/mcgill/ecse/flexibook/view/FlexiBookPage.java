@@ -1,9 +1,12 @@
 package ca.mcgill.ecse.flexibook.view;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
+import com.google.common.net.UrlEscapers;
 import com.jfoenix.controls.*;
 import com.jfoenix.validation.RequiredFieldValidator;
 import javafx.application.Application;
@@ -11,14 +14,24 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -42,29 +55,76 @@ public class FlexiBookPage extends Application {
         mainStage.show();
     }
     private void initComponents(){
-        //appointment.setFill(colors[1]);
-        /*JPanel appointment = new JPanel();
-        main.add(appointment,"appointment");
-        appointment.setPreferredSize(new Dimension(960, 540));
-        appointment.setBackground(colors[1]);
-        //setContentPane(main);
-        main.setVisible(true);
-        main.setFocusable(true);*/
-
-        startButton = new JFXButton("Start Appointment");
+        /*startButton = new JFXButton("Start Appointment");
         startButton.getStyleClass().add("button-raised");
         startButton.setOnAction(this::startAppointmentEvent);
         Region padderRegion = new Region();
-        padderRegion.prefWidthProperty().setValue(250);
+        padderRegion.prefWidthProperty().setValue(250);*/
 
 
         BorderPane border = new BorderPane();
-        VBox vBox = new VBox(100);
-        vBox.setPadding(new Insets(100));
+        //VBox vBox = new VBox(100);
+        //vBox.setPadding(new Insets(100));
+        Label welcome = new Label("Welcome, ");
+        HBox top = new HBox();
+        border.setTop(top);
+        HBox filler = new HBox();
+        top.getChildren().add(filler);
+        HBox.setHgrow(filler,Priority.ALWAYS);
+        top.getChildren().add(welcome);
+        welcome.getStyleClass().add("user-text");
+
+        VBox center = new VBox();
+        border.setCenter(center);
+
+        HBox buttons = new HBox(100);
+        FontIcon appointmentIcon = new FontIcon("eli-calendar");
+        FontIcon accountIcon = new FontIcon("dashicons-businessperson");
+        FontIcon businessIcon = new FontIcon("icm-briefcase");
+        FontIcon serviceIcon = new FontIcon("ion4-ios-list-box");
+
+        appointmentIcon.getStyleClass().add("icon");
+        accountIcon.getStyleClass().add("icon");
+        businessIcon.getStyleClass().add("icon");
+        serviceIcon.getStyleClass().add("icon");
 
 
-        HBox hBox = new HBox(50);
-        hBox.getChildren().add(padderRegion);
+        JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
+        appointmentButton.setContentDisplay(ContentDisplay.TOP);
+        appointmentButton.setOnAction(e->{
+            int i;
+        });
+        buttons.getChildren().add(appointmentButton);
+
+        JFXButton accountButton = new JFXButton("Account",accountIcon);
+        accountButton.setContentDisplay(ContentDisplay.TOP);
+        accountButton.setOnAction(e->{
+            int i;
+        });
+        accountButton.getStyleClass().add("icon");
+        buttons.getChildren().add(accountButton);
+
+        JFXButton businessButton = new JFXButton("Business",businessIcon);
+        businessButton.setContentDisplay(ContentDisplay.TOP);
+        businessButton.setOnAction(e->{
+            int i;
+        });
+        businessButton.getStyleClass().add("icon");
+        buttons.getChildren().add(businessButton);
+
+        JFXButton serviceButton = new JFXButton("service",serviceIcon);
+        serviceButton.setContentDisplay(ContentDisplay.TOP);
+        serviceButton.setOnAction(e->{
+            int i;
+        });
+        buttons.getChildren().add(serviceButton);
+
+        center.getChildren().add(buttons);
+
+
+
+        //Box hBox = new HBox(50);
+        /*//hBox.getChildren().add(padderRegion);
         hBox.getChildren().add(startButton);
         //hBox.getChildren().add(vBox);
         border.setTop(hBox);
@@ -78,9 +138,9 @@ public class FlexiBookPage extends Application {
         JFXPasswordField password = new JFXPasswordField();
         password.setLabelFloat(true);
         password.setPromptText("Password");
-        vBox.getChildren().add(password);
+        vBox.getChildren().add(password);*/
 
-        HBox tilePane = new HBox();
+        /*HBox tilePane = new HBox();
         border.setBottom(tilePane);
         JFXDatePicker datePicker = new JFXDatePicker();
         datePicker.setOnAction(ActionEvent-> {
@@ -97,13 +157,13 @@ public class FlexiBookPage extends Application {
         jfxCombo.getItems().add(new Label("service 3"));
         jfxCombo.getItems().add(new Label("service 4"));
         jfxCombo.setPromptText("Select Service");
-        border.setRight(jfxCombo);
+        border.setRight(jfxCombo);*/
 
 
-        Scene appointment = new Scene(border,960,540,colors[3]);
+        Scene ownerHomeScreen = new Scene(border,1440,810,colors[3]);
         border.setStyle("-fx-background-color: #B0DDE4;");
-        mainStage.setScene(appointment);
-        appointment.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        mainStage.setScene(ownerHomeScreen);
+        ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
     }
 
     private void refreshData(){

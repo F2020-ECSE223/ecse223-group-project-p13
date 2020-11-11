@@ -39,6 +39,12 @@ dependencies {
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.2'
 
     compile 'com.jfoenix:jfoenix:8.0.10'
+    compile 'org.kordamp.ikonli:ikonli-core:2.6.0'
+    compile 'org.kordamp.ikonli:ikonli-javafx:2.6.0'
+    compile 'org.kordamp.ikonli:ikonli-dashicons-pack:2.6.0'
+    compile 'org.kordamp.ikonli:ikonli-elusive-pack:2.6.0'
+    compile 'org.kordamp.ikonli:ikonli-ionicons4-pack:2.6.0'
+    compile 'org.kordamp.ikonli:ikonli-icomoon-pack:2.6.0'
 }
 
 application {
