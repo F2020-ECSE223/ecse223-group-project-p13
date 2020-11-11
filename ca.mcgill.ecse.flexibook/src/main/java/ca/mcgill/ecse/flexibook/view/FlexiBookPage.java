@@ -42,8 +42,8 @@ public class FlexiBookPage extends Application {
     private Scene Services;
     private Scene Account;
     private Scene makeAppointment;*/
-    Label calendarMonth;
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
+    LocalDate renderDate;
 
 
 
@@ -60,7 +60,7 @@ public class FlexiBookPage extends Application {
         startButton.setOnAction(this::startAppointmentEvent);
         Region padderRegion = new Region();
         padderRegion.prefWidthProperty().setValue(250);*/
-
+        renderDate = LocalDate.now();
         /*
         //Main Screen
         BorderPane mainScreenBorderPane = new BorderPane();
@@ -293,7 +293,7 @@ public class FlexiBookPage extends Application {
         calendarTop.setStyle("-fx-background-color: #E2F0F9");
         HBox.setHgrow(calendarTop, Priority.ALWAYS);
 
-        calendarMonth = new Label("November");
+        Label calendarMonth = new Label(renderDate.getMonth().toString());
         calendarMain.setPrefSize(200,200);
         calendarMonth.getStyleClass().add("user-text");
         calendarTop.getChildren().add(calendarMonth);
@@ -381,12 +381,12 @@ public class FlexiBookPage extends Application {
     }
     private void switchToAppointment(){
         ownerHomeScreen.setRoot(ownerAppointmentCalendar);
-        updateDate(LocalDate.now());
+        updateDate();
     }
 
     private void switchToCustomerAppointment(){
         customerHomeScreen.setRoot(customerAppointmentCalendar);
-        updateDate(LocalDate.now());
+        updateDate();
     }
 
     private void switchToBusiness(){
@@ -396,9 +396,9 @@ public class FlexiBookPage extends Application {
 
     }
     private void switchToAccount(){}
-    private void updateDate(LocalDate date){
+    private void updateDate(){
 
-        LocalDate calendarDate = LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+        LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
         while (!calendarDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             calendarDate = calendarDate.minusDays(1);
         }
@@ -406,7 +406,8 @@ public class FlexiBookPage extends Application {
             c.setDate(calendarDate);
             c.setText(String.valueOf(calendarDate.getDayOfMonth()));
             calendarDate = calendarDate.plusDays(1);
-            if(!c.getDate().getMonth().equals(date.getMonth())){
+            c.getStyleClass().remove("not-in-month");
+            if(!c.getDate().getMonth().equals(renderDate.getMonth())){
                 c.getStyleClass().add("not-in-month");
             }
         }
@@ -416,42 +417,43 @@ public class FlexiBookPage extends Application {
             String message = ((JFXButton)e.getTarget()).getText();
             switch (message) {
                 case "January":
-                    calendarMonth.setText("January");
+                    renderDate = renderDate.withMonth(1);
                     break;
                 case "February":
-                    calendarMonth.setText("February");
+                    renderDate = renderDate.withMonth(2);
                     break;
                 case "March":
-                    calendarMonth.setText("March");
+                    renderDate = renderDate.withMonth(3);
                     break;
                 case "April":
-                    calendarMonth.setText("April");
+                    renderDate = renderDate.withMonth(4);
                     break;
                 case "May":
-                    calendarMonth.setText("May");
+                    renderDate = renderDate.withMonth(5);
                     break;
                 case "June":
-                    calendarMonth.setText("June");
+                    renderDate = renderDate.withMonth(6);
                     break;
                 case "July":
-                    calendarMonth.setText("July");
+                    renderDate = renderDate.withMonth(7);
                     break;
                 case "August":
-                    calendarMonth.setText("August");
+                    renderDate = renderDate.withMonth(8);
                     break;
                 case "September":
-                    calendarMonth.setText("September");
+                    renderDate = renderDate.withMonth(9);
                     break;
                 case "October":
-                    calendarMonth.setText("October");
+                    renderDate = renderDate.withMonth(10);
                     break;
                 case "November":
-                    calendarMonth.setText("November");
+                    renderDate = renderDate.withMonth(11);
                     break;
                 case "December":
-                    calendarMonth.setText("December");
+                    renderDate = renderDate.withMonth(12);
                     break;
             }
+            updateDate();
         }
     }
 

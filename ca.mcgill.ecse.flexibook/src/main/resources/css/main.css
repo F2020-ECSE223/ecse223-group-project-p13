@@ -46,9 +46,14 @@
     -fx-border-width: 1 1 1 1;
 }
 .not-in-month{
-    -fx-background-color: rgba(220, 20, 60, 0.5);
+    -fx-text-fill: #d3d3d3;
+    -fx-font-size: 20px;
+    -jfx-button-type: RAISED;
+    -fx-pref-width: 150;
+    -jfx-rippler-fill: #ffffff;
 }
 .calendar-holiday{
     -fx-background-color: #286FB480;
+
 }
 .calendar-appointment{}
