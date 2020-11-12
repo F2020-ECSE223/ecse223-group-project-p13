@@ -667,10 +667,11 @@ public class CucumberStepDefinitions {
             Time sTime = Time.valueOf(LocalTime.parse(row.get(3+off),formatter));
             Time eTime = Time.valueOf(LocalTime.parse(row.get(4+off),formatter));
             TimeSlot slot = new TimeSlot(date,sTime,date,eTime,flexiBook);
-            ServiceCombo combo = (ServiceCombo) BookableService.getWithName(row.get(1));
+
             Appointment a = new Appointment((Customer) Customer.getWithUsername(row.get(0)),
 					BookableService.getWithName(row.get(1)),slot,flexiBook);
-            if(off==1){
+            if( BookableService.getWithName(row.get(1)) instanceof ServiceCombo){
+				ServiceCombo combo = (ServiceCombo) BookableService.getWithName(row.get(1));
             	String[] args = row.get(2).split(",");
             	for(ComboItem s: combo.getServices()){
             		if(Arrays.asList(args).contains(s.getService().getName()) || s.getMandatory()){
