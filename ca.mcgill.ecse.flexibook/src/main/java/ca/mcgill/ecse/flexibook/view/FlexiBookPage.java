@@ -43,20 +43,12 @@ public class FlexiBookPage extends Application {
     //private CardLayout mainLayout;
     private Stage mainStage;
     Scene mainScene;
-    Scene ownerHomeScreen;
     HBox ownerAppointmentCalendar;
     HBox customerAppointmentCalendar;
     TextField textUserName;
     PasswordField pf;
-
-    /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
-    private Scene businessInfo;
-    private Scene Services;
-    private Scene Account;
-    private Scene makeAppointment;*/
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
     ArrayList<CalendarEntry> dbvDays = new ArrayList<>();
-    ArrayList<CalendarEntry> listDays2 = new ArrayList<>();
     LocalDate renderDate;
     Label calendarYear;
     List<TOAppointmentCalendarItem> items;
@@ -233,18 +225,9 @@ public class FlexiBookPage extends Application {
         //time combo boxes
         JFXComboBox<Label> hourSelection = new JFXComboBox<Label>();
 
-        hourSelection.getItems().add(new Label("1"));
-        hourSelection.getItems().add(new Label("2"));
-        hourSelection.getItems().add(new Label("3"));
-        hourSelection.getItems().add(new Label("4"));
-        hourSelection.getItems().add(new Label("5"));
-        hourSelection.getItems().add(new Label("6"));
-        hourSelection.getItems().add(new Label("7"));
-        hourSelection.getItems().add(new Label("8"));
-        hourSelection.getItems().add(new Label("9"));
-        hourSelection.getItems().add(new Label("10"));
-        hourSelection.getItems().add(new Label("11"));
-        hourSelection.getItems().add(new Label("12"));
+        for(int i = 1; i < 13; i++){
+            hourSelection.getItems().add(new Label(String.valueOf(i)));
+        }
 
         hourSelection.setPromptText("Select Hour");
 
@@ -252,18 +235,18 @@ public class FlexiBookPage extends Application {
 
         JFXComboBox<Label> minuteSelection = new JFXComboBox<Label>();
 
-        minuteSelection.getItems().add(new Label("00"));
-        minuteSelection.getItems().add(new Label("05"));
-        minuteSelection.getItems().add(new Label("10"));
-        minuteSelection.getItems().add(new Label("15"));
-        minuteSelection.getItems().add(new Label("20"));
-        minuteSelection.getItems().add(new Label("25"));
-        minuteSelection.getItems().add(new Label("30"));
-        minuteSelection.getItems().add(new Label("35"));
-        minuteSelection.getItems().add(new Label("40"));
-        minuteSelection.getItems().add(new Label("45"));
-        minuteSelection.getItems().add(new Label("50"));
-        minuteSelection.getItems().add(new Label("55"));
+        for(int i = 0; i < 56; i+=5){
+            if(i == 0){
+                minuteSelection.getItems().add(new Label("00"));
+                continue;
+            }
+            if(i == 5){
+                minuteSelection.getItems().add(new Label("05"));
+            }
+            else{
+                minuteSelection.getItems().add(new Label(String.valueOf(i)));
+            }
+        }
 
         minuteSelection.setPromptText("Select Minute");
 
@@ -633,7 +616,6 @@ public class FlexiBookPage extends Application {
                 calendarEntry.setOnAction(this::updateDailySchedule);
                 entry.add(calendarEntry);
                 listDays.add(calendarEntry);
-                listDays2.add(calendarEntry);
                 days.add(calendarEntry,j,i);
             }
         }
