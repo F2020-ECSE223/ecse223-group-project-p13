@@ -6,7 +6,6 @@ import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 
 import ca.mcgill.ecse.flexibook.util.SystemTime;
 import com.jfoenix.controls.*;
-import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -59,6 +58,12 @@ public class FlexiBookPage extends Application {
     //String username = "f10na_ryan";
     TableView<DayEvent> dailyAppointmentTable;
     String username = null;
+    JFXTextField updateUsername;
+    JFXPasswordField updatePassword;
+    TextField textUserName1;
+    PasswordField pf1;
+
+
 
     public void start(Stage s){
         mainStage = s;
@@ -125,6 +130,8 @@ public class FlexiBookPage extends Application {
         FontIcon loginIcon = new FontIcon("dashicons-admin-users");
         FontIcon logoutIcon= new FontIcon("dashicons-exit");
         FontIcon signUp= new FontIcon("dashicons-edit");
+        FontIcon delete = new FontIcon("dashicons-trash");
+        FontIcon back = new FontIcon("dashicons-arrow-left-alt");
 
         appointmentIcon.getStyleClass().add("icon");
         accountIcon.getStyleClass().add("icon");
@@ -137,6 +144,10 @@ public class FlexiBookPage extends Application {
         accountIcon.getStyleClass().add("icon-main-menu");
         businessIcon.getStyleClass().add("icon-main-menu");
         serviceIcon.getStyleClass().add("icon-main-menu");
+        delete.getStyleClass().add("icon");
+        back.getStyleClass().add("icon");
+
+        JFXButton backPage = new JFXButton("Back", back);
 
         JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
         logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
@@ -482,7 +493,94 @@ public class FlexiBookPage extends Application {
         mainScene.setRoot(ownerMainScreenBorderPane);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         customerScreenBorderPane.requestFocus();
+
+                //Account
+        changeAcc = new HBox();
+        changeAcc.setPadding(new Insets(100,100,100,100));
+        changeAcc.setStyle("-fx-background-color: #B0DDE4;");
+        GridPane pane= new GridPane();
+        pane.setHgap(100);
+        pane.setVgap(100);
+        JFXButton updateButton = new JFXButton("Update Account",signUp);
+        updateButton.setOnAction(e->updateAcc());
+        JFXButton deleteAcc = new JFXButton("Delete Account", delete);
+        deleteAcc.setOnAction(e->deleteAcc());
+
+        Label newUsername = new Label("Enter your new username!");
+        updateUsername = new JFXTextField();
+        changeAcc.getChildren().add(updateUsername);
+
+        Label newPassword = new Label("Enter your new password!");
+        updatePassword = new JFXPasswordField();
+        changeAcc.getChildren().add(updatePassword);
+
+
+        pane.add(newUsername,0,0);
+        pane.add(updateUsername,1,0);
+        pane.add(newPassword,0,1);
+        pane.add(updatePassword,1,1);
+        pane.add(updateButton, 1, 2);
+        pane.add(deleteAcc, 2, 2);
+        pane.add(backPage, 3, 0);
+        pane.setAlignment(Pos.CENTER_LEFT);
+
+        changeAcc.getChildren().add(pane);
+
+        backPage.setOnAction(e->back());
+
     }
+
+    private void back() {
+
+
+
+    }
+
+    private void signUp() {
+
+    	try{
+        	String username = textUserName1.getText();
+        	String password = pf1.getText();
+            FlexiBookController.customerSignUp(username, password);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    private void updateAcc() {
+
+        try{
+        	String username = FlexiBookApplication.getUser().getUsername();
+        	String newUsername = updateUsername.getText();
+        	String newPassword = updatePassword.getText();
+            FlexiBookController.updateAccount(username, newUsername, newPassword);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    private void deleteAcc(){
+
+        try{
+        	String username = FlexiBookApplication.getUser().getUsername();
+            FlexiBookController.deleteCustomerAccount(username);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+
+    }
+
+    private void switchToAccount(){
+
+    	ownerHomeScreen.setRoot(changeAcc);
+
+    }
+
     private void logout() {
         try{
             FlexiBookController.logout();
