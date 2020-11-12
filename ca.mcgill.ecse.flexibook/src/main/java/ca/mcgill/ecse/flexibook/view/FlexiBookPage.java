@@ -23,11 +23,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import org.checkerframework.checker.units.qual.A;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -71,8 +69,6 @@ public class FlexiBookPage extends Application {
         startButton.setOnAction(this::startAppointmentEvent);
         Region padderRegion = new Region();
         padderRegion.prefWidthProperty().setValue(250);*/
-        renderDate = LocalDate.now();
-
 
 
         //Main Screen
@@ -446,7 +442,7 @@ public class FlexiBookPage extends Application {
         //ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         //mainScreenBorderPane.requestFocus();
 
-        mainScene.setRoot(customerScreenBorderPane);
+        mainScene.setRoot(change2);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         customerScreenBorderPane.requestFocus();
     }
@@ -555,7 +551,7 @@ public class FlexiBookPage extends Application {
         leftArrowButton.setContentDisplay(ContentDisplay.TOP);
         leftArrowButton.setOnAction(e-> {
             renderDate= renderDate.minusYears(1);
-            updateDate();
+            updateDate(listDays);
         });
         leftArrowButton.getStyleClass().add("icon-calendar-button");
         calendarTop.getChildren().add(leftArrowButton);
@@ -568,7 +564,7 @@ public class FlexiBookPage extends Application {
         rightArrowButton.setContentDisplay(ContentDisplay.TOP);
         rightArrowButton.setOnAction(e-> {
             renderDate= renderDate.plusYears(1);
-            updateDate();
+            updateDate(listDays);
         });
         rightArrowButton.getStyleClass().add("icon-calendar-button");
         calendarTop.getChildren().add(rightArrowButton);
@@ -622,8 +618,6 @@ public class FlexiBookPage extends Application {
         calendarMain.getChildren().add(days);
     return calendar;
     }
-
-
     private void startAppointmentEvent(ActionEvent event){
         error = null;
         startButton.setText("End Appointment");
@@ -649,20 +643,18 @@ public class FlexiBookPage extends Application {
     }
     private void switchToAppointment(){
         mainScene.setRoot(ownerAppointmentCalendar);
-        updateDate();
+        updateDate(listDays);
     }
 
     private void switchToCustomerAppointment(){
         mainScene.setRoot(customerAppointmentCalendar);
-        updateDate();
+        updateDate(listDays);
     }
 
     private void switchToBusiness(){
         //mainStage.setScene(businessInfo);
     }
     private void switchToServices(){}
-
-
     private List<TOAppointmentCalendarItem> updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
@@ -682,16 +674,16 @@ public class FlexiBookPage extends Application {
 
     private void switchToCustomerAccount(){}
 
-    private void updateDate(){
-        listDays.get(15).getStyleClass().add("calendar-holiday");
-        listDays.get(15).setStyle("-fx-background-color: #e0163e");
+    private void updateDate(ArrayList<CalendarEntry> list){
+        list.get(15).getStyleClass().add("calendar-holiday");
+        list.get(15).setStyle("-fx-background-color: #e0163e");
         calendarYear.setText(String.valueOf(renderDate.getYear()));
         calendarMonth.setText(String.valueOf(renderDate.getMonth()));
         LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
         while (!calendarDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             calendarDate = calendarDate.minusDays(1);
         }
-        for(CalendarEntry c:listDays){
+        for(CalendarEntry c:list){
             c.setDate(calendarDate);
             c.setText(String.valueOf(calendarDate.getDayOfMonth()));
             calendarDate = calendarDate.plusDays(1);
@@ -700,7 +692,6 @@ public class FlexiBookPage extends Application {
                 c.getStyleClass().add("not-in-month");
             }
         }
-
     }
 
     private void switchMonth(ActionEvent e){
@@ -744,7 +735,7 @@ public class FlexiBookPage extends Application {
                     renderDate = renderDate.withMonth(12);
                     break;
             }
-            updateDate();
+            updateDate(listDays);
         }
     }
     private String generateLocalDate(LocalDate date){
