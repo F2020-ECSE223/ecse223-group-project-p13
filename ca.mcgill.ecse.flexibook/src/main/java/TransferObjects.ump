@@ -13,6 +13,7 @@ class TOAppointmentCalendarItem{
     Time startTime;
     Time endTime;
     boolean available;
+    String username;
 }
 
 

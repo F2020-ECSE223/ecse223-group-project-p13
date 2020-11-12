@@ -1844,7 +1844,7 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true,null);
     		input.add(n1);
     	}
     	int count=0;
@@ -1867,7 +1867,7 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(2),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false,null);
     		input.add(n1);
     	}
     	int count=0;
