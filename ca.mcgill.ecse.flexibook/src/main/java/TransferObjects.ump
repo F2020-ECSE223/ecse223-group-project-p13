@@ -16,4 +16,15 @@ class TOAppointmentCalendarItem{
     String username;
 }
 
+class TOBookableService {
+	String name;
+}
+
+class TOService {
+	String name;
+	int duration;
+	int downtimeDuration;
+	int downtimeStart;
+}
+
 
