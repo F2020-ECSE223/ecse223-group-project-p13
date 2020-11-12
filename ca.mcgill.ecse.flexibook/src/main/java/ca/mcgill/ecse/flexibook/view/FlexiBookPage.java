@@ -604,7 +604,7 @@ public class FlexiBookPage extends Application {
     }
 
     private void refreshData(){
-        int index = 0;
+        /*int index = 0;
         serviceNameInput.setText("");
         downtimeDurationInput.setText("");
         durationInput.setText("");
@@ -620,7 +620,7 @@ public class FlexiBookPage extends Application {
             existingServices.getItems().add(s.getName());
             existingServices1.getItems().add(s.getName());
             index++;
-        }
+        }*/
     }
     private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox  calendar =new HBox();
