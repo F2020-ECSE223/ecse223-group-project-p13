@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.flexibook.view;
 
+import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
@@ -38,6 +39,10 @@ public class FlexiBookPage extends Application {
     HBox ownerAppointmentCalendar;
     TextField textUserName;
     PasswordField pf;
+    JFXTextField updateUsername;
+    JFXPasswordField updatePassword;
+    TextField textUserName1;
+    PasswordField pf1;
     /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
     private Scene businessInfo;
     private Scene Services;
@@ -45,6 +50,8 @@ public class FlexiBookPage extends Application {
     private Scene makeAppointment;*/
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
     LocalDate renderDate;
+	private HBox change2;
+	private HBox changeAcc;
 
 
 
@@ -95,6 +102,7 @@ public class FlexiBookPage extends Application {
         FontIcon loginIcon = new FontIcon("dashicons-admin-users");
         FontIcon logoutIcon= new FontIcon("dashicons-exit");
         FontIcon signUp= new FontIcon("dashicons-edit");
+        FontIcon delete = new FontIcon("dashicons-trash");
 
         appointmentIcon.getStyleClass().add("icon");
         accountIcon.getStyleClass().add("icon");
@@ -103,12 +111,14 @@ public class FlexiBookPage extends Application {
         loginIcon.getStyleClass().add("icon");
         logoutIcon.getStyleClass().add("icon");
         signUp.getStyleClass().add("icon");
+        delete.getStyleClass().add("icon");
 
         JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
         logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
         logoutButton.getStyleClass().add("main-menu-button");
         logoutButton.setOnAction(e->logout());
         bottom.getChildren().add(logoutButton);
+        
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
         appointmentButton.setOnAction(e->switchToAppointment());
@@ -213,10 +223,11 @@ public class FlexiBookPage extends Application {
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
-        final TextField textUserName1= new TextField();
+        textUserName1= new TextField();
         Label lblPassword1= new Label("Enter a Password");
-        final PasswordField pf1=  new PasswordField();
+        pf1=  new PasswordField();
         JFXButton btonLogin1= new JFXButton("SignUp",signUp);
+        btonLogin1.setOnAction(e->signUp());
         final Label lblMessage1= new Label();
         gridP2.add(lblUserName1,0,0);
         gridP2.add(textUserName1,1,0);
@@ -235,7 +246,88 @@ public class FlexiBookPage extends Application {
         mainStage.setScene(ownerHomeScreen);
         ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         mainScreenBorderPane.requestFocus();
+        
+        
+        //Account
+        changeAcc = new HBox();
+        changeAcc.setPadding(new Insets(200,200,200,200));
+        changeAcc.setStyle("-fx-background-color: #B0DDE4;");
+        GridPane pane= new GridPane();
+        pane.setHgap(100);
+        pane.setVgap(100);
+        JFXButton updateButton = new JFXButton("Update Account",signUp);
+        updateButton.setOnAction(e->updateAcc());
+        JFXButton deleteAcc = new JFXButton("Delete Account", delete);
+        deleteAcc.setOnAction(e->deleteAcc());
+        
+        Label newUsername = new Label("Enter your new username!");
+        updateUsername = new JFXTextField(); 
+        changeAcc.getChildren().add(updateUsername);
+        
+        Label newPassword = new Label("Enter your new password!");
+        updatePassword = new JFXPasswordField();
+        changeAcc.getChildren().add(updatePassword);
+       
+
+        pane.add(newUsername,0,0);
+        pane.add(updateUsername,1,0);
+        pane.add(newPassword,0,1);
+        pane.add(updatePassword,1,1);
+        pane.add(updateButton, 1, 2);
+        pane.add(deleteAcc, 2, 2);
+        pane.setAlignment(Pos.CENTER_LEFT);
+        
+        changeAcc.getChildren().add(pane);
+        
+        
+        
     }
+    
+    private void signUp() {
+    	
+    	try{
+        	String username = textUserName1.getText();
+        	String password = pf1.getText();
+            FlexiBookController.customerSignUp(username, password);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+    	
+    }
+    
+    private void updateAcc() {
+    	
+        try{
+        	String username = FlexiBookApplication.getUser().getUsername();
+        	String newUsername = updateUsername.getText();
+        	String newPassword = updatePassword.getText();
+            FlexiBookController.updateAccount(username, newUsername, newPassword);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+    	
+    }
+    
+    private void deleteAcc(){
+    	
+        try{
+        	String username = FlexiBookApplication.getUser().getUsername();
+            FlexiBookController.deleteCustomerAccount(username);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+    	
+    }
+    
+    private void switchToAccount(){
+    	
+    	ownerHomeScreen.setRoot(changeAcc);
+    	
+    }
+    
     private void logout() {
         try{
             FlexiBookController.logout();
@@ -419,9 +511,8 @@ public class FlexiBookPage extends Application {
 
     }
     private void switchToHomeScreen(){
-    ownerHomeScreen.setRoot(change2);
+    	ownerHomeScreen.setRoot(change2);
     }
-    private void switchToAccount(){}
     private void updateDate(){
 
         LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
