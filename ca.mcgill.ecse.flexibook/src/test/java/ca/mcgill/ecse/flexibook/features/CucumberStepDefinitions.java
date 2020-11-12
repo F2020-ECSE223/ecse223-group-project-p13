@@ -1059,7 +1059,7 @@ public class CucumberStepDefinitions {
     @When("{string} initiates the addition of the service {string} with duration {string}, start of down time {string} and down time duration {string}")
     public void initiatesTheAdditionOfTheServiceWithDurationStartOfDownTimeAndDownTimeDuration(String username, String name, String duration, String downtimeStart, String downtimeDuration) {
     	try{
-            FlexiBookController.addService(username, name, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
+            FlexiBookController.addService(name, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
         }
         catch (InvalidInputException e){
             error += e.getMessage();
@@ -1158,7 +1158,7 @@ public class CucumberStepDefinitions {
     @When("{string} initiates the deletion of service {string}")
     public void initiatesTheDeletionOfService(String username, String name) {
     	try{
-            FlexiBookController.deleteService(username, name);
+            FlexiBookController.deleteService(name);
         }
         catch (InvalidInputException e){
             error += e.getMessage();
@@ -1808,7 +1808,7 @@ public class CucumberStepDefinitions {
     @When("{string} initiates the update of the service {string} to name {string}, duration {string}, start of down time {string} and down time duration {string}")
     public void initiatesTheUpdateOfTheServiceToNameDurationStartOfDownTimeAndDownTimeDuration(String username, String currentName, String newName, String duration, String downtimeStart, String downtimeDuration) {
     	try{
-            FlexiBookController.updateService(username, currentName, newName, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
+            FlexiBookController.updateService(currentName, newName, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
         }
         catch (InvalidInputException e){
             error += e.getMessage();
