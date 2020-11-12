@@ -181,8 +181,8 @@ public class FlexiBookPage extends Application {
         FontIcon appointmentIcon1 = new FontIcon("eli-calendar");
         FontIcon accountIcon1 = new FontIcon("dashicons-businessperson");
 
-        appointmentIcon1.getStyleClass().add("icon");
-        accountIcon1.getStyleClass().add("icon");
+        appointmentIcon1.getStyleClass().add("icon-main-menu");
+        accountIcon1.getStyleClass().add("icon-main-menu");
 
 
         JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
@@ -219,6 +219,7 @@ public class FlexiBookPage extends Application {
         makeApptButton.setTextFill(Paint.valueOf("#ffffff"));
 
         //time combo boxes
+        //hour
         JFXComboBox<Label> hourSelection = new JFXComboBox<Label>();
 
         for(int i = 1; i < 13; i++){
@@ -229,6 +230,7 @@ public class FlexiBookPage extends Application {
 
         hourSelection.setStyle("-fx-background-color: #b0dde4");
 
+        //minute
         JFXComboBox<Label> minuteSelection = new JFXComboBox<Label>();
 
         for(int i = 0; i < 56; i+=5){
@@ -248,6 +250,7 @@ public class FlexiBookPage extends Application {
 
         minuteSelection.setStyle("-fx-background-color: #b0dde4");
 
+        // pm/am
         JFXComboBox<Label> timeOfDay = new JFXComboBox<Label>();
 
         timeOfDay.getItems().add(new Label("AM"));
@@ -256,6 +259,17 @@ public class FlexiBookPage extends Application {
         timeOfDay.setPromptText("AM/PM");
 
         timeOfDay.setStyle("-fx-background-color: #b0dde4");
+
+        //service
+        JFXComboBox<Label> services = new JFXComboBox<Label>();
+
+        services.getItems().add(new Label("service1"));
+        services.getItems().add(new Label("service2"));
+
+        services.setPromptText("Choose Service");
+
+        services.setStyle("-fx-background-color: #b0dde4");
+
 
         // make appt button and date picker for pop up
         VBox datePickBox = new VBox(40);
@@ -272,7 +286,9 @@ public class FlexiBookPage extends Application {
         timePicker.setAlignment(Pos.CENTER);
         datePickBox.getChildren().add(timePicker);
 
+        datePickBox.getChildren().add(services);
         makeApptButton.setAlignment(Pos.CENTER);
+
         datePickBox.getChildren().add(makeApptButton);
 
         JFXPopup appointmentPopup = new JFXPopup();
@@ -294,7 +310,7 @@ public class FlexiBookPage extends Application {
             @Override
             public void handle(ActionEvent event) {
                 StackPane secondaryLayout = new StackPane();
-                Scene secondScene = new Scene(secondaryLayout, 500, 200);
+                Scene secondScene = new Scene(secondaryLayout, 510, 300);
 
                 secondaryLayout.getChildren().add(datePickBox);
 
@@ -353,7 +369,7 @@ public class FlexiBookPage extends Application {
         FontIcon plusIcon = new FontIcon("eli-plus-sign");
         plusIcon.setScaleX(0.5);
         plusIcon.setScaleY(0.5);
-        plusIcon.getStyleClass().add("icon");
+        plusIcon.getStyleClass().add("icon-main-menu");
 
 
         Label slabel = new Label("",plusIcon);
@@ -415,7 +431,7 @@ public class FlexiBookPage extends Application {
         final PasswordField pf1=  new PasswordField();
         JFXButton btonLogin1= new JFXButton("SignUp",signUp);
         btonLogin1.setOnAction(e->{
-            mainScene.setRoot(mainScreenBorderPane);
+            mainScene.setRoot(customerScreenBorderPane);
         });
         final Label lblMessage1= new Label();
         gridP2.add(lblUserName1,0,0);
@@ -551,7 +567,7 @@ public class FlexiBookPage extends Application {
         leftArrowButton.setContentDisplay(ContentDisplay.TOP);
         leftArrowButton.setOnAction(e-> {
             renderDate= renderDate.minusYears(1);
-            updateDate(listDays);
+            updateDate(dbvDays);
         });
         leftArrowButton.getStyleClass().add("icon-calendar-button");
         calendarTop.getChildren().add(leftArrowButton);
@@ -564,7 +580,7 @@ public class FlexiBookPage extends Application {
         rightArrowButton.setContentDisplay(ContentDisplay.TOP);
         rightArrowButton.setOnAction(e-> {
             renderDate= renderDate.plusYears(1);
-            updateDate(listDays);
+            updateDate(dbvDays);
         });
         rightArrowButton.getStyleClass().add("icon-calendar-button");
         calendarTop.getChildren().add(rightArrowButton);
@@ -648,7 +664,7 @@ public class FlexiBookPage extends Application {
 
     private void switchToCustomerAppointment(){
         mainScene.setRoot(customerAppointmentCalendar);
-        updateDate(listDays);
+        updateDate(dbvDays);
     }
 
     private void switchToBusiness(){
@@ -735,7 +751,7 @@ public class FlexiBookPage extends Application {
                     renderDate = renderDate.withMonth(12);
                     break;
             }
-            updateDate(listDays);
+            updateDate(dbvDays);
         }
     }
     private String generateLocalDate(LocalDate date){
