@@ -1847,8 +1847,14 @@ public class CucumberStepDefinitions {
     		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true);
     		input.add(n1);
     	}
+    	int count=0;
+    	for(TOAppointmentCalendarItem item: output1){
+    		if(item.getAvailable()){
+    			count++;
+			}
+		}
  
-        assertEquals(input.size(),output1.size());
+        assertEquals(input.size(),count);
     }
     @Then("the following slots shall be unavailable:")
     public void theFollowingSlotsShallBeUnavailable(List<List<String>> list) {
@@ -1864,7 +1870,14 @@ public class CucumberStepDefinitions {
     		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false);
     		input.add(n1);
     	}
-        assertEquals(input.size(),output1.size());
+    	int count=0;
+		for(TOAppointmentCalendarItem item: output1){
+			if(!item.getAvailable()){
+				count++;
+			}
+		}
+
+		assertEquals(input.size(),count);
     }
 /*
 *@author Victoria Sanchez
