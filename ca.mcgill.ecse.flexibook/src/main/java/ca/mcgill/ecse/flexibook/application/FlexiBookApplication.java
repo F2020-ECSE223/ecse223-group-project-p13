@@ -10,7 +10,7 @@ import ca.mcgill.ecse.flexibook.view.FlexiBookPage;
 import javafx.application.Application;
 
 public class FlexiBookApplication {
-	private static FlexiBook flexibook ;
+	private static FlexiBook flexibook;
 	private static User currentUser;
     public String getGreeting() {
         return "Hello world.";
