@@ -1,6 +1,5 @@
 package ca.mcgill.ecse.flexibook.view;
 
-import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
@@ -48,10 +47,13 @@ public class FlexiBookPage extends Application {
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
     ArrayList<CalendarEntry> dbvDays = new ArrayList<>();
     LocalDate renderDate;
-    Label calendarYear;
     List<TOAppointmentCalendarItem> items;
     HBox change2;
-    Label calendarMonth;
+    Label calendarMonthOwner;
+    Label calendarYearOwner;
+    Label calendarMonthCustomer;
+    Label calendarYearCustomer;
+
 
 
     public void start(Stage s){
@@ -124,7 +126,7 @@ public class FlexiBookPage extends Application {
         bottom.getChildren().add(logoutButton);
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
-        appointmentButton.setOnAction(e->switchToAppointment());
+        appointmentButton.setOnAction(e-> switchToOwnerAppointment());
         appointmentButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(appointmentButton);
 
@@ -203,10 +205,11 @@ public class FlexiBookPage extends Application {
 
         //Appointment Calendar
         ownerAppointmentCalendar = new HBox();
-        ownerAppointmentCalendar.getChildren().add(setCalendar(listDays));
+        ownerAppointmentCalendar.getChildren().add(setCalendar(listDays,true));
         ownerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
+
         customerAppointmentCalendar = new HBox();
-        customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays));
+        customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays,false));
         customerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
 
 
@@ -452,12 +455,6 @@ public class FlexiBookPage extends Application {
         mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         mainScreenBorderPane.requestFocus();
 
-        //ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
-        //mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        //mainStage.setScene(ownerHomeScreen);
-        //ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-        //mainScreenBorderPane.requestFocus();
-
         mainScene.setRoot(change2);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         customerScreenBorderPane.requestFocus();
@@ -484,7 +481,7 @@ public class FlexiBookPage extends Application {
     private void refreshData(){
 
     }
-    private HBox setCalendar(ArrayList<CalendarEntry> entry){
+    private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox  calendar =new HBox();
 
         VBox months = new VBox(20);
@@ -548,16 +545,6 @@ public class FlexiBookPage extends Application {
         HBox calendarTop = new HBox();
         calendarTop.setStyle("-fx-background-color: #E2F0F9");
 
-        //HBox.setHgrow(calendarTop, Priority.ALWAYS);
-
-        calendarMonth = new Label(renderDate.getMonth().toString());
-        calendarMain.setPrefSize(500,100);
-        calendarMonth.getStyleClass().add("month-year");
-        calendarTop.getChildren().add(calendarMonth);
-        Region space = new Region();
-        space.setMinWidth(415);
-        calendarTop.getChildren().add(space);
-
         FontIcon leftArrow = new FontIcon("fth-arrow-left-circle");
         leftArrow.getStyleClass().add("icon-calendar");
         FontIcon rightArrow = new FontIcon("fth-arrow-right-circle");
@@ -567,23 +554,48 @@ public class FlexiBookPage extends Application {
         leftArrowButton.setContentDisplay(ContentDisplay.TOP);
         leftArrowButton.setOnAction(e-> {
             renderDate= renderDate.minusYears(1);
+            updateDate(listDays,calendarYearOwner,calendarMonthOwner);
             updateDate(dbvDays);
         });
         leftArrowButton.getStyleClass().add("icon-calendar-button");
-        calendarTop.getChildren().add(leftArrowButton);
-
-        calendarYear = new Label(String.valueOf(renderDate.getYear()));
-        calendarYear.getStyleClass().add("month-year");
-        calendarTop.getChildren().add(calendarYear);
+        Region space = new Region();
+        space.setMinWidth(350);
 
         JFXButton rightArrowButton = new JFXButton("",rightArrow);
         rightArrowButton.setContentDisplay(ContentDisplay.TOP);
         rightArrowButton.setOnAction(e-> {
             renderDate= renderDate.plusYears(1);
-            updateDate(dbvDays);
+            updateDate(listDays,calendarYearOwner,calendarMonthOwner);
         });
         rightArrowButton.getStyleClass().add("icon-calendar-button");
-        calendarTop.getChildren().add(rightArrowButton);
+        calendarMain.setPrefSize(500,100);
+
+        if(owner){
+            calendarMonthOwner =  new Label(renderDate.getMonth().toString());
+            calendarMonthOwner.getStyleClass().add("month-year");
+            calendarMonthOwner.setPrefWidth(150);
+            calendarTop.getChildren().add(calendarMonthOwner);
+            calendarTop.getChildren().add(space);
+            calendarTop.getChildren().add(leftArrowButton);
+            calendarYearOwner = new Label(String.valueOf(renderDate.getYear()));
+            calendarYearOwner.getStyleClass().add("month-year");
+            calendarTop.getChildren().add(calendarYearOwner);
+            calendarTop.getChildren().add(rightArrowButton);
+        }
+        else{
+            calendarMonthCustomer =  new Label(renderDate.getMonth().toString());
+            calendarMonthCustomer.getStyleClass().add("month-year");
+            calendarTop.getChildren().add(calendarMonthCustomer);
+            calendarTop.getChildren().add(space);
+            calendarTop.getChildren().add(leftArrowButton);
+            calendarYearCustomer = new Label(String.valueOf(renderDate.getYear()));
+            calendarYearCustomer.getStyleClass().add("month-year");
+            calendarTop.getChildren().add(calendarYearCustomer);
+            calendarTop.getChildren().add(rightArrowButton);
+        }
+
+
+
 
         calendarMain.getChildren().add(calendarTop);
         AnchorPane.setRightAnchor(rightArrow,0.0);
@@ -657,14 +669,14 @@ public class FlexiBookPage extends Application {
             error = e.getMessage();
         }
     }
-    private void switchToAppointment(){
+    private void switchToOwnerAppointment(){
         mainScene.setRoot(ownerAppointmentCalendar);
-        updateDate(listDays);
+        updateDate(listDays,calendarYearOwner,calendarMonthOwner);
     }
 
     private void switchToCustomerAppointment(){
         mainScene.setRoot(customerAppointmentCalendar);
-        updateDate(dbvDays);
+        updateDate(listDays,null,null);
     }
 
     private void switchToBusiness(){
@@ -690,11 +702,11 @@ public class FlexiBookPage extends Application {
 
     private void switchToCustomerAccount(){}
 
-    private void updateDate(ArrayList<CalendarEntry> list){
+    private void updateDate(ArrayList<CalendarEntry> list,Label year,Label month){
         list.get(15).getStyleClass().add("calendar-holiday");
         list.get(15).setStyle("-fx-background-color: #e0163e");
-        calendarYear.setText(String.valueOf(renderDate.getYear()));
-        calendarMonth.setText(String.valueOf(renderDate.getMonth()));
+        year.setText(String.valueOf(renderDate.getYear()));
+        month.setText(String.valueOf(renderDate.getMonth()));
         LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
         while (!calendarDate.getDayOfWeek().toString().equals("SUNDAY") ) {
             calendarDate = calendarDate.minusDays(1);
@@ -751,7 +763,7 @@ public class FlexiBookPage extends Application {
                     renderDate = renderDate.withMonth(12);
                     break;
             }
-            updateDate(dbvDays);
+            updateDate(listDays,calendarYearOwner,calendarMonthOwner);
         }
     }
     private String generateLocalDate(LocalDate date){
