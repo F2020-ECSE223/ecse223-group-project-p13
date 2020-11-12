@@ -10,7 +10,7 @@
 .user-text{
     -fx-padding: 0.7em 0.57em;
     -fx-font-size: 20px;
-    -fx-pref-width: 200;
+    -fx-pref-width: 175;
     -fx-text-fill: #286FB4;
 }
 .icon-main-menu{
@@ -32,34 +32,58 @@
     -fx-background-color: #286FB4;
     -fx-pref-width: 150;
     -fx-text-fill: #ffffff;
-    -jfx-rippler-fill: #ffffff;
-
+    -jfx-rippler-fill: #FFFFFF;
 }
-.calendar-cell{
+.service-text{
+    -fx-font-size: 17px;
+    -fx-pref-width: 175;
+    -fx-text-fill: #286FB4;
+}
+.service-button{
+    -fx-font-size: 17px;
+    -fx-pref-width: 200;
+    -fx-text-fill: #286FB4;
+    -fx-background-color: #E2F0F9;
+}
+.service-heading{
+    -fx-padding: 0.7em 0.57em;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 250;
+    -fx-text-fill: #286FB4;
+    -fx-font-family: "Anurati-Regular";
+}
+.month-year{
+    -fx-padding: 0.7em 0.57em;
+    -fx-font-size: 20px;
+    -fx-text-fill: #286FB4;
+    -fx-font-weight: bold;
+    -fx-font-family: "Anurati-Regular";
+}
+@font-face {
+    src: url('Anurati-Regular.otf') format("opentype");
+}
+.daily-appointment-table{
     -fx-font-size: 20px;
     -jfx-button-type: RAISED;
-    -fx-background-color: #286FB4;
-    -fx-pref-width: 150;
-    -fx-text-fill: #000000;
+    -fx-background-color: #E2F0F9;
+
+    -fx-text-fill: #286FB4;
     -jfx-rippler-fill: #ffffff;
     -fx-border-color:#D3D3D3;
     -fx-border-width: 1 1 1 1;
 }
-.not-in-month{
-    -fx-text-fill: #d3d3d3;
+.error-text{
     -fx-font-size: 20px;
-    -jfx-button-type: RAISED;
+    -fx-text-fill: #FF0000;
+}
+.combo-box{
     -fx-pref-width: 150;
-    -jfx-rippler-fill: #ffffff;
 }
-.calendar-holiday{
-    -fx-background-color: #286FB4;
-}
-.calendar-appointment{}
 .icon-calendar{
     -fx-icon-size: 20px;
-    -fx-icon-color: #286FB4;
-    -fx-text-size: 1em;
+    -fx-icon-color: #286fb4;
+    -fx-text-size:1em;
 }
 .icon-calendar-button{
     /*-jfx-button-type: RAISED;*/

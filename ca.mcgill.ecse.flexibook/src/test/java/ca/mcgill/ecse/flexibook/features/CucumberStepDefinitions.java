@@ -667,10 +667,11 @@ public class CucumberStepDefinitions {
             Time sTime = Time.valueOf(LocalTime.parse(row.get(3+off),formatter));
             Time eTime = Time.valueOf(LocalTime.parse(row.get(4+off),formatter));
             TimeSlot slot = new TimeSlot(date,sTime,date,eTime,flexiBook);
-            ServiceCombo combo = (ServiceCombo) BookableService.getWithName(row.get(1));
+
             Appointment a = new Appointment((Customer) Customer.getWithUsername(row.get(0)),
 					BookableService.getWithName(row.get(1)),slot,flexiBook);
-            if(off==1){
+            if( BookableService.getWithName(row.get(1)) instanceof ServiceCombo){
+				ServiceCombo combo = (ServiceCombo) BookableService.getWithName(row.get(1));
             	String[] args = row.get(2).split(",");
             	for(ComboItem s: combo.getServices()){
             		if(Arrays.asList(args).contains(s.getService().getName()) || s.getMandatory()){
@@ -1058,7 +1059,7 @@ public class CucumberStepDefinitions {
     @When("{string} initiates the addition of the service {string} with duration {string}, start of down time {string} and down time duration {string}")
     public void initiatesTheAdditionOfTheServiceWithDurationStartOfDownTimeAndDownTimeDuration(String username, String name, String duration, String downtimeStart, String downtimeDuration) {
     	try{
-            FlexiBookController.addService(username, name, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
+            FlexiBookController.addService(name, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
         }
         catch (InvalidInputException e){
             error += e.getMessage();
@@ -1157,7 +1158,7 @@ public class CucumberStepDefinitions {
     @When("{string} initiates the deletion of service {string}")
     public void initiatesTheDeletionOfService(String username, String name) {
     	try{
-            FlexiBookController.deleteService(username, name);
+            FlexiBookController.deleteService(name);
         }
         catch (InvalidInputException e){
             error += e.getMessage();
@@ -1807,7 +1808,7 @@ public class CucumberStepDefinitions {
     @When("{string} initiates the update of the service {string} to name {string}, duration {string}, start of down time {string} and down time duration {string}")
     public void initiatesTheUpdateOfTheServiceToNameDurationStartOfDownTimeAndDownTimeDuration(String username, String currentName, String newName, String duration, String downtimeStart, String downtimeDuration) {
     	try{
-            FlexiBookController.updateService(username, currentName, newName, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
+            FlexiBookController.updateService(currentName, newName, Integer.parseInt(duration), Integer.parseInt(downtimeDuration), Integer.parseInt(downtimeStart));
         }
         catch (InvalidInputException e){
             error += e.getMessage();
@@ -1843,11 +1844,17 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true,null);
     		input.add(n1);
     	}
+    	int count=0;
+    	for(TOAppointmentCalendarItem item: output1){
+    		if(item.getAvailable()){
+    			count++;
+			}
+		}
  
-        assertEquals(input.size(),output1.size());
+        assertEquals(input.size(),count);
     }
     @Then("the following slots shall be unavailable:")
     public void theFollowingSlotsShallBeUnavailable(List<List<String>> list) {
@@ -1860,10 +1867,17 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(2),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false,null);
     		input.add(n1);
     	}
-        assertEquals(input.size(),output1.size());
+    	int count=0;
+		for(TOAppointmentCalendarItem item: output1){
+			if(!item.getAvailable()){
+				count++;
+			}
+		}
+
+		assertEquals(input.size(),count);
     }
 /*
 *@author Victoria Sanchez

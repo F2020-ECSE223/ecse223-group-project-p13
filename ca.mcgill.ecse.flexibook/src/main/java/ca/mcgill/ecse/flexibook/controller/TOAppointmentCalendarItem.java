@@ -19,18 +19,20 @@ public class TOAppointmentCalendarItem
   private Time startTime;
   private Time endTime;
   private boolean available;
+  private String username;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOAppointmentCalendarItem(String aDescription, Date aDate, Time aStartTime, Time aEndTime, boolean aAvailable)
+  public TOAppointmentCalendarItem(String aDescription, Date aDate, Time aStartTime, Time aEndTime, boolean aAvailable, String aUsername)
   {
     description = aDescription;
     date = aDate;
     startTime = aStartTime;
     endTime = aEndTime;
     available = aAvailable;
+    username = aUsername;
   }
 
   //------------------------
@@ -77,6 +79,14 @@ public class TOAppointmentCalendarItem
     return wasSet;
   }
 
+  public boolean setUsername(String aUsername)
+  {
+    boolean wasSet = false;
+    username = aUsername;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getDescription()
   {
     return description;
@@ -102,6 +112,11 @@ public class TOAppointmentCalendarItem
     return available;
   }
 
+  public String getUsername()
+  {
+    return username;
+  }
+
   public void delete()
   {}
 
@@ -110,7 +125,8 @@ public class TOAppointmentCalendarItem
   {
     return super.toString() + "["+
             "description" + ":" + getDescription()+ "," +
-            "available" + ":" + getAvailable()+ "]" + System.getProperties().getProperty("line.separator") +
+            "available" + ":" + getAvailable()+ "," +
+            "username" + ":" + getUsername()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null");
