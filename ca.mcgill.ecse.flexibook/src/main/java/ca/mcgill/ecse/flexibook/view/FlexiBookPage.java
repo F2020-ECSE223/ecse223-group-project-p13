@@ -57,6 +57,19 @@ public class FlexiBookPage extends Application {
     JFXPasswordField updatePassword;
     TextField textUserName1;
     PasswordField pf1;
+    HBox change1;
+    private Label calendarMonth;
+    private TextField serviceNameInput;
+    private TextField downtimeDurationInput;
+    private TextField durationInput;
+    private TextField downtimeStartInput;
+    private ComboBox<String> existingServices;
+    private TextField serviceNameInput1;
+    private TextField downtimeDurationInput1;
+    private TextField durationInput1;
+    private TextField downtimeStartInput1;
+    private ComboBox<String> existingServices1;
+    private Label serviceError;
 
 
 
