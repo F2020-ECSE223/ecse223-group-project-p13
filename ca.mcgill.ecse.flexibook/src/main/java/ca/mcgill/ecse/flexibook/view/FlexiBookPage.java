@@ -4,9 +4,11 @@ import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
+
 import com.jfoenix.controls.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,6 +18,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -38,6 +42,7 @@ public class FlexiBookPage extends Application {
     private Stage mainStage;
     Scene mainScene;
     HBox ownerAppointmentCalendar;
+    HBox customerAppointmentCalendar;
     TextField textUserName;
     PasswordField pf;
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
@@ -150,10 +155,234 @@ public class FlexiBookPage extends Application {
         center.getChildren().add(buttons);
 
 
+
+        //Customer Home Page
+        BorderPane customerScreenBorderPane = new BorderPane();
+        Label welcome1 = new Label("Welcome, User");
+        HBox top1 = new HBox();
+        customerScreenBorderPane.setTop(top1);
+        top1.setAlignment(Pos.BASELINE_RIGHT);
+        top1.getChildren().add(welcome1);
+        welcome1.getStyleClass().add("user-text");
+
+        VBox center1 = new VBox(120);
+        customerScreenBorderPane.setCenter(center1);
+        center1.setAlignment(Pos.TOP_CENTER);
+        Image image1 = new Image("/img/newLogo.png");
+        ImageView view1 = new ImageView(image1);
+        view1.setPreserveRatio(true);
+        view1.setFitHeight(200);
+        center1.getChildren().add(view1);
+
+        HBox buttons1 = new HBox(75);
+
+        buttons1.setAlignment(Pos.CENTER);
+
+        FontIcon appointmentIcon1 = new FontIcon("eli-calendar");
+        FontIcon accountIcon1 = new FontIcon("dashicons-businessperson");
+
+        appointmentIcon1.getStyleClass().add("icon");
+        accountIcon1.getStyleClass().add("icon");
+
+
+        JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
+        appointmentButton1.setContentDisplay(ContentDisplay.TOP);
+        appointmentButton1.setOnAction(e->switchToCustomerAppointment());
+        appointmentButton1.getStyleClass().add("main-menu-button");
+        buttons1.getChildren().add(appointmentButton1);
+
+        JFXButton accountButton1 = new JFXButton("Account",accountIcon1);
+        accountButton1.setContentDisplay(ContentDisplay.TOP);
+        accountButton1.setOnAction(e->switchToAccount());
+        accountButton1.getStyleClass().add("main-menu-button");
+        buttons1.getChildren().add(accountButton1);
+
+
+        center1.getChildren().add(buttons1);
+
+
         //Appointment Calendar
         ownerAppointmentCalendar = new HBox();
         ownerAppointmentCalendar.getChildren().add(setCalendar(listDays));
         ownerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
+        customerAppointmentCalendar = new HBox();
+        customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays));
+        customerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
+
+
+        //Pop-up window
+        // make appt button
+        JFXButton makeApptButton = new JFXButton("Make Appointment");
+        makeApptButton.setStyle("-fx-background-color: #286fb4");
+        makeApptButton.setButtonType(JFXButton.ButtonType.RAISED);
+        makeApptButton.setOpacity(0.8);
+        makeApptButton.setTextFill(Paint.valueOf("#ffffff"));
+
+        //time combo boxes
+        JFXComboBox<Label> hourSelection = new JFXComboBox<Label>();
+
+        hourSelection.getItems().add(new Label("1"));
+        hourSelection.getItems().add(new Label("2"));
+        hourSelection.getItems().add(new Label("3"));
+        hourSelection.getItems().add(new Label("4"));
+        hourSelection.getItems().add(new Label("5"));
+        hourSelection.getItems().add(new Label("6"));
+        hourSelection.getItems().add(new Label("7"));
+        hourSelection.getItems().add(new Label("8"));
+        hourSelection.getItems().add(new Label("9"));
+        hourSelection.getItems().add(new Label("10"));
+        hourSelection.getItems().add(new Label("11"));
+        hourSelection.getItems().add(new Label("12"));
+
+        hourSelection.setPromptText("Select Hour");
+
+        hourSelection.setStyle("-fx-background-color: #b0dde4");
+
+        JFXComboBox<Label> minuteSelection = new JFXComboBox<Label>();
+
+        minuteSelection.getItems().add(new Label("00"));
+        minuteSelection.getItems().add(new Label("05"));
+        minuteSelection.getItems().add(new Label("10"));
+        minuteSelection.getItems().add(new Label("15"));
+        minuteSelection.getItems().add(new Label("20"));
+        minuteSelection.getItems().add(new Label("25"));
+        minuteSelection.getItems().add(new Label("30"));
+        minuteSelection.getItems().add(new Label("35"));
+        minuteSelection.getItems().add(new Label("40"));
+        minuteSelection.getItems().add(new Label("45"));
+        minuteSelection.getItems().add(new Label("50"));
+        minuteSelection.getItems().add(new Label("55"));
+
+        minuteSelection.setPromptText("Select Minute");
+
+        minuteSelection.setStyle("-fx-background-color: #b0dde4");
+
+        JFXComboBox<Label> timeOfDay = new JFXComboBox<Label>();
+
+        timeOfDay.getItems().add(new Label("AM"));
+        timeOfDay.getItems().add(new Label("PM"));
+
+        timeOfDay.setPromptText("AM/PM");
+
+        timeOfDay.setStyle("-fx-background-color: #b0dde4");
+
+        // make appt button and date picker for pop up
+        VBox datePickBox = new VBox(40);
+        JFXDatePicker appointmentDatePicker = new JFXDatePicker();
+        appointmentDatePicker.setPromptText("Select Date");
+
+        datePickBox.getChildren().add(appointmentDatePicker);
+
+
+        HBox timePicker = new HBox(40);
+        timePicker.getChildren().add(hourSelection);
+        timePicker.getChildren().add(minuteSelection);
+        timePicker.getChildren().add(timeOfDay);
+        timePicker.setAlignment(Pos.CENTER);
+        datePickBox.getChildren().add(timePicker);
+
+        makeApptButton.setAlignment(Pos.CENTER);
+        datePickBox.getChildren().add(makeApptButton);
+
+        JFXPopup appointmentPopup = new JFXPopup();
+        appointmentDatePicker.setLayoutX(200);
+        appointmentDatePicker.setLayoutY(200);
+        datePickBox.setAlignment(Pos.TOP_CENTER);
+        appointmentPopup.setPopupContent(datePickBox);
+
+
+        //NodeList in Make Appointment
+
+        JFXButton serviceCombo = new JFXButton("Service Combo");
+        serviceCombo.setStyle("-fx-background-color: #e2f0f9;");
+        serviceCombo.setButtonType(JFXButton.ButtonType.RAISED);
+        serviceCombo.setOpacity(0.8);
+        serviceCombo.setTextFill(Paint.valueOf("#286fb4"));
+        serviceCombo.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                StackPane secondaryLayout = new StackPane();
+                Scene secondScene = new Scene(secondaryLayout, 500, 200);
+
+                secondaryLayout.getChildren().add(datePickBox);
+
+                // New window (Stage)
+                Stage newWindow = new Stage();
+                newWindow.setTitle("Make Appointment");
+                newWindow.setScene(secondScene);
+
+                // Specifies the modality for new window.
+                newWindow.initModality(Modality.WINDOW_MODAL);
+                // Specifies the owner Window (parent) for new window
+                newWindow.initOwner(mainStage);
+
+                // Set position of second window, related to primary window.
+                newWindow.setX(mainStage.getX() + 500);
+                newWindow.setY(mainStage.getY() + 300);
+
+                newWindow.show();
+            }
+        });
+
+
+        JFXButton service = new JFXButton("Service");
+        service.setStyle("-fx-background-color: #e2f0f9;");
+        service.setButtonType(JFXButton.ButtonType.RAISED);
+        service.setOpacity(0.8);
+        service.setTextFill(Paint.valueOf("#286fb4"));
+
+        service.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                StackPane secondaryLayout = new StackPane();
+                Scene secondScene = new Scene(secondaryLayout, 500, 200);
+
+                secondaryLayout.getChildren().add(datePickBox);
+
+                // New window (Stage)
+                Stage newWindow = new Stage();
+                newWindow.setTitle("Make Appointment");
+                newWindow.setScene(secondScene);
+
+                // Specifies the modality for new window.
+                newWindow.initModality(Modality.WINDOW_MODAL);
+                // Specifies the owner Window (parent) for new window
+                newWindow.initOwner(mainStage);
+
+                // Set position of second window, related to primary window.
+                newWindow.setX(mainStage.getX() + 500);
+                newWindow.setY(mainStage.getY() + 300);
+
+                newWindow.show();
+            }
+        });
+
+        FontIcon plusIcon = new FontIcon("eli-plus-sign");
+        plusIcon.setScaleX(0.5);
+        plusIcon.setScaleY(0.5);
+        plusIcon.getStyleClass().add("icon");
+
+
+        Label slabel = new Label("",plusIcon);
+        slabel.setWrapText(true);
+
+        HBox rightSide = new HBox();
+
+        rightSide.maxHeight(700);
+        rightSide.maxWidth(400);
+        JFXNodesList nodesList = new JFXNodesList();
+        nodesList.setSpacing(10);
+        nodesList.addAnimatedNode(slabel);
+        nodesList.addAnimatedNode(serviceCombo);
+        nodesList.addAnimatedNode(service);
+
+        nodesList.setAlignment(Pos.BOTTOM_RIGHT);
+        rightSide.getChildren().add(nodesList);
+        rightSide.setAlignment(Pos.CENTER_RIGHT);
+        customerAppointmentCalendar.getChildren().add(rightSide);
+
 
         VBox appointments = new VBox(20);
         ownerAppointmentCalendar.getChildren().add(appointments);
@@ -215,6 +444,16 @@ public class FlexiBookPage extends Application {
         mainStage.setScene(mainScene);
         mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         mainScreenBorderPane.requestFocus();
+
+        //ownerHomeScreen = new Scene(mainScreenBorderPane,1440,810,colors[3]);
+        //mainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        //mainStage.setScene(ownerHomeScreen);
+        //ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        //mainScreenBorderPane.requestFocus();
+
+        mainScene.setRoot(customerScreenBorderPane);
+        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        customerScreenBorderPane.requestFocus();
     }
     private void logout() {
         try{
@@ -414,12 +653,16 @@ public class FlexiBookPage extends Application {
         mainScene.setRoot(ownerAppointmentCalendar);
         updateDate();
     }
+
+    private void switchToCustomerAppointment(){
+        mainScene.setRoot(customerAppointmentCalendar);
+        updateDate();
+    }
+
     private void switchToBusiness(){
         //mainStage.setScene(businessInfo);
     }
-    private void switchToServices(){
-
-    }
+    private void switchToServices(){}
     private List<TOAppointmentCalendarItem> updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
@@ -436,6 +679,9 @@ public class FlexiBookPage extends Application {
         mainScene.setRoot(change2);
     }
     private void switchToAccount(){}
+
+    private void switchToCustomerAccount(){}
+
     private void updateDate(){
         listDays.get(15).getStyleClass().add("calendar-holiday");
         listDays.get(15).setStyle("-fx-background-color: #e0163e");
