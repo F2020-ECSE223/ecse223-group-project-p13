@@ -1271,33 +1271,28 @@ public class FlexiBookController {
 
 		/**
 		 * @author Hana Gustyn
-		 * @param username
 		 * @param name
 		 * @param duration
 		 * @param downtimeDuration
 		 * @param downtimeStart
 		 * @throws InvalidInputException
 		 */
-		public static void addService (String username, String name,int duration, int downtimeDuration,
+		public static void addService (String name,int duration, int downtimeDuration,
 		int downtimeStart) throws InvalidInputException {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 			try {
-			/*if (checkIfServiceExists(name, flexibook)) {
-				throw new InvalidInputException("Service " + name + " already exists");
-			}*/
-
 				if (BookableService.hasWithName(name)) {
 					throw new InvalidInputException("Service " + name + " already exists");
 				}
 
 				checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 
-				if (!(username.equals("owner"))) {
+				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
-				} else {
-					new Service(name, flexibook, duration, downtimeDuration, downtimeStart);
-				}
+				}*/
+
+				new Service(name, flexibook, duration, downtimeDuration, downtimeStart);
 				FlexiBookPersistence.save(flexibook);
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
@@ -1306,7 +1301,6 @@ public class FlexiBookController {
 
 			/**
 			 * @author Hana Gustyn
-			 * @param username
 			 * @param currentName
 			 * @param name
 			 * @param duration
@@ -1314,16 +1308,16 @@ public class FlexiBookController {
 			 * @param downtimeStart
 			 * @throws InvalidInputException
 			 */
-			public static void updateService (String username, String currentName, String name,int duration,
+			public static void updateService (String currentName, String name,int duration,
 				int downtimeDuration, int downtimeStart) throws InvalidInputException {
 				FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 				try {
 					checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 
-					if (!(username.equals("owner"))) {
+					/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 						throw new InvalidInputException("You are not authorized to perform this operation");
-					}
+					}*/
 
 					if (BookableService.hasWithName(name) && (!(currentName.equals(name)))) {
 						throw new InvalidInputException("Service " + name + " already exists");
@@ -1343,11 +1337,10 @@ public class FlexiBookController {
 
 		/**
 		 * @author Hana Gustyn
-		 * @param username
 		 * @param name
 		 * @throws InvalidInputException
 		 */
-		public static void deleteService (String username, String name) throws InvalidInputException {
+		public static void deleteService (String name) throws InvalidInputException {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 			try {
@@ -1363,9 +1356,9 @@ public class FlexiBookController {
 
 				}
 
-				if (!(username.equals("owner"))) {
+				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
-				}
+				}*/
 
 				List<BookableService> bookableServices = flexibook.getBookableServices();
 				List<BookableService> servicesToDelete = new ArrayList();
@@ -1393,7 +1386,7 @@ public class FlexiBookController {
 				int size = servicesToDelete.size();
 				for (int i = 0; i < size; i++) {
 					ServiceCombo serviceCombo = (ServiceCombo) servicesToDelete.get(i);
-					deleteServiceCombo(username, serviceCombo);
+					deleteServiceCombo(FlexiBookApplication.getUser().getUsername(), serviceCombo);
 				}
 				
 				service.delete();
@@ -1447,6 +1440,22 @@ public class FlexiBookController {
 			if (downtimeStart > duration) {
 				throw new InvalidInputException("Downtime must not start after the end of the service");
 			}
+		}
+	
+		/**
+		 * @author Hana Gustyn
+		 */
+		public static List<TOService> getServices(){
+			ArrayList<TOService> services = new ArrayList<TOService>();
+			for (BookableService s : FlexiBookApplication.getFlexiBook().getBookableServices()) {
+				if (s instanceof Service) {
+					Service service = (Service) s;
+					TOService toService = new TOService(service.getName(), service.getDuration(),
+					service.getDowntimeDuration(), service.getDowntimeStart());
+					services.add(toService);
+				}
+			}
+			return services;
 		}
 
 		/**
