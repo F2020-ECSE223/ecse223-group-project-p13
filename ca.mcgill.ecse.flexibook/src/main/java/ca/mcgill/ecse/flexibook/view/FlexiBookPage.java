@@ -63,7 +63,19 @@ public class FlexiBookPage extends Application {
     JFXPasswordField updatePassword;
     TextField textUserName1;
     PasswordField pf1;
-    HBox changeAcc;
+    private BorderPane mainScreenborderpane;
+    HBox servicePage;
+    private TextField serviceNameInput;
+    private TextField downtimeDurationInput;
+    private TextField durationInput;
+    private TextField downtimeStartInput;
+    private ComboBox<String> existingServices;
+    private TextField serviceNameInput1;
+    private TextField downtimeDurationInput1;
+    private TextField durationInput1;
+    private TextField downtimeStartInput1;
+    private ComboBox<String> existingServices1;
+    private Label serviceError;
 
 
 
@@ -525,12 +537,13 @@ public class FlexiBookPage extends Application {
     }
 
     private void back() {
-
-
+    	mainScene.setRoot(mainScreenBorderPane);
 
     }
 
     private void signUp() {
+
+        mainScene.setRoot(mainScreenBorderPane);
 
     	try{
         	String username = textUserName1.getText();
@@ -891,5 +904,239 @@ public class FlexiBookPage extends Application {
         }
         s+=date.getDayOfMonth();
         return s;
+    }
+    private class CalendarEntry extends JFXButton{
+        LocalDate date;
+        CalendarEntry(String date){
+            super(date);
+        }
+
+        public LocalDate getDate() {
+            return date;
+        }
+
+        public void setDate(LocalDate date) {
+            this.date = date;
+        }
+    }
+
+private void setUpServicePage() {
+    	servicePage = new HBox();
+    	servicePage.setAlignment(Pos.CENTER);
+        servicePage.setStyle("-fx-background-color: #B0DDE4;");
+
+        Image image = new Image("/img/newLogo.png");
+
+        Label serviceName = new Label("Service Name: ");
+        serviceName.getStyleClass().add("service-text");
+        serviceName.setAlignment(Pos.CENTER_RIGHT);
+        Label downtimeDuration = new Label("Downtime Duration:");
+        downtimeDuration.getStyleClass().add("service-text");
+        downtimeDuration.setAlignment(Pos.CENTER_RIGHT);
+        serviceNameInput = new TextField();
+        downtimeDurationInput = new TextField();
+        Label duration = new Label("Duration:");
+        duration.getStyleClass().add("service-text");
+        duration.setAlignment(Pos.CENTER_RIGHT);
+        Label downtimeStart = new Label("Downtime Start:");
+        downtimeStart.getStyleClass().add("service-text");
+        downtimeStart.setAlignment(Pos.CENTER_RIGHT);
+        durationInput = new TextField();
+        downtimeStartInput = new TextField();
+        Button addServiceButton = new Button("Add Service");
+        addServiceButton.getStyleClass().add("service-button");
+        addServiceButton.setOnAction(e->addServiceAction());
+        Label serviceName1 = new Label("Service:");
+        serviceName1.getStyleClass().add("service-text");
+        serviceName1.setAlignment(Pos.CENTER_RIGHT);
+        Label newServiceName = new Label("New Service Name: ");
+        newServiceName.getStyleClass().add("service-text");
+        newServiceName.setAlignment(Pos.CENTER_RIGHT);
+        Label newDowntimeDuration = new Label("Downtime Duration:");
+        newDowntimeDuration.getStyleClass().add("service-text");
+        newDowntimeDuration.setAlignment(Pos.CENTER_RIGHT);
+        Label newDuration = new Label("Duration:");
+        newDuration.getStyleClass().add("service-text");
+        newDuration.setAlignment(Pos.CENTER_RIGHT);
+        Label newDowntimeStart = new Label("Downtime Start:");
+        newDowntimeStart.getStyleClass().add("service-text");
+        newDowntimeStart.setAlignment(Pos.CENTER_RIGHT);
+        existingServices = new ComboBox<String>();
+        existingServices.getStyleClass().add("combo-box");
+        serviceNameInput1 = new TextField();
+        downtimeDurationInput1 = new TextField();
+        durationInput1 = new TextField();
+        downtimeStartInput1 = new TextField();
+        Button updateServiceButton = new Button("Update Service");
+        updateServiceButton.getStyleClass().add("service-button");
+        updateServiceButton.setOnAction(e->updateServiceAction());
+        Label serviceToDelete = new Label("Service:");
+        serviceToDelete.getStyleClass().add("service-text");
+        serviceToDelete.setAlignment(Pos.CENTER_RIGHT);
+        existingServices1 = new ComboBox<String>();
+        Button deleteServiceButton = new Button("Delete Service");
+        deleteServiceButton.getStyleClass().add("service-button");
+        deleteServiceButton.setOnAction(e->deleteServiceAction());
+        Label spacing = new Label(" ");
+        spacing.getStyleClass().add("service-text");
+        serviceError = new Label("");
+        serviceError.getStyleClass().add("error-text");
+
+        FontIcon homeIcon = new FontIcon("dashicons-admin-home");
+        homeIcon.getStyleClass().add("icon");
+
+        JFXButton homeButton = new JFXButton("Home", homeIcon);
+        homeButton.setContentDisplay(ContentDisplay.TOP);
+        homeButton.getStyleClass().add("main-menu-button");
+
+        VBox col1 = new VBox(20);
+        col1.getChildren().addAll(serviceName, downtimeDuration);
+        VBox col2 = new VBox(20);
+        col2.getChildren().addAll(serviceNameInput, downtimeDurationInput);
+        VBox col3 = new VBox(20);
+        col3.getChildren().addAll(duration, downtimeStart);
+        VBox col4 = new VBox(20);
+        col4.getChildren().addAll(durationInput, downtimeStartInput, addServiceButton);
+
+        VBox col11 = new VBox(20);
+        col11.getChildren().addAll(serviceName1, newDuration, newDowntimeStart);
+        VBox col21 = new VBox(20);
+        col21.getChildren().addAll(existingServices, durationInput1, downtimeStartInput1);
+        VBox col31 = new VBox(20);
+        col31.getChildren().addAll(newServiceName, newDowntimeDuration);
+        VBox col41 = new VBox(20);
+        col41.getChildren().addAll(serviceNameInput1, downtimeDurationInput1, updateServiceButton);
+
+        VBox col12 = new VBox(20);
+        col12.getChildren().add(serviceToDelete);
+        VBox col22 = new VBox(20);
+        col22.getChildren().add(existingServices1);
+        VBox col32 = new VBox(20);
+        col32.getChildren().add(spacing);
+        VBox col42 = new VBox(20);
+        col42.getChildren().add(deleteServiceButton);
+
+        Label addService = new Label("Add Service");
+        addService.getStyleClass().add("service-heading");
+        addService.setAlignment(Pos.CENTER);
+
+        Label updateService = new Label("Update Service");
+        updateService.getStyleClass().add("service-heading");
+        updateService.setAlignment(Pos.CENTER);
+
+        Label deleteService = new Label("Delete Service");
+        deleteService.getStyleClass().add("service-heading");
+        deleteService.setAlignment(Pos.CENTER);
+
+        HBox row1 = new HBox(10);
+        row1.getChildren().addAll(col1, col2, col3, col4);
+        HBox row2 = new HBox(10);
+        row2.getChildren().addAll(col11, col21, col31, col41);
+        HBox row3 = new HBox(10);
+        row3.getChildren().addAll(col12, col22, col32, col42);
+        HBox row4 = new HBox(10);
+        row4.getChildren().add(addService);
+        row4.setAlignment(Pos.CENTER);
+        row4.setTranslateX(75);
+        HBox row5 = new HBox(10);
+        row5.getChildren().add(updateService);
+        row5.setAlignment(Pos.CENTER);
+        row5.setTranslateX(75);
+        HBox row6 = new HBox(10);
+        row6.getChildren().add(deleteService);
+        row6.setAlignment(Pos.CENTER);
+        row6.setTranslateX(75);
+        HBox row7 = new HBox(10);
+        row7.getChildren().add(serviceError);
+        row7.setAlignment(Pos.CENTER);
+        row7.setTranslateX(75);
+
+        VBox space = new VBox(20);
+        space.setAlignment(Pos.CENTER);
+        space.getChildren().addAll(row4, row1, row5, row2, row6, row3, row7);
+
+        ImageView view1 = new ImageView(image);
+
+        HBox topRight = new HBox();
+        topRight.setAlignment(Pos.TOP_LEFT);
+        topRight.getChildren().add(view1);
+
+        HBox topLeft = new HBox();
+        topLeft.setAlignment(Pos.TOP_CENTER);
+        topLeft.getChildren().add(homeButton);
+        topLeft.setTranslateX(-140);
+
+        servicePage.getChildren().addAll(topLeft, space, topRight);
+    }
+
+    private void addServiceAction() {
+        serviceError.setText("");
+        if (serviceNameInput.getText().equals("")){
+            serviceError.setText("A service must have a name!");
+        }
+        else if (durationInput.getText().equals("")){
+            serviceError.setText("A service must have a duration!");
+        }
+        else if(downtimeDurationInput.getText().equals("")){
+            serviceError.setText("A service must have a downtime duration!");
+        }
+        else if(downtimeStartInput.getText().equals("")){
+            serviceError.setText("A service must have a downtime start!");
+        }
+
+        if(serviceError.getText().length() == 0) {
+            try {
+                FlexiBookController.addService(serviceNameInput.getText(), Integer.parseInt(durationInput.getText()),
+                        Integer.parseInt(downtimeDurationInput.getText()), Integer.parseInt(downtimeStartInput.getText()));
+            } catch (InvalidInputException e) {
+                serviceError.setText(e.getMessage());
+            }
+        }
+        refreshData();
+    }
+
+    private void updateServiceAction(){
+        serviceError.setText("");
+
+        if (existingServices.getItems().size() == 0){
+            serviceError.setText("An existing service must be selected!");
+        }
+        else if (serviceNameInput1.getText().equals("")){
+            serviceError.setText("A service must have a name!");
+        }
+        else if (durationInput1.getText().equals("")){
+            serviceError.setText("A service must have a duration!");
+        }
+        else if(downtimeDurationInput1.getText().equals("")){
+            serviceError.setText("A service must have a downtime duration!");
+        }
+        else if(downtimeStartInput1.getText().equals("")){
+            serviceError.setText("A service must have a downtime start!");
+        }
+        if (serviceError.getText().length() == 0) {
+            try {
+                FlexiBookController.updateService(existingServices.getValue(), serviceNameInput1.getText(), Integer.parseInt(durationInput1.getText()),
+                        Integer.parseInt(downtimeDurationInput1.getText()), Integer.parseInt(downtimeStartInput1.getText()));
+            } catch (InvalidInputException e) {
+                serviceError.setText(e.getMessage());
+            }
+        }
+        refreshData();
+    }
+
+    private void deleteServiceAction(){
+        serviceError.setText("");
+
+        if (existingServices1.getItems().size() == 0){
+            serviceError.setText("An existing service must be selected!");
+        }
+        if (serviceError.getText().length() == 0) {
+            try {
+                FlexiBookController.deleteService(existingServices1.getValue());
+            } catch (InvalidInputException e) {
+                serviceError.setText(e.getMessage());
+            }
+        }
+        refreshData();
     }
 }
