@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.flexibook.view;
 
+import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
@@ -62,6 +63,7 @@ public class FlexiBookPage extends Application {
     JFXPasswordField updatePassword;
     TextField textUserName1;
     PasswordField pf1;
+    HBox changeAcc;
 
 
 
@@ -71,18 +73,10 @@ public class FlexiBookPage extends Application {
         renderDate = LocalDate.now();
         FlexiBookController.testAppointment();
         initComponents();
-        refreshData();
         mainStage.show();
     }
     public FlexiBookPage(){}
     private void initComponents(){
-        /*startButton = new JFXButton("Start Appointment");
-        startButton.getStyleClass().add("button-raised");
-        startButton.setOnAction(this::startAppointmentEvent);
-        Region padderRegion = new Region();
-        padderRegion.prefWidthProperty().setValue(250);*/
-
-
         //Main Screen
         ownerMainScreenBorderPane = new BorderPane();
         Label welcome = new Label("Welcome, User");
@@ -575,12 +569,6 @@ public class FlexiBookPage extends Application {
 
     }
 
-    private void switchToAccount(){
-
-    	ownerHomeScreen.setRoot(changeAcc);
-
-    }
-
     private void logout() {
         try{
             FlexiBookController.logout();
@@ -600,9 +588,6 @@ public class FlexiBookPage extends Application {
         }
     }
 
-    private void refreshData(){
-
-    }
     private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox  calendar =new HBox();
 
@@ -815,7 +800,9 @@ public class FlexiBookPage extends Application {
     private void switchToHomeScreen(){
         mainScene.setRoot(change2);
     }
-    private void switchToAccount(){}
+    private void switchToAccount(){
+        mainScene.setRoot(changeAcc);
+    }
 
     private void switchToCustomerAccount(){}
     private void refreshDailyAppointments(List<TOAppointmentCalendarItem> calendarItems){
