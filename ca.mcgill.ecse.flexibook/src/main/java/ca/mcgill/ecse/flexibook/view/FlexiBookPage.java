@@ -584,7 +584,23 @@ public class FlexiBookPage extends Application {
     }
 
     private void refreshData(){
+        int index = 0;
+        serviceNameInput.setText("");
+        downtimeDurationInput.setText("");
+        durationInput.setText("");
+        downtimeStartInput.setText("");
+        serviceNameInput1.setText("");
+        downtimeDurationInput1.setText("");
+        durationInput1.setText("");
+        downtimeStartInput1.setText("");
 
+        existingServices.getItems().clear();
+        existingServices1.getItems().clear();
+        for (TOService s : FlexiBookController.getServices()){
+            existingServices.getItems().add(s.getName());
+            existingServices1.getItems().add(s.getName());
+            index++;
+        }
     }
     private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox  calendar =new HBox();
@@ -785,7 +801,10 @@ public class FlexiBookPage extends Application {
     private void switchToBusiness(){
         //mainStage.setScene(businessInfo);
     }
-    private void switchToServices(){}
+    private void switchToServices(){
+        setUpServicePage();
+        mainScene.setRoot(servicePage);
+    }
     private List<TOAppointmentCalendarItem> updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
