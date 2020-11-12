@@ -10,7 +10,7 @@
 .user-text{
     -fx-padding: 0.7em 0.57em;
     -fx-font-size: 20px;
-    -fx-pref-width: 200;
+    -fx-pref-width: 175;
     -fx-text-fill: #286FB4;
 }
 .icon-main-menu{
@@ -72,5 +72,19 @@
     -fx-font-size: 20px;
     -fx-text-fill: #286FB4;
     -fx-font-weight: bold;
+    -fx-font-family: "Anurati-Regular";
+}
+@font-face {
+    src: url('Anurati-Regular.otf') format("opentype");
+}
+.daily-appointment-table{
+    -fx-font-size: 20px;
+    -jfx-button-type: RAISED;
+    -fx-background-color: #E2F0F9;
+
+    -fx-text-fill: #286FB4;
+    -jfx-rippler-fill: #ffffff;
+    -fx-border-color:#D3D3D3;
+    -fx-border-width: 1 1 1 1;
 }
 
