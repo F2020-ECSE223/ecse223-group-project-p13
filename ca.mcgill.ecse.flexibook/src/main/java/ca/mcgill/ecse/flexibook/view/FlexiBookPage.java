@@ -248,22 +248,23 @@ public class FlexiBookPage extends Application {
 
         VBox appointments = new VBox(20);
         ownerAppointmentCalendar.getChildren().add(appointments);
+        appointments.setMinWidth(600);
 
         //appointments.setPrefWidth(Double.MAX_VALUE);
         dailyAppointmentTable = new TableView<>();
         TableColumn<DayEvent, String> column1 = new TableColumn<>("Start Time");
         column1.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+
         TableColumn<DayEvent, String> column2 = new TableColumn<>("Username");
-        column2.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        column2.setCellValueFactory(new PropertyValueFactory<>("username"));
         TableColumn<DayEvent, String> column3 = new TableColumn<>("End Time");
-        column2.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        TableColumn<DayEvent, String> column4 = new TableColumn<>("Service");
-        column2.setCellValueFactory(new PropertyValueFactory<>("date"));
-        dailyAppointmentTable.getColumns().addAll(column1,column2,column3,column4);
+        column3.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+        dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
 
         dailyAppointmentTable.setPlaceholder(new Label("No Appointments Today"));
         appointments.getChildren().add(dailyAppointmentTable);
         dailyAppointmentTable.getStyleClass().add("daily-appointment-table");
+        dailyAppointmentTable.setPadding(new Insets(20,20,20,20));
 
 
 
@@ -928,20 +929,6 @@ public class FlexiBookPage extends Application {
         }
         s+=date.getDayOfMonth();
         return s;
-    }
-    private class CalendarEntry extends JFXButton{
-        LocalDate date;
-        CalendarEntry(String date){
-            super(date);
-        }
-
-        public LocalDate getDate() {
-            return date;
-        }
-
-        public void setDate(LocalDate date) {
-            this.date = date;
-        }
     }
 
 private void setUpServicePage() {
