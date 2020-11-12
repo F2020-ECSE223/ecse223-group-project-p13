@@ -95,3 +95,10 @@
     -fx-border-color:#D3D3D3;
     -fx-border-width: 1 1 1 1;
 }
+.icon-calendar-button{
+    /*-jfx-button-type: RAISED;*/
+    -fx-background-color: #E2F0F9;
+    -fx-text-fill: #ffffff;
+    -jfx-rippler-fill: #ffffff;
+}
+
