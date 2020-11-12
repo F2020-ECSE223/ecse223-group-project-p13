@@ -26,6 +26,7 @@ import ca.mcgill.ecse.flexibook.model.TimeSlot;
 import ca.mcgill.ecse.flexibook.model.User;
 import ca.mcgill.ecse.flexibook.persistence.FlexiBookPersistence;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
+import javafx.application.Application;
 
 
 public class FlexiBookController {
@@ -403,63 +404,64 @@ public class FlexiBookController {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
 
-
-			for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
-				if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true);
-					calendar.add(t0);
+			if(flexibook.getBusiness() != null){
+				for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
+					if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
+						TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true);
+						calendar.add(t0);
+					}
 				}
-			}
-			for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
-				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
-					addTO(calendar, t, "holiday");
+				for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
+					if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+						addTO(calendar, t, "holiday");
+					}
 				}
-			}
-			for(TimeSlot t: flexibook.getBusiness().getVacation()) {
-				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
-					addTO(calendar,t,"vacation");
+				for(TimeSlot t: flexibook.getBusiness().getVacation()) {
+					if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+						addTO(calendar,t,"vacation");
+					}
 				}
-			}
-			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
-			int start = 0;
-			int duration = 0;
-			for (Appointment a : flexibook.getAppointments()) {
-				if (a.getTimeSlot().getStartDate().equals(sqlDate)) {
-					addTO(calendar, a.getTimeSlot(), "appointment");
-					if (a.getBookableService() instanceof Service) {
-						if (((Service) a.getBookableService()).getDowntimeDuration() != 0) {
-							calendar.remove(calendar.size() - 1);
-							LocalTime n1 = a.getTimeSlot().getStartTime().toLocalTime();
-							LocalTime n2 = n1.plusMinutes(((Service) a.getBookableService()).getDowntimeStart());
-							LocalTime n3 = n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
-							Time newT = Time.valueOf(n2);
-							Time newT2 = Time.valueOf(n3);
-							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), newT, false);
-							TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("appointment", sqlDate, newT, newT2, false);
-							TOAppointmentCalendarItem t2 = new TOAppointmentCalendarItem("appointment", sqlDate, newT2, a.getTimeSlot().getEndTime(), false);
-							calendar.add(t0);
-							calendar.add(t1);
-							calendar.add(t2);
-						}
-					} else {
-						for (ComboItem s : a.getChosenItems()) { //going through service times
-							if (s.getService().getDowntimeDuration() != 0) { //if there is a service time
-								start = s.getService().getDowntimeStart();
-								duration += s.getService().getDowntimeDuration();
-								if (start != 0) {
-									Time startTime = a.getTimeSlot().getStartTime();
-									Time durationStart = Time.valueOf(startTime.toLocalTime().plusMinutes(start));
-									Time durationEnd = Time.valueOf(durationStart.toLocalTime().plusMinutes(duration));
-									Time endTime = a.getTimeSlot().getEndTime();
-									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), startTime, durationStart,false));
-									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), durationEnd, endTime,false));
-								} else {
-									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(),false));
-								}
-
+				ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
+				int start = 0;
+				int duration = 0;
+				for (Appointment a : flexibook.getAppointments()) {
+					if (a.getTimeSlot().getStartDate().equals(sqlDate)) {
+						addTO(calendar, a.getTimeSlot(), "appointment");
+						if (a.getBookableService() instanceof Service) {
+							if (((Service) a.getBookableService()).getDowntimeDuration() != 0) {
+								calendar.remove(calendar.size() - 1);
+								LocalTime n1 = a.getTimeSlot().getStartTime().toLocalTime();
+								LocalTime n2 = n1.plusMinutes(((Service) a.getBookableService()).getDowntimeStart());
+								LocalTime n3 = n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
+								Time newT = Time.valueOf(n2);
+								Time newT2 = Time.valueOf(n3);
+								TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), newT, false);
+								TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("appointment", sqlDate, newT, newT2, false);
+								TOAppointmentCalendarItem t2 = new TOAppointmentCalendarItem("appointment", sqlDate, newT2, a.getTimeSlot().getEndTime(), false);
+								calendar.add(t0);
+								calendar.add(t1);
+								calendar.add(t2);
 							}
+						} else {
+							for (ComboItem s : a.getChosenItems()) { //going through service times
+								if (s.getService().getDowntimeDuration() != 0) { //if there is a service time
+									start = s.getService().getDowntimeStart();
+									duration += s.getService().getDowntimeDuration();
+									if (start != 0) {
+										Time startTime = a.getTimeSlot().getStartTime();
+										Time durationStart = Time.valueOf(startTime.toLocalTime().plusMinutes(start));
+										Time durationEnd = Time.valueOf(durationStart.toLocalTime().plusMinutes(duration));
+										Time endTime = a.getTimeSlot().getEndTime();
+										calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), startTime, durationStart,false));
+										calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), durationEnd, endTime,false));
+									} else {
+										calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(),false));
+									}
+
+								}
+							}
+							start = 0;
 						}
-						start = 0;
 					}
 				}
 			}
@@ -1925,5 +1927,13 @@ public class FlexiBookController {
 			catch (RuntimeException e){
 				throw new IllegalAccessException(e.getMessage());
 			}
+		}
+		public static void testAppointment(){
+			FlexiBook f = FlexiBookApplication.getFlexiBook();
+			Service s  = new Service("cut",f,10,0,0);
+			Customer c = new Customer("boul","jawn",f);
+			Business b = new Business("Toms","here","302123123","tomasz@tom.c",f);
+			Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
+			FlexiBookPersistence.save(f);
 		}
 }
