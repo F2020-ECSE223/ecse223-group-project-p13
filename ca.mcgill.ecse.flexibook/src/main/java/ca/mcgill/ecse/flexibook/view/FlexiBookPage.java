@@ -42,9 +42,13 @@ public class FlexiBookPage extends Application {
     JFXButton startButton;
     //private CardLayout mainLayout;
     private Stage mainStage;
+    Scene mainScene;
     Scene ownerHomeScreen;
     HBox ownerAppointmentCalendar;
     HBox customerAppointmentCalendar;
+    TextField textUserName;
+    PasswordField pf;
+
     /*private Scene appointmentCalendar = new Scene(new HBox(),1440,810,colors[3]);
     private Scene businessInfo;
     private Scene Services;
@@ -214,7 +218,7 @@ public class FlexiBookPage extends Application {
         ownerAppointmentCalendar.getChildren().add(setCalendar(listDays));
         ownerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
         customerAppointmentCalendar = new HBox();
-        customerAppointmentCalendar.getChildren().add(setCalendar());
+        customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays));
         customerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
 
 
@@ -459,10 +463,8 @@ public class FlexiBookPage extends Application {
         //ownerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         //mainScreenBorderPane.requestFocus();
 
-        customerHomeScreen = new Scene(customerScreenBorderPane,1440,810,colors[3]);
+        mainScene.setRoot(customerScreenBorderPane);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        mainStage.setScene(customerHomeScreen);
-        customerHomeScreen.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         customerScreenBorderPane.requestFocus();
     }
     private void logout() {
@@ -669,7 +671,7 @@ public class FlexiBookPage extends Application {
     }
 
     private void switchToCustomerAppointment(){
-        customerHomeScreen.setRoot(customerAppointmentCalendar);
+        mainScene.setRoot(customerAppointmentCalendar);
         updateDate();
     }
 
@@ -678,7 +680,7 @@ public class FlexiBookPage extends Application {
     }
     private void switchToServices(){}
 
-    }
+
     private List<TOAppointmentCalendarItem> updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
