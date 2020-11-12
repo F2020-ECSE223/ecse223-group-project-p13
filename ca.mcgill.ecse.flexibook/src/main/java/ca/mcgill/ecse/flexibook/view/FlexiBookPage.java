@@ -4,7 +4,6 @@ import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
-import ca.mcgill.ecse.flexibook.model.FlexiBook;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -20,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import org.checkerframework.checker.units.qual.A;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
