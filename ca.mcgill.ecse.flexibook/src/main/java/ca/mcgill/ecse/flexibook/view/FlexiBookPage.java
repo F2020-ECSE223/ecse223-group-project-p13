@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.checkerframework.checker.units.qual.A;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
@@ -42,6 +43,7 @@ public class FlexiBookPage extends Application {
     TextField textUserName;
     PasswordField pf;
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
+    ArrayList<CalendarEntry> dbvDays = new ArrayList<>();
     LocalDate renderDate;
     Label calendarYear;
     List<TOAppointmentCalendarItem> items;
@@ -152,7 +154,7 @@ public class FlexiBookPage extends Application {
 
         //Appointment Calendar
         ownerAppointmentCalendar = new HBox();
-        ownerAppointmentCalendar.getChildren().add(setCalendar());
+        ownerAppointmentCalendar.getChildren().add(setCalendar(listDays));
         ownerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
 
         VBox appointments = new VBox(20);
@@ -238,7 +240,7 @@ public class FlexiBookPage extends Application {
     private void refreshData(){
 
     }
-    private HBox setCalendar(){
+    private HBox setCalendar(ArrayList<CalendarEntry> entry){
         HBox  calendar =new HBox();
 
         VBox months = new VBox(20);
@@ -380,7 +382,7 @@ public class FlexiBookPage extends Application {
                 calendarEntry.getStyleClass().add("calendar-cell");
                 calendarEntry.setAlignment(Pos.TOP_LEFT);
                 calendarEntry.setOnAction(this::updateDailySchedule);
-                listDays.add(calendarEntry);
+                entry.add(calendarEntry);
                 days.add(calendarEntry,j,i);
             }
         }
