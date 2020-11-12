@@ -5,6 +5,7 @@ import ca.mcgill.ecse.flexibook.controller.FlexiBookController;
 import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 
+import ca.mcgill.ecse.flexibook.controller.TOService;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
@@ -76,6 +77,7 @@ public class FlexiBookPage extends Application {
     private TextField downtimeStartInput1;
     private ComboBox<String> existingServices1;
     private Label serviceError;
+    private HBox changeAcc;
 
 
 
@@ -537,13 +539,13 @@ public class FlexiBookPage extends Application {
     }
 
     private void back() {
-    	mainScene.setRoot(mainScreenBorderPane);
+    	mainScene.setRoot(ownerMainScreenBorderPane);
 
     }
 
     private void signUp() {
 
-        mainScene.setRoot(mainScreenBorderPane);
+        mainScene.setRoot(ownerMainScreenBorderPane);
 
     	try{
         	String username = textUserName1.getText();

@@ -51,6 +51,12 @@
     -fx-font-weight: bold;
     -fx-pref-width: 250;
     -fx-text-fill: #286FB4;
+    -fx-font-family: "Anurati-Regular";
+}
+.month-year{
+    -fx-padding: 0.7em 0.57em;
+    -fx-font-size: 20px;
+    -fx-text-fill: #286FB4;
     -fx-font-weight: bold;
     -fx-font-family: "Anurati-Regular";
 }
@@ -72,5 +78,10 @@
     -fx-text-fill: #FF0000;
 }
 .combo-box{
--fx-pref-width: 150;
+    -fx-pref-width: 150;
+}
+.icon-calendar{
+    -fx-icon-size: 20px;
+    -fx-icon-color: #286fb4;
+    -fx-text-size:1em;
 }
