@@ -25,6 +25,7 @@ import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
+import javax.swing.*;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -699,7 +700,13 @@ public class FlexiBookPage extends Application {
                 calendarEntry.setStyle("-fx-background-color: #FFFFFF");
                 calendarEntry.getStyleClass().add("calendar-cell");
                 calendarEntry.setAlignment(Pos.TOP_LEFT);
-                calendarEntry.setOnAction(this::updateDailySchedule);
+                if(owner){
+                    calendarEntry.setOnAction(this::updateDailySchedule);
+                }
+                else{
+                    calendarEntry.setOnAction(this::customerDailySchedule);
+                }
+
                 entry.add(calendarEntry);
                 listDays.add(calendarEntry);
                 days.add(calendarEntry,j,i);
@@ -757,6 +764,20 @@ public class FlexiBookPage extends Application {
         }
         return null;
     }
+
+    private List<TOAppointmentCalendarItem> customerDailySchedule(ActionEvent e){
+        if(e.getTarget() instanceof CalendarEntry){
+            LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
+            try{
+                items = FlexiBookController.getAppointmentCalendar(generateLocalDate(date));
+            }
+            catch (InvalidInputException errr){
+                error = errr.getMessage();
+            }
+        }
+        return null;
+    }
+
     private void switchToHomeScreen(){
         mainScene.setRoot(change2);
     }
