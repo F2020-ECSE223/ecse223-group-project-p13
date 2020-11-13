@@ -707,12 +707,13 @@ public class FlexiBookPage extends Application {
 
     private void signUp() {
 
-        mainScene.setRoot(ownerMainScreenBorderPane);
-
-    	try{
+     	try{
+    		
         	String username = textUserName1.getText();
         	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
+            mainScene.setRoot(mainScreenBorderPane);
+            System.out.println("SignUp Successful");
         }
         catch(Exception e){
             e.getMessage();
@@ -727,6 +728,7 @@ public class FlexiBookPage extends Application {
         	String newUsername = updateUsername.getText();
         	String newPassword = updatePassword.getText();
             FlexiBookController.updateAccount(username, newUsername, newPassword);
+            System.out.println(username + "," + newUsername  + "," + newPassword);
         }
         catch(Exception e){
             e.getMessage();
@@ -739,6 +741,7 @@ public class FlexiBookPage extends Application {
         try{
         	String username = FlexiBookApplication.getUser().getUsername();
             FlexiBookController.deleteCustomerAccount(username);
+            System.out.println("Delete successfull");
         }
         catch(Exception e){
             e.getMessage();
