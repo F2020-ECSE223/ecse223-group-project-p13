@@ -92,7 +92,7 @@
     -fx-pref-width: 150;
     -fx-text-fill: #000000;
     -jfx-rippler-fill: #ffffff;
-    -fx-border-color:#D3D3D3;
+    -fx-border-color:#d3d3d3;
     -fx-border-width: 1 1 1 1;
 }
 .icon-calendar-button{
@@ -101,4 +101,17 @@
     -fx-text-fill: #ffffff;
     -jfx-rippler-fill: #ffffff;
 }
+.not-in-month{
+    -fx-background-color: rgba(220, 20, 60, 0.5);
+    -fx-text-fill: #d3d3d3;
+    -fx-font-size: 20px;
+    -jfx-button-type: RAISED;
+    -fx-pref-width: 150;
+    -jfx-rippler-fill: #ffffff;
+}
+.appointment-table-rows{
+    -fx-min-width: 200px;
+    -fx-alignment: Center;
+}
+
 

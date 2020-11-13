@@ -9,6 +9,8 @@ import ca.mcgill.ecse.flexibook.controller.TOService;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -27,8 +29,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-//import java.awt.*;
-import javax.swing.*;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -40,8 +41,7 @@ public class FlexiBookPage extends Application {
     private Color[] colors = {new Color(.886,.941,.976,1.0),new Color(.690,.867,.882,1.0),
             new Color(.157,.435,.706,1.0),Color.WHITE,new Color(.875,.298,.451,1.0)};
 
-    JFXButton startButton;
-    //private CardLayout mainLayout;
+
     private Stage mainStage;
     Scene mainScene;
     HBox ownerAppointmentCalendar;
@@ -79,6 +79,8 @@ public class FlexiBookPage extends Application {
     private ComboBox<String> existingServices1;
     private Label serviceError;
     private HBox changeAcc;
+    TableView.TableViewSelectionModel<DayEvent> selectionModel;
+    VBox appointmentDetails;
 
 
 
@@ -249,23 +251,69 @@ public class FlexiBookPage extends Application {
 
         VBox appointments = new VBox(20);
         ownerAppointmentCalendar.getChildren().add(appointments);
-        appointments.setMinWidth(600);
+        appointments.setMinWidth(530);
 
         //appointments.setPrefWidth(Double.MAX_VALUE);
         dailyAppointmentTable = new TableView<>();
         TableColumn<DayEvent, String> column1 = new TableColumn<>("Start Time");
         column1.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-
+        column1.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
+        column1.getStyleClass().add("appointment-table-rows");
         TableColumn<DayEvent, String> column2 = new TableColumn<>("Username");
+        column2.getStyleClass().add("appointment-table-rows");
+        column2.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
         column2.setCellValueFactory(new PropertyValueFactory<>("username"));
         TableColumn<DayEvent, String> column3 = new TableColumn<>("End Time");
+        column3.getStyleClass().add("appointment-table-rows");
+        column3.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
+
         column3.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
+        selectionModel = dailyAppointmentTable.getSelectionModel();
+        ObservableList<DayEvent> observableList = selectionModel.getSelectedItems();
+        observableList.addListener((ListChangeListener<DayEvent>) c -> {
+            while(c.next()) {
+                if (!c.wasPermutated()) {
+                    for (DayEvent additem : c.getAddedSubList()) {
+                        ((Label)appointmentDetails.getChildren().get(0)).setText(additem.getAppointment().getUsername());
+                    }
+                }
+            }
+            c.reset();
+        });
+
 
         dailyAppointmentTable.setPlaceholder(new Label("No Appointments Today"));
         appointments.getChildren().add(dailyAppointmentTable);
         dailyAppointmentTable.getStyleClass().add("daily-appointment-table");
         dailyAppointmentTable.setPadding(new Insets(20,20,20,20));
+
+        HBox individualAppointment = new HBox();
+        appointments.getChildren().add(individualAppointment);
+        individualAppointment.prefWidthProperty().bind(dailyAppointmentTable.widthProperty());
+        appointmentDetails = new VBox();
+        VBox appointmentButtons = new VBox();
+
+        individualAppointment.getChildren().add(appointmentDetails);
+        individualAppointment.getChildren().add(appointmentButtons);
+        appointmentDetails.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.5));
+        appointmentButtons.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.5));
+
+        JFXButton startAppointment = new JFXButton("Start Appointment");
+        startAppointment.getStyleClass().add("button-raised");
+        startAppointment.setOnAction(this::startAppointmentEvent);
+        appointmentButtons.getChildren().add(startAppointment);
+
+        JFXButton registerNoShow = new JFXButton("Register No Show");
+        startAppointment.setOnAction(this::startAppointmentEvent);
+        registerNoShow.getStyleClass().add("button-raised");
+        appointmentButtons.getChildren().add(registerNoShow);
+
+        Label appointmentDetailsName = new Label("");
+        appointmentDetailsName.getStyleClass().add("user-text");
+        appointmentDetails.getChildren().add(appointmentDetailsName);
+
+
 
 
 
@@ -516,12 +564,6 @@ public class FlexiBookPage extends Application {
                 newWindow1.show();
             }
         });
-
-        // something else
-        VBox appointments = new VBox(20);
-        ownerAppointmentCalendar.getChildren().add(appointments);
-        //appointments.setPrefWidth(Double.MAX_VALUE);
-        appointments.setStyle("-fx-background-color: #ffffff;");
 
         change2= new HBox();
         change2.setPadding(new Insets(200,200,200,200));
@@ -861,9 +903,7 @@ public class FlexiBookPage extends Application {
                 else{
                     calendarEntry.setOnAction(this::customerDailySchedule);
                 }
-
                 entry.add(calendarEntry);
-                listDays.add(calendarEntry);
                 days.add(calendarEntry,j,i);
             }
         }
@@ -872,7 +912,6 @@ public class FlexiBookPage extends Application {
     }
     private void startAppointmentEvent(ActionEvent event){
         error = null;
-        startButton.setText("End Appointment");
 
         /*try{
             FlexiBookController.startAppointment(new TOAppointmentCalendarItem("appointment",new Date(2135435),new Time(23435435),new Time(23435435),true));
@@ -910,7 +949,7 @@ public class FlexiBookPage extends Application {
         setUpServicePage();
         mainScene.setRoot(servicePage);
     }
-    private List<TOAppointmentCalendarItem> updateDailySchedule(ActionEvent event){
+    private void updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
             try{
@@ -920,14 +959,13 @@ public class FlexiBookPage extends Application {
                 error = e.getMessage();
             }
         }
-        return null;
     }
 
     private List<TOAppointmentCalendarItem> customerDailySchedule(ActionEvent e){
         if(e.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
             try{
-                items = FlexiBookController.getAppointmentCalendar(generateLocalDate(date));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(date)));
             }
             catch (InvalidInputException errr){
                 error = errr.getMessage();
