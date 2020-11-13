@@ -712,7 +712,7 @@ public class FlexiBookPage extends Application {
         	String username = textUserName1.getText();
         	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
-            mainScene.setRoot(mainScreenBorderPane);
+            mainScene.setRoot(ownerMainScreenBorderPane);
             System.out.println("SignUp Successful");
         }
         catch(Exception e){
@@ -963,6 +963,7 @@ public class FlexiBookPage extends Application {
             }
             else{
                 FlexiBookController.endAppointment(currentAppointment);
+                updateDate(listDays,calendarYearOwner,calendarMonthOwner);
                 refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
                 notStarted = true;
                 startAppointment.setGraphic(startAppointmentIcon);
@@ -978,7 +979,7 @@ public class FlexiBookPage extends Application {
     private void registerNoShowEvent(ActionEvent event){
         error =null;
         try{
-            FlexiBookController.registerNoShow(null,null);
+            FlexiBookController.registerNoShow(null);
         }
         catch (InvalidInputException e){
             error = e.getMessage();

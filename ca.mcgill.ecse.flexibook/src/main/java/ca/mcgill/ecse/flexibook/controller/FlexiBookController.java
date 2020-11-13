@@ -1967,11 +1967,12 @@ public class FlexiBookController {
 	 * @param date
 	 * @param
 	 * */
-		public static void registerNoShow(String date,String time) throws InvalidInputException {
+		public static void registerNoShow(TOAppointmentCalendarItem item) throws InvalidInputException {
 			try{
+
 				FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-				Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
-				Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
+				Date sDate = item.getDate();
+				Time sTime = item.getStartTime();
 
 
 				List<Appointment> appointments = flexiBook.getAppointments();

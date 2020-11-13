@@ -2236,7 +2236,8 @@ public class CucumberStepDefinitions {
 	public void theOwnerAttemptsToRegisterANoShowForTheAppointmentAt(String dateTime) {
 		try{
 			SystemTime.setTime(dateTime);
-			FlexiBookController.registerNoShow(appointmentDate,appointmentTime);
+			LocalDateTime dt = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
+			FlexiBookController.registerNoShow(new TOAppointmentCalendarItem(null,Date.valueOf(dt.toLocalDate()),Time.valueOf(dt.toLocalTime()),null,false,null,null));
 		}
 		catch(InvalidInputException e){
 			error+=e;
