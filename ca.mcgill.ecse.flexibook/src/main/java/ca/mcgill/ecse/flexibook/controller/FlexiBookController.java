@@ -1278,7 +1278,7 @@ public class FlexiBookController {
 		 * @param downtimeStart
 		 * @throws InvalidInputException
 		 */
-		public static void addService (String name,int duration, int downtimeDuration,
+		public static void addService (String username, String name,int duration, int downtimeDuration,
 		int downtimeStart) throws InvalidInputException {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
@@ -1289,9 +1289,9 @@ public class FlexiBookController {
 
 				checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 
-				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
+				if (!(username.equals("owner"))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
-				}*/
+				}
 
 				new Service(name, flexibook, duration, downtimeDuration, downtimeStart);
 				FlexiBookPersistence.save(flexibook);
@@ -1309,16 +1309,16 @@ public class FlexiBookController {
 			 * @param downtimeStart
 			 * @throws InvalidInputException
 			 */
-			public static void updateService (String currentName, String name,int duration,
+			public static void updateService (String username, String currentName, String name,int duration,
 				int downtimeDuration, int downtimeStart) throws InvalidInputException {
 				FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 				try {
 					checkServiceParameters(name, duration, downtimeDuration, downtimeStart, flexibook);
 
-					/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
+					if (!(username.equals("owner"))) {
 						throw new InvalidInputException("You are not authorized to perform this operation");
-					}*/
+					}
 
 					if (BookableService.hasWithName(name) && (!(currentName.equals(name)))) {
 						throw new InvalidInputException("Service " + name + " already exists");
@@ -1341,7 +1341,7 @@ public class FlexiBookController {
 		 * @param name
 		 * @throws InvalidInputException
 		 */
-		public static void deleteService (String name) throws InvalidInputException {
+		public static void deleteService (String username, String name) throws InvalidInputException {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 
 			try {
@@ -1357,9 +1357,9 @@ public class FlexiBookController {
 
 				}
 
-				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
+				if (!(username.equals("owner"))) {
 					throw new InvalidInputException("You are not authorized to perform this operation");
-				}*/
+				}
 
 				List<BookableService> bookableServices = flexibook.getBookableServices();
 				List<BookableService> servicesToDelete = new ArrayList();
