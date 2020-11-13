@@ -6,9 +6,10 @@ import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 
 import ca.mcgill.ecse.flexibook.controller.TOService;
-import ca.mcgill.ecse.flexibook.util.SystemTime;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -18,7 +19,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -35,6 +35,7 @@ import javax.xml.soap.Text;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.CollationElementIterator;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,7 @@ public class FlexiBookPage extends Application {
     private Color[] colors = {new Color(.886,.941,.976,1.0),new Color(.690,.867,.882,1.0),
             new Color(.157,.435,.706,1.0),Color.WHITE,new Color(.875,.298,.451,1.0)};
 
-    JFXButton startButton;
-    //private CardLayout mainLayout;
+
     private Stage mainStage;
     Scene mainScene;
     HBox ownerAppointmentCalendar;
@@ -84,6 +84,14 @@ public class FlexiBookPage extends Application {
     private ComboBox<String> existingServices1;
     private Label serviceError;
     private HBox changeAcc;
+    TableView.TableViewSelectionModel<DayEvent> selectionModel;
+    private TilePane appointmentDetails;
+    TOAppointmentCalendarItem currentAppointment = null;
+    boolean notStarted = true;
+    FontIcon startAppointmentIcon;
+    FontIcon endAppointmentIcon;
+    JFXButton startAppointment;
+
 
 
 
@@ -147,10 +155,6 @@ public class FlexiBookPage extends Application {
         FontIcon delete = new FontIcon("dashicons-trash");
         FontIcon back = new FontIcon("dashicons-arrow-left-alt");
 
-        appointmentIcon.getStyleClass().add("icon");
-        accountIcon.getStyleClass().add("icon");
-        businessIcon.getStyleClass().add("icon");
-        serviceIcon.getStyleClass().add("icon");
         loginIcon.getStyleClass().add("icon");
         logoutIcon.getStyleClass().add("icon");
         signUp.getStyleClass().add("icon");
@@ -254,22 +258,103 @@ public class FlexiBookPage extends Application {
 
         VBox appointments = new VBox(20);
         ownerAppointmentCalendar.getChildren().add(appointments);
+        appointments.setMinWidth(530);
 
         //appointments.setPrefWidth(Double.MAX_VALUE);
         dailyAppointmentTable = new TableView<>();
         TableColumn<DayEvent, String> column1 = new TableColumn<>("Start Time");
         column1.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        column1.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
+        column1.getStyleClass().add("appointment-table-rows");
         TableColumn<DayEvent, String> column2 = new TableColumn<>("Username");
-        column2.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        column2.getStyleClass().add("appointment-table-rows");
+        column2.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
+        column2.setCellValueFactory(new PropertyValueFactory<>("username"));
         TableColumn<DayEvent, String> column3 = new TableColumn<>("End Time");
-        column2.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        TableColumn<DayEvent, String> column4 = new TableColumn<>("Service");
-        column2.setCellValueFactory(new PropertyValueFactory<>("date"));
-        dailyAppointmentTable.getColumns().addAll(column1,column2,column3,column4);
+        column3.getStyleClass().add("appointment-table-rows");
+        column3.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
+
+        column3.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+        dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
+        selectionModel = dailyAppointmentTable.getSelectionModel();
 
         dailyAppointmentTable.setPlaceholder(new Label("No Appointments Today"));
         appointments.getChildren().add(dailyAppointmentTable);
         dailyAppointmentTable.getStyleClass().add("daily-appointment-table");
+        dailyAppointmentTable.setPadding(new Insets(20,20,20,20));
+
+        HBox individualAppointment = new HBox();
+        appointments.getChildren().add(individualAppointment);
+        individualAppointment.prefWidthProperty().bind(dailyAppointmentTable.widthProperty());
+        appointmentDetails = new TilePane();
+        VBox appointmentButtons = new VBox();
+
+        individualAppointment.getChildren().add(appointmentDetails);
+        individualAppointment.getChildren().add(appointmentButtons);
+        appointmentDetails.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.7));
+        appointmentButtons.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.3));
+        appointmentDetails.setPrefColumns(2);
+        appointmentDetails.setVisible(false);
+
+        startAppointmentIcon = new FontIcon("eli-play-circle");
+        startAppointmentIcon.getStyleClass().add("icon-start-buttons");
+
+        endAppointmentIcon = new FontIcon("ri-stop-sign");
+        endAppointmentIcon.getStyleClass().add("icon-start-buttons");
+
+        startAppointment = new JFXButton("Start Appointment",startAppointmentIcon);
+        startAppointment.setContentDisplay(ContentDisplay.TOP);
+        startAppointment.getStyleClass().add("appointment-start-buttons");
+        startAppointment.setDisable(true);
+        startAppointment.setOnAction(this::startAppointmentEvent);
+        startAppointment.getStyleClass().add("appointment-start-buttons");
+        appointmentButtons.getChildren().add(startAppointment);
+
+        FontIcon registerNoShowIcon = new FontIcon("enty-eye-with-line");
+        registerNoShowIcon.getStyleClass().add("icon-start-buttons");
+        //registerNoShowIcon.setStyle("-fx-pref-width: 150px;");
+
+        JFXButton registerNoShow = new JFXButton("Register No Show",registerNoShowIcon);
+        registerNoShow.setContentDisplay(ContentDisplay.TOP);
+        registerNoShow.setOnAction(this::registerNoShowEvent);
+        registerNoShow.setDisable(true);
+        registerNoShow.getStyleClass().add("appointment-start-buttons");
+        appointmentButtons.getChildren().add(registerNoShow);
+
+        ObservableList<DayEvent> observableList = selectionModel.getSelectedItems();
+        observableList.addListener((ListChangeListener<DayEvent>) c -> {
+            while(c.next()) {
+                if (!c.wasPermutated()) {
+                    for (DayEvent removeitem : c.getRemoved()) {
+                        appointmentDetails.setVisible(false);
+                        registerNoShow.setDisable(true);
+                        startAppointment.setDisable(true);
+                        currentAppointment = null;
+                    }
+                    for (DayEvent additem : c.getAddedSubList()) {
+                        currentAppointment = additem.getAppointment();
+                        ((Label)appointmentDetails.getChildren().get(1)).setText(additem.getAppointment().getUsername());
+                        ((Label)appointmentDetails.getChildren().get(3)).setText(additem.getStartTime());
+                        ((Label)appointmentDetails.getChildren().get(5)).setText(additem.getEndTime());
+                        ((Label)appointmentDetails.getChildren().get(7)).setText(additem.getAppointment().getMainService());
+                        registerNoShow.setDisable(false);
+                        startAppointment.setDisable(false);
+                        appointmentDetails.setVisible(true);
+                    }
+                }
+            }
+            c.reset();
+        });
+        for(int i = 0; i< 10;i++){
+            Label l = new Label("");
+            appointmentDetails.getChildren().add(l);
+            l.getStyleClass().add("user-text");
+        }
+        ((Label)appointmentDetails.getChildren().get(0)).setText("Username: ");
+        ((Label)appointmentDetails.getChildren().get(2)).setText("Start Time: ");
+        ((Label)appointmentDetails.getChildren().get(4)).setText("End Time: ");
+        ((Label)appointmentDetails.getChildren().get(6)).setText("Main Service: ");
+        ((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
 
 
         customerAppointmentCalendar = new HBox();
@@ -692,7 +777,7 @@ public class FlexiBookPage extends Application {
     }
 
     private void refreshData(){
-        /*int index = 0;
+        int index = 0;
         serviceNameInput.setText("");
         downtimeDurationInput.setText("");
         durationInput.setText("");
@@ -708,7 +793,7 @@ public class FlexiBookPage extends Application {
             existingServices.getItems().add(s.getName());
             existingServices1.getItems().add(s.getName());
             index++;
-        }*/
+        }
     }
     private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox  calendar =new HBox();
@@ -894,7 +979,6 @@ public class FlexiBookPage extends Application {
                         }
                     });
                 }
-
                 entry.add(calendarEntry);
                 days.add(calendarEntry,j,i);
             }
@@ -904,26 +988,34 @@ public class FlexiBookPage extends Application {
     }
     private void startAppointmentEvent(ActionEvent event){
         error = null;
-        startButton.setText("End Appointment");
+        try{
+            if(notStarted){
+                FlexiBookController.startAppointment(currentAppointment);
+                notStarted = false;
+                startAppointment.setGraphic(endAppointmentIcon);
+                startAppointment.setText("End Appointment");
+            }
+            else{
+                FlexiBookController.endAppointment(currentAppointment);
+                notStarted = true;
+                startAppointment.setGraphic(startAppointmentIcon);
+                startAppointment.setText("Start Appointment");
+            }
 
-        /*try{
-            FlexiBookController.startAppointment(new TOAppointmentCalendarItem("appointment",new Date(2135435),new Time(23435435),new Time(23435435),true));
         }
         catch (InvalidInputException e){
             error = e.getMessage();
-        }*/
+        }
+
     }
-    private void endAppointmentEvent(ActionEvent event){
-        error = null;
-        //mainLayout.show(main,"appointment");
-        //pack();
-
-        /*try{
-            FlexiBookController.startAppointment(new TOAppointmentCalendarItem("appointment",new Date(2135435),new Time(23435435),new Time(23435435),true));
+    private void registerNoShowEvent(ActionEvent event){
+        error =null;
+        try{
+            FlexiBookController.registerNoShow(null,null);
         }
         catch (InvalidInputException e){
             error = e.getMessage();
-        }*/
+        }
     }
     private void switchToOwnerAppointment(){
         mainScene.setRoot(ownerAppointmentCalendar);
@@ -942,7 +1034,7 @@ public class FlexiBookPage extends Application {
         setUpServicePage();
         mainScene.setRoot(servicePage);
     }
-    private List<TOAppointmentCalendarItem> updateDailySchedule(ActionEvent event){
+    private void updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
             try{
@@ -952,7 +1044,6 @@ public class FlexiBookPage extends Application {
                 error = e.getMessage();
             }
         }
-        return null;
     }
 
     private List<TOAppointmentCalendarItem> customerDailySchedule(ActionEvent e){
@@ -989,7 +1080,6 @@ public class FlexiBookPage extends Application {
     }
     private void updateDate(ArrayList<CalendarEntry> list,Label year,Label month){
         list.get(15).getStyleClass().add("calendar-holiday");
-        list.get(15).setStyle("-fx-background-color: #e0163e");
         year.setText(String.valueOf(renderDate.getYear()));
         month.setText(String.valueOf(renderDate.getMonth()));
         LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
@@ -997,10 +1087,20 @@ public class FlexiBookPage extends Application {
             calendarDate = calendarDate.minusDays(1);
         }
         for(CalendarEntry c:list){
+            c.setStyle(" -fx-background-color: #E2F0F9");
             c.setDate(calendarDate);
             c.setText(String.valueOf(calendarDate.getDayOfMonth()));
+            c.getStyleClass().removeAll("calendar-appointment-present","not-in-month");
+            try{
+                List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(generateLocalDate(calendarDate));
+                if(list1.size() >0){
+                    c.setStyle("-fx-background-color: #03c04A80");
+                }
+            }
+            catch (InvalidInputException e){
+                error = e.getMessage();
+            }
             calendarDate = calendarDate.plusDays(1);
-            c.getStyleClass().remove("not-in-month");
             if(!c.getDate().getMonth().equals(renderDate.getMonth())){
                 c.getStyleClass().add("not-in-month");
             }
@@ -1063,20 +1163,6 @@ public class FlexiBookPage extends Application {
         }
         s+=date.getDayOfMonth();
         return s;
-    }
-    private class CalendarEntry extends JFXButton{
-        LocalDate date;
-        CalendarEntry(String date){
-            super(date);
-        }
-
-        public LocalDate getDate() {
-            return date;
-        }
-
-        public void setDate(LocalDate date) {
-            this.date = date;
-        }
     }
 
 private void setUpServicePage() {
@@ -1147,6 +1233,7 @@ private void setUpServicePage() {
         JFXButton homeButton = new JFXButton("Home", homeIcon);
         homeButton.setContentDisplay(ContentDisplay.TOP);
         homeButton.getStyleClass().add("main-menu-button");
+        homeButton.setOnAction(e->back());
 
         VBox col1 = new VBox(20);
         col1.getChildren().addAll(serviceName, downtimeDuration);
@@ -1226,6 +1313,7 @@ private void setUpServicePage() {
         topLeft.setTranslateX(-140);
 
         servicePage.getChildren().addAll(topLeft, space, topRight);
+        refreshData();
     }
 
     private void addServiceAction() {
@@ -1245,7 +1333,7 @@ private void setUpServicePage() {
 
         if(serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.addService(serviceNameInput.getText(), Integer.parseInt(durationInput.getText()),
+                FlexiBookController.addService("owner", serviceNameInput.getText(), Integer.parseInt(durationInput.getText()),
                         Integer.parseInt(downtimeDurationInput.getText()), Integer.parseInt(downtimeStartInput.getText()));
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
@@ -1274,7 +1362,7 @@ private void setUpServicePage() {
         }
         if (serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.updateService(existingServices.getValue(), serviceNameInput1.getText(), Integer.parseInt(durationInput1.getText()),
+                FlexiBookController.updateService("owner", existingServices.getValue(), serviceNameInput1.getText(), Integer.parseInt(durationInput1.getText()),
                         Integer.parseInt(downtimeDurationInput1.getText()), Integer.parseInt(downtimeStartInput1.getText()));
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
@@ -1291,7 +1379,7 @@ private void setUpServicePage() {
         }
         if (serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.deleteService(existingServices1.getValue());
+                FlexiBookController.deleteService("owner", existingServices1.getValue());
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
             }

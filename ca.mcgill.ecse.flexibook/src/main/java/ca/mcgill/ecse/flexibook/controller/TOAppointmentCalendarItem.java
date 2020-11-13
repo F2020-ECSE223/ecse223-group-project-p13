@@ -4,6 +4,7 @@
 package ca.mcgill.ecse.flexibook.controller;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.*;
 
 // line 10 "../../../../../TransferObjects.ump"
 public class TOAppointmentCalendarItem
@@ -20,12 +21,14 @@ public class TOAppointmentCalendarItem
   private Time endTime;
   private boolean available;
   private String username;
+  private String mainService;
+  private List<String> chosenItems;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public TOAppointmentCalendarItem(String aDescription, Date aDate, Time aStartTime, Time aEndTime, boolean aAvailable, String aUsername)
+  public TOAppointmentCalendarItem(String aDescription, Date aDate, Time aStartTime, Time aEndTime, boolean aAvailable, String aUsername, String aMainService)
   {
     description = aDescription;
     date = aDate;
@@ -33,6 +36,8 @@ public class TOAppointmentCalendarItem
     endTime = aEndTime;
     available = aAvailable;
     username = aUsername;
+    mainService = aMainService;
+    chosenItems = new ArrayList<String>();
   }
 
   //------------------------
@@ -87,6 +92,28 @@ public class TOAppointmentCalendarItem
     return wasSet;
   }
 
+  public boolean setMainService(String aMainService)
+  {
+    boolean wasSet = false;
+    mainService = aMainService;
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template attribute_SetMany */
+  public boolean addChosenItem(String aChosenItem)
+  {
+    boolean wasAdded = false;
+    wasAdded = chosenItems.add(aChosenItem);
+    return wasAdded;
+  }
+
+  public boolean removeChosenItem(String aChosenItem)
+  {
+    boolean wasRemoved = false;
+    wasRemoved = chosenItems.remove(aChosenItem);
+    return wasRemoved;
+  }
+
   public String getDescription()
   {
     return description;
@@ -117,6 +144,41 @@ public class TOAppointmentCalendarItem
     return username;
   }
 
+  public String getMainService()
+  {
+    return mainService;
+  }
+  /* Code from template attribute_GetMany */
+  public String getChosenItem(int index)
+  {
+    String aChosenItem = chosenItems.get(index);
+    return aChosenItem;
+  }
+
+  public String[] getChosenItems()
+  {
+    String[] newChosenItems = chosenItems.toArray(new String[chosenItems.size()]);
+    return newChosenItems;
+  }
+
+  public int numberOfChosenItems()
+  {
+    int number = chosenItems.size();
+    return number;
+  }
+
+  public boolean hasChosenItems()
+  {
+    boolean has = chosenItems.size() > 0;
+    return has;
+  }
+
+  public int indexOfChosenItem(String aChosenItem)
+  {
+    int index = chosenItems.indexOf(aChosenItem);
+    return index;
+  }
+
   public void delete()
   {}
 
@@ -126,7 +188,8 @@ public class TOAppointmentCalendarItem
     return super.toString() + "["+
             "description" + ":" + getDescription()+ "," +
             "available" + ":" + getAvailable()+ "," +
-            "username" + ":" + getUsername()+ "]" + System.getProperties().getProperty("line.separator") +
+            "username" + ":" + getUsername()+ "," +
+            "mainService" + ":" + getMainService()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null");
