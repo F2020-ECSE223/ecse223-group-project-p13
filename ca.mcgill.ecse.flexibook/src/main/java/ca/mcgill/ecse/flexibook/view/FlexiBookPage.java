@@ -735,7 +735,7 @@ public class FlexiBookPage extends Application {
     }
 
     private void refreshData(){
-        /*int index = 0;
+        int index = 0;
         serviceNameInput.setText("");
         downtimeDurationInput.setText("");
         durationInput.setText("");
@@ -751,7 +751,7 @@ public class FlexiBookPage extends Application {
             existingServices.getItems().add(s.getName());
             existingServices1.getItems().add(s.getName());
             index++;
-        }*/
+        }
     }
     private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox  calendar =new HBox();
@@ -1133,6 +1133,7 @@ private void setUpServicePage() {
         JFXButton homeButton = new JFXButton("Home", homeIcon);
         homeButton.setContentDisplay(ContentDisplay.TOP);
         homeButton.getStyleClass().add("main-menu-button");
+        homeButton.setOnAction(e->back());
 
         VBox col1 = new VBox(20);
         col1.getChildren().addAll(serviceName, downtimeDuration);
@@ -1212,6 +1213,7 @@ private void setUpServicePage() {
         topLeft.setTranslateX(-140);
 
         servicePage.getChildren().addAll(topLeft, space, topRight);
+        refreshData();
     }
 
     private void addServiceAction() {
