@@ -26,11 +26,15 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
+//import sun.plugin2.util.ColorUtil;
+
 
 //import java.awt.*;
 import javax.swing.*;
+import javax.xml.soap.Text;
 import java.sql.Date;
 import java.sql.Time;
+import java.text.CollationElementIterator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +69,7 @@ public class FlexiBookPage extends Application {
     JFXPasswordField updatePassword;
     TextField textUserName1;
     PasswordField pf1;
+    VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
     private TextField serviceNameInput;
@@ -267,7 +272,6 @@ public class FlexiBookPage extends Application {
         dailyAppointmentTable.getStyleClass().add("daily-appointment-table");
 
 
-
         customerAppointmentCalendar = new HBox();
         customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays,false));
         customerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
@@ -276,10 +280,10 @@ public class FlexiBookPage extends Application {
         //Pop-up window
         // make appt button
         JFXButton makeApptButton = new JFXButton("Make Appointment");
-        makeApptButton.setStyle("-fx-background-color: #286fb4");
+        makeApptButton.setStyle("-fx-background-color: #e2f0f9");
         makeApptButton.setButtonType(JFXButton.ButtonType.RAISED);
         makeApptButton.setOpacity(0.8);
-        makeApptButton.setTextFill(Paint.valueOf("#ffffff"));
+        makeApptButton.setTextFill(Paint.valueOf("#286fb4"));
 
         //time combo boxes
         //hour
@@ -308,10 +312,7 @@ public class FlexiBookPage extends Application {
                 minuteSelection.getItems().add(new Label(String.valueOf(i)));
             }
         }
-
         minuteSelection.setPromptText("Select Minute");
-
-        minuteSelection.setStyle("-fx-background-color: #b0dde4");
 
         // pm/am
         JFXComboBox<Label> timeOfDay = new JFXComboBox<Label>();
@@ -408,7 +409,7 @@ public class FlexiBookPage extends Application {
             public void handle(ActionEvent event) {
                 StackPane secondaryLayout = new StackPane();
                 Scene secondScene = new Scene(secondaryLayout, 510, 250);
-
+                secondaryLayout.setStyle("-fx-background-color: #b0dde4;");
                 secondaryLayout.getChildren().add(datePickBox);
 
                 // New window (Stage)
@@ -438,7 +439,28 @@ public class FlexiBookPage extends Application {
         Label slabel = new Label("",plusIcon);
         slabel.setWrapText(true);
 
-        HBox rightSide = new HBox(10);
+        //appointment info
+
+        HBox rightSide = new HBox(200);
+
+        VBox appointmentLabels = new VBox(10);
+        Label apptInfo = new Label("Appointment Information");
+        apptInfo.setTextFill(Paint.valueOf("#286fb4"));
+        apptInfo.setScaleX(1.5);
+        apptInfo.setScaleY(1.5);
+        apptInfo.setStyle("-fx-text-color: #286fb4");
+        Label timeLabel = new Label("Time:");
+        timeLabel.setTextFill(Paint.valueOf("#286fb4"));
+        Label dateLabel = new Label("Date:");
+        dateLabel.setTextFill(Paint.valueOf("#286fb4"));
+        Label serviceLabel = new Label("Service:");
+        serviceLabel.setTextFill(Paint.valueOf("#286fb4"));
+        appointmentLabels.setMinWidth(200);
+
+        appointmentLabels.getChildren().addAll(apptInfo,timeLabel,dateLabel,serviceLabel);
+
+        appointmentLabels.setAlignment(Pos.CENTER_LEFT);
+        rightSide.getChildren().add(appointmentLabels);
 
         rightSide.setPrefHeight(200);
         rightSide.setPrefWidth(550);
@@ -452,75 +474,61 @@ public class FlexiBookPage extends Application {
         nodesList.addAnimatedNode(serviceCombo);
         nodesList.addAnimatedNode(service);
 
-
         nodesList.setAlignment(Pos.BOTTOM_RIGHT);
         rightSide.getChildren().add(nodesList);
         rightSide.setAlignment(Pos.BASELINE_RIGHT);
 
-        // stuff for cancel/update popup
-        Label time = new Label("Time:");
-        time.setStyle("-fx-background-color: #b0dde4");
-        time.setTextFill(Paint.valueOf("#286fb4"));
-        Label date = new Label("Date:");
-        date.setStyle("-fx-background-color: #b0dde4");
-        date.setTextFill(Paint.valueOf("#286fb4"));
-        Label appointmentService = new Label("Service:");
-        appointmentService.setStyle("-fx-background-color: #b0dde4");
-        appointmentService.setTextFill(Paint.valueOf("#286fb4"));
 
+        // stuff for cancel/update popup
+
+
+        HBox timeBox = new HBox(10);
+        Label time = new Label("Time:");
+        time.setTextFill(Paint.valueOf("#286fb4"));
+        TextField timeField = new TextField();
+        timeBox.getChildren().addAll(time,timeField);
+        timeBox.setAlignment(Pos.CENTER);
+
+        HBox dateBox = new HBox(10);
+        Label date = new Label("Date:");
+        date.setTextFill(Paint.valueOf("#286fb4"));
+        TextField dateField = new TextField();
+        dateBox.getChildren().addAll(date,dateField);
+        dateBox.setAlignment(Pos.CENTER);
+
+        HBox serviceBox = new HBox(10);
+        Label appointmentService = new Label("Service:");
+        appointmentService.setTextFill(Paint.valueOf("#286fb4"));
+        TextField serviceField = new TextField();
+        serviceBox.getChildren().addAll(appointmentService,serviceField);
+        serviceBox.setAlignment(Pos.CENTER);
 
         HBox apptButtons = new HBox(10);
         JFXButton updateAppt = new JFXButton("Update Appointment");
-        updateAppt.setStyle("-fx-background-color: #b0dde4");
+        updateAppt.setStyle("-fx-background-color: #e2F0F9");
         updateAppt.setButtonType(JFXButton.ButtonType.RAISED);
         updateAppt.setTextFill(Paint.valueOf("#286fb4"));
+
+        apptButtons.setAlignment(Pos.CENTER);
+
+
         JFXButton cancelAppt = new JFXButton("Cancel Appointment");
         cancelAppt.setButtonType(JFXButton.ButtonType.RAISED);
-        cancelAppt.setStyle("-fx-background-color: #b0dde4");
+        cancelAppt.setStyle("-fx-background-color: #e3f0f9");
         cancelAppt.setTextFill(Paint.valueOf("#286fb4"));
-        apptButtons.getChildren().add(updateAppt);
-        apptButtons.getChildren().add(cancelAppt);
+        apptButtons.getChildren().addAll(updateAppt,cancelAppt);
 
-        VBox makeAndCancelPopUp = new VBox(20);
-        makeAndCancelPopUp.getChildren().add(time);
-        makeAndCancelPopUp.getChildren().add(date);
-        makeAndCancelPopUp.getChildren().add(appointmentService);
-        makeAndCancelPopUp.getChildren().add(apptButtons);
+        makeAndCancelPopUp = new VBox(20);
+        makeAndCancelPopUp.getChildren().addAll(timeBox,dateBox,serviceBox,apptButtons);
+
+        makeAndCancelPopUp.setAlignment(Pos.CENTER);
 
         JFXPopup appointmentPopup1 = new JFXPopup();
         appointmentPopup1.setPopupContent(makeAndCancelPopUp);
 
-        serviceCombo.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                StackPane secondaryLayout = new StackPane();
-                Scene changeAppt = new Scene(secondaryLayout, 510, 250);
 
-                secondaryLayout.getChildren().add(makeAndCancelPopUp);
-
-                // New window (Stage)
-                Stage newWindow1 = new Stage();
-                newWindow1.setTitle("Change Appointment");
-                newWindow1.setScene(changeAppt);
-
-                // Specifies the modality for new window.
-                newWindow1.initModality(Modality.WINDOW_MODAL);
-                // Specifies the owner Window (parent) for new window
-                newWindow1.initOwner(mainStage);
-
-                // Set position of second window, related to primary window.
-                newWindow1.setX(mainStage.getX() + 500);
-                newWindow1.setY(mainStage.getY() + 300);
-
-                newWindow1.show();
-            }
-        });
 
         // something else
-        VBox appointments = new VBox(20);
-        ownerAppointmentCalendar.getChildren().add(appointments);
-        //appointments.setPrefWidth(Double.MAX_VALUE);
-        appointments.setStyle("-fx-background-color: #ffffff;");
 
         change2= new HBox();
         change2.setPadding(new Insets(200,200,200,200));
@@ -557,7 +565,7 @@ public class FlexiBookPage extends Application {
         final PasswordField pf1=  new PasswordField();
         JFXButton btonLogin1= new JFXButton("SignUp",signUp);
         btonLogin1.setOnAction(e->{
-            mainScene.setRoot(ownerMainScreenBorderPane);
+            mainScene.setRoot(customerScreenBorderPane);
         });
         final Label lblMessage1= new Label();
         gridP2.add(lblUserName1,0,0);
@@ -578,7 +586,7 @@ public class FlexiBookPage extends Application {
         mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         ownerMainScreenBorderPane.requestFocus();
 
-        mainScene.setRoot(ownerMainScreenBorderPane);
+        mainScene.setRoot(customerScreenBorderPane);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         customerScreenBorderPane.requestFocus();
 
@@ -859,10 +867,35 @@ public class FlexiBookPage extends Application {
                 }
                 else{
                     calendarEntry.setOnAction(this::customerDailySchedule);
+                    calendarEntry.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            StackPane secondaryLayout = new StackPane();
+                            Scene changeAppt = new Scene(secondaryLayout, 510, 250);
+
+                            secondaryLayout.setStyle("-fx-background-color: #b0dde4;");
+                            secondaryLayout.getChildren().add(makeAndCancelPopUp);
+
+                            // New window (Stage)
+                            Stage newWindow1 = new Stage();
+                            newWindow1.setTitle("Change Appointment");
+                            newWindow1.setScene(changeAppt);
+
+                            // Specifies the modality for new window.
+                            newWindow1.initModality(Modality.WINDOW_MODAL);
+                            // Specifies the owner Window (parent) for new window
+                            newWindow1.initOwner(mainStage);
+
+                            // Set position of second window, related to primary window.
+                            newWindow1.setX(mainStage.getX() + 500);
+                            newWindow1.setY(mainStage.getY() + 300);
+
+                            newWindow1.show();
+                        }
+                    });
                 }
 
                 entry.add(calendarEntry);
-                listDays.add(calendarEntry);
                 days.add(calendarEntry,j,i);
             }
         }
@@ -899,7 +932,7 @@ public class FlexiBookPage extends Application {
 
     private void switchToCustomerAppointment(){
         mainScene.setRoot(customerAppointmentCalendar);
-        updateDate(listDays,calendarYearCustomer,calendarMonthCustomer);
+        updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
     }
 
     private void switchToBusiness(){
@@ -926,7 +959,7 @@ public class FlexiBookPage extends Application {
         if(e.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
             try{
-                items = FlexiBookController.getAppointmentCalendar(generateLocalDate(date));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(date)));
             }
             catch (InvalidInputException errr){
                 error = errr.getMessage();
