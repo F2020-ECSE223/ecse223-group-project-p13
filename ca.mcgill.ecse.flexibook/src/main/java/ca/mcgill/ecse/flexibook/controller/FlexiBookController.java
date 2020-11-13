@@ -1925,10 +1925,12 @@ public class FlexiBookController {
 					appt.setIsDayOf(true);
 				}
 				appt.toggleStart();
+				FlexiBookPersistence.save(flexiBook);
 			}
 			else{
 				throw new InvalidInputException("Appointment Does Not Exist");
 			}
+
 		}
 
 	/**

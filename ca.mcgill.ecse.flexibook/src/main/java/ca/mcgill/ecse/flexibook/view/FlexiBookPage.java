@@ -6,7 +6,6 @@ import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 
 import ca.mcgill.ecse.flexibook.controller.TOService;
-import ca.mcgill.ecse.flexibook.util.SystemTime;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
@@ -20,7 +19,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -30,8 +28,6 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +78,7 @@ public class FlexiBookPage extends Application {
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
-    boolean started = false;
+    boolean notStarted = true;
     FontIcon startAppointmentIcon;
     FontIcon endAppointmentIcon;
     JFXButton startAppointment;
@@ -294,7 +290,7 @@ public class FlexiBookPage extends Application {
         startAppointmentIcon = new FontIcon("eli-play-circle");
         startAppointmentIcon.getStyleClass().add("icon-start-buttons");
 
-        endAppointmentIcon = new FontIcon("");
+        endAppointmentIcon = new FontIcon("ri-stop-sign");
         endAppointmentIcon.getStyleClass().add("icon-start-buttons");
 
         startAppointment = new JFXButton("Start Appointment",startAppointmentIcon);
@@ -949,14 +945,17 @@ public class FlexiBookPage extends Application {
     private void startAppointmentEvent(ActionEvent event){
         error = null;
         try{
-            if(started){
+            if(notStarted){
                 FlexiBookController.startAppointment(currentAppointment);
-                started = true;
+                notStarted = false;
+                startAppointment.setGraphic(endAppointmentIcon);
+                startAppointment.setText("End Appointment");
             }
             else{
                 FlexiBookController.endAppointment(currentAppointment);
-                started = false;
-
+                notStarted = true;
+                startAppointment.setGraphic(startAppointmentIcon);
+                startAppointment.setText("Start Appointment");
             }
 
         }
@@ -964,15 +963,6 @@ public class FlexiBookPage extends Application {
             error = e.getMessage();
         }
 
-    }
-    private void endAppointmentEvent(ActionEvent event){
-        error = null;
-        try{
-            FlexiBookController.endAppointment(currentAppointment);
-        }
-        catch (InvalidInputException e){
-            error = e.getMessage();
-        }
     }
     private void registerNoShowEvent(ActionEvent event){
         error =null;
