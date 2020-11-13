@@ -80,7 +80,13 @@ public class FlexiBookPage extends Application {
     private Label serviceError;
     private HBox changeAcc;
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
-    VBox appointmentDetails;
+    private TilePane appointmentDetails;
+    TOAppointmentCalendarItem currentAppointment = null;
+    boolean started = false;
+    FontIcon startAppointmentIcon;
+    FontIcon endAppointmentIcon;
+    JFXButton startAppointment;
+
 
 
 
@@ -275,53 +281,75 @@ public class FlexiBookPage extends Application {
         HBox individualAppointment = new HBox();
         appointments.getChildren().add(individualAppointment);
         individualAppointment.prefWidthProperty().bind(dailyAppointmentTable.widthProperty());
-        appointmentDetails = new VBox();
+        appointmentDetails = new TilePane();
         VBox appointmentButtons = new VBox();
 
         individualAppointment.getChildren().add(appointmentDetails);
         individualAppointment.getChildren().add(appointmentButtons);
         appointmentDetails.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.7));
         appointmentButtons.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.3));
+        appointmentDetails.setPrefColumns(2);
+        appointmentDetails.setVisible(false);
 
-        JFXButton startAppointment = new JFXButton("Start Appointment");
-        startAppointment.getStyleClass().add("button-raised");
+        startAppointmentIcon = new FontIcon("eli-play-circle");
+        startAppointmentIcon.getStyleClass().add("icon-start-buttons");
+
+        endAppointmentIcon = new FontIcon("");
+        endAppointmentIcon.getStyleClass().add("icon-start-buttons");
+
+        startAppointment = new JFXButton("Start Appointment",startAppointmentIcon);
+        startAppointment.setContentDisplay(ContentDisplay.TOP);
+        startAppointment.getStyleClass().add("appointment-start-buttons");
         startAppointment.setDisable(true);
         startAppointment.setOnAction(this::startAppointmentEvent);
+        startAppointment.getStyleClass().add("appointment-start-buttons");
         appointmentButtons.getChildren().add(startAppointment);
 
         FontIcon registerNoShowIcon = new FontIcon("enty-eye-with-line");
-        registerNoShowIcon.getStyleClass().add("icon-main-menu");
+        registerNoShowIcon.getStyleClass().add("icon-start-buttons");
+        //registerNoShowIcon.setStyle("-fx-pref-width: 150px;");
 
         JFXButton registerNoShow = new JFXButton("Register No Show",registerNoShowIcon);
         registerNoShow.setContentDisplay(ContentDisplay.TOP);
-        registerNoShow.setOnAction(this::startAppointmentEvent);
+        registerNoShow.setOnAction(this::registerNoShowEvent);
         registerNoShow.setDisable(true);
-        registerNoShow.getStyleClass().add("button-raised");
+        registerNoShow.getStyleClass().add("appointment-start-buttons");
         appointmentButtons.getChildren().add(registerNoShow);
-
-        Label appointmentDetailsName = new Label("");
-        appointmentDetailsName.getStyleClass().add("user-text");
-        appointmentDetails.getChildren().add(appointmentDetailsName);
 
         ObservableList<DayEvent> observableList = selectionModel.getSelectedItems();
         observableList.addListener((ListChangeListener<DayEvent>) c -> {
             while(c.next()) {
                 if (!c.wasPermutated()) {
                     for (DayEvent removeitem : c.getRemoved()) {
+                        appointmentDetails.setVisible(false);
                         registerNoShow.setDisable(true);
                         startAppointment.setDisable(true);
+                        currentAppointment = null;
                     }
                     for (DayEvent additem : c.getAddedSubList()) {
-                        ((Label)appointmentDetails.getChildren().get(0)).setText(additem.getAppointment().getUsername());
+                        currentAppointment = additem.getAppointment();
+                        ((Label)appointmentDetails.getChildren().get(1)).setText(additem.getAppointment().getUsername());
+                        ((Label)appointmentDetails.getChildren().get(3)).setText(additem.getStartTime());
+                        ((Label)appointmentDetails.getChildren().get(5)).setText(additem.getEndTime());
+                        ((Label)appointmentDetails.getChildren().get(7)).setText(additem.getAppointment().getMainService());
                         registerNoShow.setDisable(false);
                         startAppointment.setDisable(false);
+                        appointmentDetails.setVisible(true);
                     }
                 }
             }
             c.reset();
         });
-
-
+        for(int i = 0; i< 10;i++){
+            Label l = new Label("");
+            appointmentDetails.getChildren().add(l);
+            l.getStyleClass().add("user-text");
+        }
+        ((Label)appointmentDetails.getChildren().get(0)).setText("Username: ");
+        ((Label)appointmentDetails.getChildren().get(2)).setText("Start Time: ");
+        ((Label)appointmentDetails.getChildren().get(4)).setText("End Time: ");
+        ((Label)appointmentDetails.getChildren().get(6)).setText("Main Service: ");
+        ((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
 
 
 
@@ -920,11 +948,40 @@ public class FlexiBookPage extends Application {
     }
     private void startAppointmentEvent(ActionEvent event){
         error = null;
+        try{
+            if(started){
+                FlexiBookController.startAppointment(currentAppointment);
+                started = true;
+            }
+            else{
+                FlexiBookController.endAppointment(currentAppointment);
+                started = false;
+
+            }
+
+        }
+        catch (InvalidInputException e){
+            error = e.getMessage();
+        }
 
     }
     private void endAppointmentEvent(ActionEvent event){
         error = null;
-
+        try{
+            FlexiBookController.endAppointment(currentAppointment);
+        }
+        catch (InvalidInputException e){
+            error = e.getMessage();
+        }
+    }
+    private void registerNoShowEvent(ActionEvent event){
+        error =null;
+        try{
+            FlexiBookController.registerNoShow(null,null);
+        }
+        catch (InvalidInputException e){
+            error = e.getMessage();
+        }
     }
     private void switchToOwnerAppointment(){
         mainScene.setRoot(ownerAppointmentCalendar);
@@ -989,7 +1046,6 @@ public class FlexiBookPage extends Application {
     }
     private void updateDate(ArrayList<CalendarEntry> list,Label year,Label month){
         list.get(15).getStyleClass().add("calendar-holiday");
-        list.get(15).setStyle("-fx-background-color: #e0163e");
         year.setText(String.valueOf(renderDate.getYear()));
         month.setText(String.valueOf(renderDate.getMonth()));
         LocalDate calendarDate = LocalDate.of(renderDate.getYear(), renderDate.getMonthValue(), 1);
@@ -997,10 +1053,20 @@ public class FlexiBookPage extends Application {
             calendarDate = calendarDate.minusDays(1);
         }
         for(CalendarEntry c:list){
+            c.setStyle(" -fx-background-color: #E2F0F9");
             c.setDate(calendarDate);
             c.setText(String.valueOf(calendarDate.getDayOfMonth()));
+            c.getStyleClass().removeAll("calendar-appointment-present","not-in-month");
+            try{
+                List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(generateLocalDate(calendarDate));
+                if(list1.size() >0){
+                    c.setStyle("-fx-background-color: #03c04A80");
+                }
+            }
+            catch (InvalidInputException e){
+                error = e.getMessage();
+            }
             calendarDate = calendarDate.plusDays(1);
-            c.getStyleClass().remove("not-in-month");
             if(!c.getDate().getMonth().equals(renderDate.getMonth())){
                 c.getStyleClass().add("not-in-month");
             }

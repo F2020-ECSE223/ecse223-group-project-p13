@@ -47,6 +47,7 @@ public class CucumberStepDefinitions {
 	private String appointmentTime;
 	private boolean appointmentHasStarted = false;
 	private boolean appointmentHasEnded = false;
+	private String username;
 
 
 	/**
@@ -1844,7 +1845,7 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true,null);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,true,null,null);
     		input.add(n1);
     	}
     	int count=0;
@@ -1867,7 +1868,7 @@ public class CucumberStepDefinitions {
     		DateTimeFormatter formatter1=DateTimeFormatter.ofPattern("H:mm");
     		Time t1=Time.valueOf(LocalTime.parse(list.get(i).get(1),formatter1));
     		Time t2=Time.valueOf(LocalTime.parse(list.get(i).get(2),formatter1));
-    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false,null);
+    		TOAppointmentCalendarItem n1= new TOAppointmentCalendarItem("business hour",d,t1,t2,false,null,null);
     		input.add(n1);
     	}
     	int count=0;
@@ -1941,7 +1942,7 @@ public class CucumberStepDefinitions {
 			appointmentName=service;
 			appointmentTime= time;
     		FlexiBookController.makeAppointment(customer,date,time,service,null);
-
+			username = customer;
 
 		}
     	catch (InvalidInputException e){
@@ -2148,6 +2149,8 @@ public class CucumberStepDefinitions {
 			FlexiBookController.makeAppointment(user, aptDate, aptTime,combo, null);
 			appointmentTime = aptTime;
 			appointmentDate=aptDate;
+			username= user;
+
 		}catch(Exception e) {
 			error += e.getMessage();
 			errorCounter++;
@@ -2207,8 +2210,10 @@ public class CucumberStepDefinitions {
 		LocalDate date = h.toLocalDate();
 		LocalTime time = h.toLocalTime();
 		Appointment a = getAppointment(null, date.toString(), appointmentTime);
+		Time local = Time.valueOf(LocalTime.parse(appointmentTime,DateTimeFormatter.ofPattern("kk:mm")));
+		TOAppointmentCalendarItem t = new TOAppointmentCalendarItem(null,Date.valueOf(date),local,null,false,username,null);
 		try{
-			FlexiBookController.endAppointment(a);
+			FlexiBookController.endAppointment(t);
 			appointmentHasEnded = true;
 		}catch(Exception e) {
 			error += e.getMessage();
@@ -2233,7 +2238,7 @@ public class CucumberStepDefinitions {
 			SystemTime.setTime(dateTime);
 			FlexiBookController.registerNoShow(appointmentDate,appointmentTime);
 		}
-		catch(IllegalAccessException e){
+		catch(InvalidInputException e){
 			error+=e;
 			errorCounter++;
 		}
@@ -2245,11 +2250,15 @@ public class CucumberStepDefinitions {
 	@When("the owner attempts to end the appointment at {string}")
 	public void theOwnerAttemptsToEndTheAppointmentAt(String dateTime) {
 		LocalDateTime h = LocalDateTime.parse(dateTime,DateTimeFormatter.ofPattern("uuuu-MM-dd+kk:mm"));
+		SystemTime.setTime(dateTime);
 		LocalDate date = h.toLocalDate();
 		LocalTime time = h.toLocalTime();
 		Appointment a = getAppointment(null, date.toString(), time.toString());
+		Time local = Time.valueOf(LocalTime.parse(appointmentTime,DateTimeFormatter.ofPattern("kk:mm")));
+		TOAppointmentCalendarItem t = new TOAppointmentCalendarItem(null,Date.valueOf(date),local,null,false,username,null);
+
 		try{
-			FlexiBookController.endAppointment(a);
+			FlexiBookController.endAppointment(t);
 		}catch(Exception e) {
 			error += e.getMessage();
 			errorCounter++;

@@ -414,7 +414,7 @@ public class FlexiBookController {
 
 			for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
 				if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null);
+					TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null,null);
 					calendar.add(t0);
 				}
 			}
@@ -445,16 +445,17 @@ public class FlexiBookController {
 							Time newT = Time.valueOf(n2);
 							Time newT2 = Time.valueOf(n3);
 							calendar.remove(count-1);
-							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), newT, false,a.getCustomer().getUsername());
-							TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("appointment", sqlDate, newT, newT2, false,a.getCustomer().getUsername());
-							TOAppointmentCalendarItem t2 = new TOAppointmentCalendarItem("appointment", sqlDate, newT2, a.getTimeSlot().getEndTime(), false,a.getCustomer().getUsername());
+							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(),
+									newT, false,a.getCustomer().getUsername(),a.getBookableService().getName());
+							TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("appointment", sqlDate, newT, newT2, false,a.getCustomer().getUsername(),a.getBookableService().getName());
+							TOAppointmentCalendarItem t2 = new TOAppointmentCalendarItem("appointment", sqlDate, newT2, a.getTimeSlot().getEndTime(), false,a.getCustomer().getUsername(),a.getBookableService().getName());
 							calendar.add(t0);
 							calendar.add(t1);
 							calendar.add(t2);
 						}
 						else{
 							LocalTime n1 = a.getTimeSlot().getStartTime().toLocalTime();
-							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(), false,a.getCustomer().getUsername());
+							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(), false,a.getCustomer().getUsername(),a.getBookableService().getName());
 							calendar.add(t0);
 						}
 					} else {
@@ -468,11 +469,11 @@ public class FlexiBookController {
 									Time durationEnd = Time.valueOf(durationStart.toLocalTime().plusMinutes(duration));
 									Time endTime = a.getTimeSlot().getEndTime();
 									calendar.remove(count-1);
-									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), startTime, durationStart,false,a.getCustomer().getUsername()));
-									calendar.add(new TOAppointmentCalendarItem("available",a.getTimeSlot().getStartDate(), durationStart,durationEnd,true,null));
-									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), durationEnd, endTime,false,a.getCustomer().getUsername()));
+									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), startTime, durationStart,false,a.getCustomer().getUsername(),a.getBookableService().getName()));
+									calendar.add(new TOAppointmentCalendarItem("available",a.getTimeSlot().getStartDate(), durationStart,durationEnd,true,null,null));
+									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), durationEnd, endTime,false,a.getCustomer().getUsername(),a.getBookableService().getName()));
 								} else {
-									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(),false,a.getCustomer().getUsername()));
+									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(),false,a.getCustomer().getUsername(),a.getBookableService().getName()));
 								}
 
 							}
@@ -499,15 +500,15 @@ public class FlexiBookController {
 				if(item.getAvailable()&!isAdded) {
 					if(time.getStartTime().before(item.getStartTime())&&time.getEndTime().after(item.getEndTime())){
 						toRemove.add(item);
-						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem(description,item.getDate(),item.getStartTime(),item.getEndTime(),false,item.getUsername());
+						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem(description,item.getDate(),item.getStartTime(),item.getEndTime(),false,item.getUsername(),item.getMainService());
 						toAdd.add(item1);
 						isAdded=true;
 					}
 					if(time.getStartTime().after(item.getStartTime())&& time.getEndTime().before(item.getEndTime())) {
 						toRemove.add(item);
-						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available",item.getDate(),item.getStartTime(),time.getStartTime(), true,null);
-						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername());
-						TOAppointmentCalendarItem item3= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true,null);
+						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available",item.getDate(),item.getStartTime(),time.getStartTime(), true,null,null);
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername(),item.getMainService());
+						TOAppointmentCalendarItem item3= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true,null,null);
 						toAdd.add(item1);
 						toAdd.add(item2);
 						toAdd.add(item3);
@@ -515,29 +516,29 @@ public class FlexiBookController {
 					}
 					if(time.getStartTime().before(item.getStartTime()) && time.getEndTime().before(item.getEndTime())) {
 						toRemove.add(item);
-						TOAppointmentCalendarItem item1=  new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername());
-						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true,null);
+						TOAppointmentCalendarItem item1=  new TOAppointmentCalendarItem(description,item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername(),item.getMainService());
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available", item.getDate(), time.getEndTime(),item.getEndTime(),true,null,null);
 						toAdd.add(item1);
 						toAdd.add(item2);
 						isAdded=true;
 					}
 					if(time.getStartTime().after(item.getStartTime()) && time.getEndTime().after(item.getEndTime())) {
 						toRemove.add(item);
-						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available", item.getDate(), item.getStartTime(), time.getStartTime(),true,null);
-						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description, item.getDate(), time.getStartTime(), time.getEndTime(),false,item.getUsername());
+						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem("available", item.getDate(), item.getStartTime(), time.getStartTime(),true,null,null);
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem(description, item.getDate(), time.getStartTime(), time.getEndTime(),false,item.getUsername(),item.getMainService());
 						toAdd.add(item1);
 						toAdd.add(item2);
 						isAdded=true;
 					}
 					if(time.getStartTime().after(item.getEndTime()) || time.getEndTime().before(item.getStartTime())) {
-						TOAppointmentCalendarItem single= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername());
+						TOAppointmentCalendarItem single= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername(),item.getMainService());
 						toAdd.add(single);
 						isAdded=true;
 					}
 					if(time.getStartTime().equals(item.getStartTime())){
 						toRemove.add(item);
-						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername());
-						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available",item.getDate(),time.getEndTime(),item.getEndTime(),true,null);
+						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false,item.getUsername(),item.getMainService());
+						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available",item.getDate(),time.getEndTime(),item.getEndTime(),true,null,null);
 						toAdd.add(item1);
 						toAdd.add(item2);
 						isAdded=true;
@@ -1932,16 +1933,28 @@ public class FlexiBookController {
 
 	/**
 	 * @author Tomasz Mroz
-	 * @param appt
 	 * @throws InvalidInputException
 	 */
-		public static void endAppointment(Appointment appt) throws InvalidInputException {
+		public static void endAppointment(TOAppointmentCalendarItem item) throws InvalidInputException {
+			FlexiBook f = FlexiBookApplication.getFlexiBook();
+			Appointment appt = null;
+			for(Appointment a :f.getAppointments()){
+				if(a.getTimeSlot().getStartDate().equals(item.getDate())){
+					if(a.getCustomer().getUsername().equals(item.getUsername())){
+						if(a.getTimeSlot().getStartTime().equals(item.getStartTime())){
+							appt = a;
+						}
+					}
+				}
+			}
 			try{
-				appt.toggleEnded();
-				FlexiBook  f = FlexiBookApplication.getFlexiBook();
-				f.removeAppointment(appt);
-				appt.delete();
-				FlexiBookPersistence.save(f);
+				if(appt != null){
+					appt.toggleEnded();
+					f.removeAppointment(appt);
+					appt.delete();
+					FlexiBookPersistence.save(f);
+				}
+
 			}
 			catch (RuntimeException e){
 				throw new InvalidInputException(e.getMessage());
@@ -1950,10 +1963,9 @@ public class FlexiBookController {
 	/**
 	 * Author: Florence Yared
 	 * @param date
-	 * @param time
-	 * @throws IllegalAccessException
-	 */
-		public static void registerNoShow(String date,String time) throws IllegalAccessException {
+	 * @param
+	 * */
+		public static void registerNoShow(String date,String time) throws InvalidInputException {
 			try{
 				FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 				Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
@@ -1973,7 +1985,7 @@ public class FlexiBookController {
 				}
 			}
 			catch (RuntimeException e){
-				throw new IllegalAccessException(e.getMessage());
+				throw new InvalidInputException(e.getMessage());
 			}
 		}
 		public static void testAppointment(){
