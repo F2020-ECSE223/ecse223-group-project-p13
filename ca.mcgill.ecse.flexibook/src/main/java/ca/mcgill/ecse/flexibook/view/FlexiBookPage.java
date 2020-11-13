@@ -144,10 +144,6 @@ public class FlexiBookPage extends Application {
         FontIcon delete = new FontIcon("dashicons-trash");
         FontIcon back = new FontIcon("dashicons-arrow-left-alt");
 
-        appointmentIcon.getStyleClass().add("icon");
-        accountIcon.getStyleClass().add("icon");
-        businessIcon.getStyleClass().add("icon");
-        serviceIcon.getStyleClass().add("icon");
         loginIcon.getStyleClass().add("icon");
         logoutIcon.getStyleClass().add("icon");
         signUp.getStyleClass().add("icon");
@@ -270,18 +266,6 @@ public class FlexiBookPage extends Application {
         column3.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
         selectionModel = dailyAppointmentTable.getSelectionModel();
-        ObservableList<DayEvent> observableList = selectionModel.getSelectedItems();
-        observableList.addListener((ListChangeListener<DayEvent>) c -> {
-            while(c.next()) {
-                if (!c.wasPermutated()) {
-                    for (DayEvent additem : c.getAddedSubList()) {
-                        ((Label)appointmentDetails.getChildren().get(0)).setText(additem.getAppointment().getUsername());
-                    }
-                }
-            }
-            c.reset();
-        });
-
 
         dailyAppointmentTable.setPlaceholder(new Label("No Appointments Today"));
         appointments.getChildren().add(dailyAppointmentTable);
@@ -296,22 +280,46 @@ public class FlexiBookPage extends Application {
 
         individualAppointment.getChildren().add(appointmentDetails);
         individualAppointment.getChildren().add(appointmentButtons);
-        appointmentDetails.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.5));
-        appointmentButtons.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.5));
+        appointmentDetails.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.7));
+        appointmentButtons.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.3));
 
         JFXButton startAppointment = new JFXButton("Start Appointment");
         startAppointment.getStyleClass().add("button-raised");
+        startAppointment.setDisable(true);
         startAppointment.setOnAction(this::startAppointmentEvent);
         appointmentButtons.getChildren().add(startAppointment);
 
-        JFXButton registerNoShow = new JFXButton("Register No Show");
-        startAppointment.setOnAction(this::startAppointmentEvent);
+        FontIcon registerNoShowIcon = new FontIcon("enty-eye-with-line");
+        registerNoShowIcon.getStyleClass().add("icon-main-menu");
+
+        JFXButton registerNoShow = new JFXButton("Register No Show",registerNoShowIcon);
+        registerNoShow.setContentDisplay(ContentDisplay.TOP);
+        registerNoShow.setOnAction(this::startAppointmentEvent);
+        registerNoShow.setDisable(true);
         registerNoShow.getStyleClass().add("button-raised");
         appointmentButtons.getChildren().add(registerNoShow);
 
         Label appointmentDetailsName = new Label("");
         appointmentDetailsName.getStyleClass().add("user-text");
         appointmentDetails.getChildren().add(appointmentDetailsName);
+
+        ObservableList<DayEvent> observableList = selectionModel.getSelectedItems();
+        observableList.addListener((ListChangeListener<DayEvent>) c -> {
+            while(c.next()) {
+                if (!c.wasPermutated()) {
+                    for (DayEvent removeitem : c.getRemoved()) {
+                        registerNoShow.setDisable(true);
+                        startAppointment.setDisable(true);
+                    }
+                    for (DayEvent additem : c.getAddedSubList()) {
+                        ((Label)appointmentDetails.getChildren().get(0)).setText(additem.getAppointment().getUsername());
+                        registerNoShow.setDisable(false);
+                        startAppointment.setDisable(false);
+                    }
+                }
+            }
+            c.reset();
+        });
 
 
 
@@ -913,24 +921,10 @@ public class FlexiBookPage extends Application {
     private void startAppointmentEvent(ActionEvent event){
         error = null;
 
-        /*try{
-            FlexiBookController.startAppointment(new TOAppointmentCalendarItem("appointment",new Date(2135435),new Time(23435435),new Time(23435435),true));
-        }
-        catch (InvalidInputException e){
-            error = e.getMessage();
-        }*/
     }
     private void endAppointmentEvent(ActionEvent event){
         error = null;
-        //mainLayout.show(main,"appointment");
-        //pack();
 
-        /*try{
-            FlexiBookController.startAppointment(new TOAppointmentCalendarItem("appointment",new Date(2135435),new Time(23435435),new Time(23435435),true));
-        }
-        catch (InvalidInputException e){
-            error = e.getMessage();
-        }*/
     }
     private void switchToOwnerAppointment(){
         mainScene.setRoot(ownerAppointmentCalendar);
