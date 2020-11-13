@@ -277,15 +277,22 @@ public class FlexiBookPage extends Application {
         HBox individualAppointment = new HBox();
         appointments.getChildren().add(individualAppointment);
         individualAppointment.prefWidthProperty().bind(dailyAppointmentTable.widthProperty());
+        VBox appointmentInformation = new VBox();
+        individualAppointment.getChildren().add(appointmentInformation);
         appointmentDetails = new TilePane();
         VBox appointmentButtons = new VBox();
 
-        individualAppointment.getChildren().add(appointmentDetails);
+        Label appointmentTitle = new Label("Appointment Info");
+        appointmentTitle.getStyleClass().add("user-text");
+        individualAppointment.setAlignment(Pos.CENTER);
+        appointmentInformation.getChildren().add(appointmentTitle);
+
+        appointmentInformation.getChildren().add(appointmentDetails);
         individualAppointment.getChildren().add(appointmentButtons);
-        appointmentDetails.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.7));
+        appointmentInformation.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.7));
         appointmentButtons.prefWidthProperty().bind(individualAppointment.widthProperty().multiply(0.3));
         appointmentDetails.setPrefColumns(2);
-        appointmentDetails.setVisible(false);
+        appointmentInformation.setVisible(false);
 
         startAppointmentIcon = new FontIcon("eli-play-circle");
         startAppointmentIcon.getStyleClass().add("icon-start-buttons");
@@ -317,7 +324,7 @@ public class FlexiBookPage extends Application {
             while(c.next()) {
                 if (!c.wasPermutated()) {
                     for (DayEvent removeitem : c.getRemoved()) {
-                        appointmentDetails.setVisible(false);
+                        appointmentInformation.setVisible(false);
                         registerNoShow.setDisable(true);
                         startAppointment.setDisable(true);
                         currentAppointment = null;
@@ -330,7 +337,7 @@ public class FlexiBookPage extends Application {
                         ((Label)appointmentDetails.getChildren().get(7)).setText(additem.getAppointment().getMainService());
                         registerNoShow.setDisable(false);
                         startAppointment.setDisable(false);
-                        appointmentDetails.setVisible(true);
+                        appointmentInformation.setVisible(true);
                     }
                 }
             }
@@ -953,6 +960,7 @@ public class FlexiBookPage extends Application {
             }
             else{
                 FlexiBookController.endAppointment(currentAppointment);
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
                 notStarted = true;
                 startAppointment.setGraphic(startAppointmentIcon);
                 startAppointment.setText("Start Appointment");
@@ -1025,10 +1033,7 @@ public class FlexiBookPage extends Application {
     private void switchToCustomerAccount(){}
     private void refreshDailyAppointments(List<TOAppointmentCalendarItem> calendarItems){
         dailyAppointmentTable.getItems().clear();
-        if(calendarItems == null ){
-
-        }
-        else{
+        if(calendarItems != null ){
             for(TOAppointmentCalendarItem item:calendarItems){
                 dailyAppointmentTable.getItems().add(new DayEvent(item));
             }
