@@ -1964,7 +1964,6 @@ public class FlexiBookController {
 		}
 	/**
 	 * Author: Florence Yared
-	 * @param date
 	 * @param
 	 * */
 		public static void registerNoShow(TOAppointmentCalendarItem item) throws InvalidInputException {
