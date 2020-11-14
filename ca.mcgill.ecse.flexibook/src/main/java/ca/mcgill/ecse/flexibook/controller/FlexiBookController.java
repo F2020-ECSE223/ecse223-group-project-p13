@@ -175,8 +175,9 @@ public class FlexiBookController {
 					flexibook.addCustomer(aUsername, aPassword);
 					User user = findUser(aUsername);
 					FlexiBookApplication.setCurrentUser(user);
+					FlexiBookPersistence.save(flexibook);
 				}
-				FlexiBookPersistence.save(flexibook);
+				
 			} 
 			catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
