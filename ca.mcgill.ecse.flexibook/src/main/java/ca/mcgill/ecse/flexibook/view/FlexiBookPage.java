@@ -870,8 +870,9 @@ public class FlexiBookPage extends Application {
     }
      private void login() {
         try{
-            mainStage.setScene(mainScene);
+            
             FlexiBookController.login(textUserName.getText(),pf.getText());
+            mainScene.setRoot(ownerMainScreenBorderPane);
         }
         catch(InvalidInputException e){
             e.getMessage();
