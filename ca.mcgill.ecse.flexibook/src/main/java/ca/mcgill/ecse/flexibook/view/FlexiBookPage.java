@@ -793,19 +793,14 @@ public class FlexiBookPage extends Application {
         busPane2.setAlignment(Pos.CENTER_LEFT);
         changeBussCust.getChildren().add(busPane2);
 
-        backPage3.setOnAction(e->back2());
+        backPage3.setOnAction(e->back());
     }
 
     private void back() {
     	mainScene.setRoot(ownerMainScreenBorderPane);
 
     }
-    private void back1() {
-        mainScene.setRoot(ownerMainScreenBorderPane);
-    }
-    private void back2(){
-        mainScene.setRoot(ownerMainScreenBorderPane);
-    }
+
     private void signUp() {
 
      	try{
