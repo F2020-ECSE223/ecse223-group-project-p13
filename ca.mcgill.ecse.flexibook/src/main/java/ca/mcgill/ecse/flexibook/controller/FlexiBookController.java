@@ -173,9 +173,10 @@ public class FlexiBookController {
 				}
 				else {
 					flexibook.addCustomer(aUsername, aPassword);
-					//User user = findUser(aUsername);
-					//FlexiBookApplication.setCurrentUser(user);
+					User user = findUser(aUsername);
+					FlexiBookApplication.setCurrentUser(user);
 				}
+				FlexiBookPersistence.save(flexibook);
 			} 
 			catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
@@ -248,6 +249,7 @@ public class FlexiBookController {
 				else {
 					throw new InvalidInputException("You have to be logged in to the corresponding account to update it");
 				}
+				FlexiBookPersistence.save(flexiBook);
 
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
@@ -326,6 +328,7 @@ public class FlexiBookController {
 					throw new InvalidInputException("You do not have permission to delete this account");
 				}
 				FlexiBookApplication.setCurrentUser(null);
+				FlexiBookPersistence.save(flexibook);
 
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
