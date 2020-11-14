@@ -10,6 +10,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.model.Appointment;
@@ -1498,13 +1500,18 @@ public class FlexiBookController {
 		addB, Boolean addBusinessH, Boolean addV, Boolean addH) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 			Business biz = flexiBook.getBusiness();
+			String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+					"[a-zA-Z0-9_+&*-]+)*@" +
+					"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+					"A-Z]{2,7}$";
+			Pattern pat = Pattern.compile(emailRegex);
 			try {
 
 
-				if (!(FlexiBookApplication.getUser() instanceof Owner)) {
+				if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("No permission to set up business information");
 				}
-				if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
+				if (!(pat.matcher(email).matches())) {
 					throw new InvalidInputException("Invalid email");
 				}
 
@@ -1668,13 +1675,17 @@ public class FlexiBookController {
 		removeH, Boolean updateH) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 			Business business = flexiBook.getBusiness();
+			String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+					"[a-zA-Z0-9_+&*-]+)*@" +
+					"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+					"A-Z]{2,7}$";
+			Pattern pat = Pattern.compile(emailRegex);
 			try {
-
-				if (!(FlexiBookApplication.getUser() instanceof Owner)) {
+				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("No permission to set up business information");
-				}
+				}*/
 				if (basic) {
-					if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
+					if (!(pat.matcher(email).matches())) {
 						throw new InvalidInputException("Invalid email");
 
 					}else {
