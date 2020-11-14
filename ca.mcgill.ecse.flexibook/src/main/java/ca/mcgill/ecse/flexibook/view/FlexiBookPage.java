@@ -59,6 +59,15 @@ public class FlexiBookPage extends Application {
     String username = null;
     JFXTextField updateUsername;
     JFXPasswordField updatePassword;
+    JFXTextField updateBusName;
+    JFXTextField updateBusEmail;
+    JFXTextField updateBusAdd;
+    JFXTextField updateBusPhone;
+    Label businessError;
+    Label curBussName;
+    Label curBussEmail;
+    Label curBussAdd;
+    Label curBussPN;
     TextField textUserName1;
     PasswordField pf1;
     private BorderPane mainScreenborderpane;
@@ -75,6 +84,7 @@ public class FlexiBookPage extends Application {
     private ComboBox<String> existingServices1;
     private Label serviceError;
     private HBox changeAcc;
+    private HBox changeBuss;
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
@@ -691,6 +701,66 @@ public class FlexiBookPage extends Application {
 
         backPage.setOnAction(e->back());
 
+        //Business info
+        changeBuss = new HBox();
+        changeBuss.setPadding(new Insets(100,100,100,100));
+        changeBuss.setStyle("-fx-background-color: #B0DDE4;");
+        GridPane busPane = new GridPane();
+        busPane.setHgap(100);
+        busPane.setVgap(100);
+        JFXButton updateBusinessButton = new JFXButton("Update Business Info",signUp);
+        updateBusinessButton.setOnAction(e->updateBusinessAction());
+
+
+
+        Label newBussName = new Label("Enter your new name!");
+        updateBusName = new JFXTextField();
+        changeBuss.getChildren().add(updateBusName);
+
+        Label newBussEmail = new Label("Enter your new email!");
+        updateBusEmail = new JFXTextField();
+        changeBuss.getChildren().add(updateBusEmail);
+
+        Label newBussAdd = new Label("Enter your new address!");
+        updateBusAdd = new JFXTextField();
+        changeBuss.getChildren().add(updateBusAdd);
+
+        Label newBussPhone = new Label("Enter your new phone number!");
+        updateBusPhone = new JFXTextField();
+        changeBuss.getChildren().add(updateBusPhone);
+
+        businessError = new Label("");
+        businessError.getStyleClass().add("error-text");
+
+
+        curBussName = new Label("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail = new Label("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd = new Label("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN = new Label("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+
+
+
+        busPane.add(newBussName,0,0);
+        busPane.add(updateBusName,1,0);
+        busPane.add(newBussEmail,0,1);
+        busPane.add(updateBusEmail,1,1);
+        busPane.add(newBussAdd, 0, 2);
+        busPane.add(updateBusAdd, 1,2);
+        busPane.add(newBussPhone, 0, 3);
+        busPane.add(updateBusPhone, 1, 3);
+        busPane.add(updateBusinessButton, 1, 4);
+        busPane.add(businessError, 1, 5);
+        busPane.add(backPage, 3, 0);
+        busPane.add(curBussName, 3, 1);
+        busPane.add(curBussEmail, 3, 2);
+        busPane.add(curBussAdd, 3, 3);
+        busPane.add(curBussPN, 3, 4);
+        busPane.setAlignment(Pos.CENTER_LEFT);
+
+        changeBuss.getChildren().add(busPane);
+
+        backPage.setOnAction(e->back());
+
     }
 
     private void back() {
@@ -705,7 +775,7 @@ public class FlexiBookPage extends Application {
         	String username = textUserName1.getText();
         	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
-            mainScene.setRoot(mainScreenBorderPane);
+            //mainScene.setRoot(mainScreenBorderPane);
             System.out.println("SignUp Successful");
         }
         catch(Exception e){
@@ -728,6 +798,20 @@ public class FlexiBookPage extends Application {
         }
 
     }
+
+   /* private void updateBusiness() {
+        try{
+            String newName = updateBusName.getText();
+            String newEmail = updateBusEmail.getText();
+            String newAddress = updateBusAdd.getText();
+            String newPhone = updateBusPhone.getText();
+            FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
+            //System.out.println(newName);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+    }*/
 
     private void deleteAcc(){
 
@@ -759,6 +843,18 @@ public class FlexiBookPage extends Application {
         catch(InvalidInputException e){
             e.getMessage();
         }
+    }
+
+    private void refreshBusiness(){
+        updateBusName.setText("");
+        updateBusEmail.setText("");
+        updateBusAdd.setText("");
+        updateBusPhone.setText("");
+        curBussName.setText("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail.setText("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd.setText("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN.setText("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+
     }
 
     private void refreshData(){
@@ -987,7 +1083,8 @@ public class FlexiBookPage extends Application {
     }
 
     private void switchToBusiness(){
-        //mainStage.setScene(businessInfo);
+        //setUpBusinessPage();
+       mainScene.setRoot(changeBuss);
     }
     private void switchToServices(){
         setUpServicePage();
@@ -1344,5 +1441,36 @@ private void setUpServicePage() {
             }
         }
         refreshData();
+    }
+
+    private void updateBusinessAction(){
+        businessError.setText("");
+        if(updateBusName.getText().length() == 0){
+            businessError.setText("All fields must be completed!");
+        }
+        if(updateBusEmail.getText().length() == 0) {
+            businessError.setText("All fields must be completed!");
+        }
+        if(updateBusAdd.getText().length() == 0) {
+            businessError.setText("All fields must be completed!");
+        }
+        if(updateBusPhone.getText().length() == 0) {
+            businessError.setText("All fields must be completed!");
+        }
+        if(businessError.getText().length() == 0){
+            try{
+                String newName = updateBusName.getText();
+                String newEmail = updateBusEmail.getText();
+                String newAddress = updateBusAdd.getText();
+                String newPhone = updateBusPhone.getText();
+                FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
+                //System.out.println(newName);
+            }
+            catch(Exception e){
+                businessError.setText(e.getMessage());
+            }
+        }
+        refreshBusiness();
+
     }
 }
