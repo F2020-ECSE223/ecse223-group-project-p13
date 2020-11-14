@@ -68,6 +68,10 @@ public class FlexiBookPage extends Application {
     Label curBussEmail;
     Label curBussAdd;
     Label curBussPN;
+    Label curBussName2;
+    Label curBussEmail2;
+    Label curBussAdd2;
+    Label curBussPN2;
     TextField textUserName1;
     PasswordField pf1;
     private BorderPane mainScreenborderpane;
@@ -85,6 +89,7 @@ public class FlexiBookPage extends Application {
     private Label serviceError;
     private HBox changeAcc;
     private HBox changeBuss;
+    private HBox changeBussCust;
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
@@ -108,7 +113,7 @@ public class FlexiBookPage extends Application {
     private void initComponents(){
         //Main Screen
         ownerMainScreenBorderPane = new BorderPane();
-        Label welcome = new Label("Welcome, User");
+        Label welcome = new Label("Welcome, Owner");
         HBox top = new HBox();
         ownerMainScreenBorderPane.setTop(top);
         top.setAlignment(Pos.CENTER_RIGHT);
@@ -167,6 +172,8 @@ public class FlexiBookPage extends Application {
         back.getStyleClass().add("icon");
 
         JFXButton backPage = new JFXButton("Back", back);
+        JFXButton backPage2 = new JFXButton("Back", back);
+        JFXButton backPage3 = new JFXButton("Back", back);
 
         JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
         logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
@@ -247,6 +254,12 @@ public class FlexiBookPage extends Application {
         accountButton1.setOnAction(e->switchToAccount());
         accountButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(accountButton1);
+
+        JFXButton businessButton1 = new JFXButton("Business", businessIcon);
+        businessButton1.setContentDisplay(ContentDisplay.TOP);
+        businessButton1.setOnAction(e->switchToBusinessCust());
+        businessButton1.getStyleClass().add("main-menu-button");
+        buttons1.getChildren().add(businessButton1);
 
 
         center1.getChildren().add(buttons1);
@@ -750,24 +763,49 @@ public class FlexiBookPage extends Application {
         busPane.add(updateBusPhone, 1, 3);
         busPane.add(updateBusinessButton, 1, 4);
         busPane.add(businessError, 1, 5);
-        busPane.add(backPage, 3, 0);
-        busPane.add(curBussName, 3, 1);
-        busPane.add(curBussEmail, 3, 2);
-        busPane.add(curBussAdd, 3, 3);
-        busPane.add(curBussPN, 3, 4);
+        busPane.add(backPage2, 4, 0);
+        busPane.add(curBussName, 3, 0);
+        busPane.add(curBussEmail, 3, 1);
+        busPane.add(curBussAdd, 3, 2);
+        busPane.add(curBussPN, 3, 3);
         busPane.setAlignment(Pos.CENTER_LEFT);
 
         changeBuss.getChildren().add(busPane);
 
-        backPage.setOnAction(e->back());
+        backPage2.setOnAction(e->back());
 
+        //cust business info
+        changeBussCust = new HBox();
+        changeBussCust.setPadding(new Insets(100,100,100,100));
+        changeBussCust.setStyle("-fx-background-color: #B0DDE4;");
+        GridPane busPane2 = new GridPane();
+        curBussName2 = new Label("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail2 = new Label("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd2 = new Label("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN2 = new Label("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+        busPane2.setHgap(100);
+        busPane2.setVgap(100);
+        busPane2.add(backPage3, 4, 0);
+        busPane2.add(curBussName2, 3, 0);
+        busPane2.add(curBussEmail2, 3, 1);
+        busPane2.add(curBussAdd2, 3, 2);
+        busPane2.add(curBussPN2, 3, 3);
+        busPane2.setAlignment(Pos.CENTER_LEFT);
+        changeBussCust.getChildren().add(busPane2);
+
+        backPage3.setOnAction(e->back2());
     }
 
     private void back() {
     	mainScene.setRoot(ownerMainScreenBorderPane);
 
     }
-
+    private void back1() {
+        mainScene.setRoot(ownerMainScreenBorderPane);
+    }
+    private void back2(){
+        mainScene.setRoot(ownerMainScreenBorderPane);
+    }
     private void signUp() {
 
      	try{
@@ -1082,6 +1120,11 @@ public class FlexiBookPage extends Application {
         updateDate(listDays,calendarYearCustomer,calendarMonthCustomer);
     }
 
+    private void switchToBusinessCust(){
+        mainScene.setRoot(changeBussCust);
+
+    }
+
     private void switchToBusiness(){
         //setUpBusinessPage();
        mainScene.setRoot(changeBuss);
@@ -1219,6 +1262,10 @@ public class FlexiBookPage extends Application {
         }
         s+=date.getDayOfMonth();
         return s;
+    }
+
+    private void setUpBusinessPage(){
+
     }
 
 private void setUpServicePage() {
@@ -1459,14 +1506,13 @@ private void setUpServicePage() {
         }
         if(businessError.getText().length() == 0){
             try{
-                String newName = updateBusName.getText();
-                String newEmail = updateBusEmail.getText();
-                String newAddress = updateBusAdd.getText();
-                String newPhone = updateBusPhone.getText();
-                FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
-                //System.out.println(newName);
+                String name = updateBusName.getText();
+                String email = updateBusEmail.getText();
+                String address = updateBusAdd.getText();
+                String pn = updateBusPhone.getText();
+                FlexiBookController.updateBusinessInfo(name, address, pn, email, null, null, null, null, null,  null, null, null, null, null, null, true,false,false,false,false,false,false,false,false,false);
             }
-            catch(Exception e){
+            catch(InvalidInputException e){
                 businessError.setText(e.getMessage());
             }
         }
