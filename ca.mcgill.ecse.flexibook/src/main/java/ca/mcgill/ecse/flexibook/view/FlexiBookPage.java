@@ -650,13 +650,12 @@ public class FlexiBookPage extends Application {
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
-        final TextField textUserName1= new TextField();
+        textUserName1= new TextField();
         Label lblPassword1= new Label("Enter a Password");
-        final PasswordField pf1=  new PasswordField();
+        pf1=  new PasswordField();
         JFXButton btonLogin1= new JFXButton("SignUp",signUp);
-        btonLogin1.setOnAction(e->{
-            mainScene.setRoot(ownerMainScreenBorderPane);
-        });
+        btonLogin1.setOnAction(e->signUp());
+       
         final Label lblMessage1= new Label();
         gridP2.add(lblUserName1,0,0);
         gridP2.add(textUserName1,1,0);
@@ -808,8 +807,9 @@ public class FlexiBookPage extends Application {
         	String username = textUserName1.getText();
         	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
-            //mainScene.setRoot(mainScreenBorderPane);
+            mainScene.setRoot(ownerMainScreenBorderPane);
             System.out.println("SignUp Successful");
+            System.out.println("Username = " + username + "," + "Password = " + password);
         }
         catch(Exception e){
             e.getMessage();
