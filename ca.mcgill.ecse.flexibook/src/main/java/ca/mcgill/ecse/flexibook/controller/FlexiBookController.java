@@ -1470,19 +1470,26 @@ public class FlexiBookController {
 		 */
 		public static TOBusinessInfo showBI(){
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-			String name = flexiBook.getBusiness().getName();
-			String address = flexiBook.getBusiness().getAddress();
-			String phoneNumber = flexiBook.getBusiness().getPhoneNumber();
-			String email = flexiBook.getBusiness().getEmail();
-			TOBusinessInfo disp = new TOBusinessInfo(name, address, phoneNumber, email);
-			return disp;
+			if(flexiBook.getBusiness() != null){
+				String name = flexiBook.getBusiness().getName();
+				String address = flexiBook.getBusiness().getAddress();
+				String phoneNumber = flexiBook.getBusiness().getPhoneNumber();
+				String email = flexiBook.getBusiness().getEmail();
+				return new TOBusinessInfo(name, address, phoneNumber, email);
+			}
+			else{
+				return new TOBusinessInfo(null,null,null,null);
+			}
 		}
 		public static List<TOBusinessHour> getBH() {
 			ArrayList<TOBusinessHour> bh = new ArrayList<TOBusinessHour>();
-			for (BusinessHour a : FlexiBookApplication.getFlexiBook().getBusiness().getBusinessHours()) {
-				BusinessHour b = a;
-				TOBusinessHour toBH = new TOBusinessHour(b.getDayOfWeek().toString(), b.getStartTime(), b.getEndTime());
-				bh.add(toBH);
+			FlexiBook f = FlexiBookApplication.getFlexiBook();
+			if(FlexiBookApplication.getFlexiBook().getBusiness() != null){
+				for (BusinessHour a : FlexiBookApplication.getFlexiBook().getBusiness().getBusinessHours()) {
+					BusinessHour b = a;
+					TOBusinessHour toBH = new TOBusinessHour(b.getDayOfWeek().toString(), b.getStartTime(), b.getEndTime());
+					bh.add(toBH);
+				}
 			}
 			return bh;
 		}
