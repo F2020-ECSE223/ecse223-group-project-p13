@@ -102,6 +102,9 @@ public class FlexiBookPage extends Application {
     FontIcon startAppointmentIcon;
     FontIcon endAppointmentIcon;
     JFXButton startAppointment;
+    JFXTextField textUserName;
+    JFXPasswordField pf;
+    GridPane gridP;
 
 
 
@@ -924,7 +927,12 @@ public class FlexiBookPage extends Application {
             mainScene.setRoot(ownerMainScreenBorderPane);
         }
         catch(InvalidInputException e){
-            e.getMessage();
+             e.getMessage();
+            Label error = new Label("invalid username/password");
+            error.setTextFill(Color.RED);
+            gridP.add(error,1,4);
+            textUserName.setText("");
+            pf.setText("");
         }
     }
 
