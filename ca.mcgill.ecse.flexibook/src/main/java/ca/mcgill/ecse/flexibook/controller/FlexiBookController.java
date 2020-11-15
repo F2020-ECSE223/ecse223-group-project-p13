@@ -10,6 +10,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.mcgill.ecse.flexibook.application.FlexiBookApplication;
 import ca.mcgill.ecse.flexibook.model.Appointment;
@@ -171,9 +173,11 @@ public class FlexiBookController {
 				}
 				else {
 					flexibook.addCustomer(aUsername, aPassword);
-					//User user = findUser(aUsername);
-					//FlexiBookApplication.setCurrentUser(user);
+					User user1 = findUser(aUsername);
+					FlexiBookApplication.setCurrentUser(user1);
+					FlexiBookPersistence.save(flexibook);
 				}
+				
 			} 
 			catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
@@ -246,6 +250,7 @@ public class FlexiBookController {
 				else {
 					throw new InvalidInputException("You have to be logged in to the corresponding account to update it");
 				}
+				FlexiBookPersistence.save(flexiBook);
 
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
@@ -324,6 +329,7 @@ public class FlexiBookController {
 					throw new InvalidInputException("You do not have permission to delete this account");
 				}
 				FlexiBookApplication.setCurrentUser(null);
+				FlexiBookPersistence.save(flexibook);
 
 			} catch (RuntimeException e) {
 				throw new InvalidInputException(e.getMessage());
@@ -1471,6 +1477,15 @@ public class FlexiBookController {
 			TOBusinessInfo disp = new TOBusinessInfo(name, address, phoneNumber, email);
 			return disp;
 		}
+		public static List<TOBusinessHour> getBH() {
+			ArrayList<TOBusinessHour> bh = new ArrayList<TOBusinessHour>();
+			for (BusinessHour a : FlexiBookApplication.getFlexiBook().getBusiness().getBusinessHours()) {
+				BusinessHour b = a;
+				TOBusinessHour toBH = new TOBusinessHour(b.getDayOfWeek().toString(), b.getStartTime(), b.getEndTime());
+				bh.add(toBH);
+			}
+			return bh;
+		}
 
 
 		/**
@@ -1498,13 +1513,18 @@ public class FlexiBookController {
 		addB, Boolean addBusinessH, Boolean addV, Boolean addH) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 			Business biz = flexiBook.getBusiness();
+			String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+					"[a-zA-Z0-9_+&*-]+)*@" +
+					"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+					"A-Z]{2,7}$";
+			Pattern pat = Pattern.compile(emailRegex);
 			try {
 
 
-				if (!(FlexiBookApplication.getUser() instanceof Owner)) {
+				if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("No permission to set up business information");
 				}
-				if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
+				if (!(pat.matcher(email).matches())) {
 					throw new InvalidInputException("Invalid email");
 				}
 
@@ -1632,6 +1652,71 @@ public class FlexiBookController {
 			}
 
 		}
+		public static void setUpBusinessHour(String day, String st, String et) throws InvalidInputException{
+			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+			try {
+				LocalTime bhStart = LocalTime.parse(st);
+				LocalTime bhEnd = LocalTime.parse(et);
+
+
+				if (!(bhStart.isBefore(bhEnd))) {
+					throw new InvalidInputException("Start time must be before end time");
+				}
+				else{
+					for (int i = 0; i < flexiBook.getBusiness().numberOfBusinessHours(); i++) {
+						BusinessHour a = flexiBook.getBusiness().getBusinessHour(i);
+						if ( a.getDayOfWeek().toString().equals(day) && a.getStartTime().toLocalTime().isBefore(bhEnd) && bhStart.isBefore(a.getEndTime().toLocalTime())) {
+							throw new InvalidInputException("The business hours cannot overlap");
+						}
+
+					}
+					Time a = Time.valueOf(bhStart);
+					Time b = Time.valueOf(bhEnd);
+					BusinessHour.DayOfWeek dayN = null;
+					if (day.equals("Monday")) {
+						dayN = BusinessHour.DayOfWeek.Monday;
+					} else if (day.equals("Tuesday")) {
+						dayN = BusinessHour.DayOfWeek.Tuesday;
+					} else if (day.equals("Wednesday")) {
+						dayN = BusinessHour.DayOfWeek.Wednesday;
+					} else if (day.equals("Thursday")) {
+						dayN = BusinessHour.DayOfWeek.Thursday;
+					} else if (day.equals("Friday")) {
+						dayN = BusinessHour.DayOfWeek.Friday;
+					} else if (day.equals("Saturday")) {
+						dayN = BusinessHour.DayOfWeek.Saturday;
+					} else if (day.equals("Sunday")) {
+						dayN = BusinessHour.DayOfWeek.Sunday;
+					} else {
+						throw new InvalidInputException("Please choose day of the week");
+					}
+					BusinessHour newBH = new BusinessHour(dayN, a, b, flexiBook);
+					flexiBook.addHour(newBH);
+					flexiBook.getBusiness().addBusinessHour(newBH);
+				}
+				FlexiBookPersistence.save(flexiBook);
+			}catch(RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
+
+			}
+		}
+
+		public static void deleteBusinessHours(String day, String startTime){
+			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
+				BusinessHour b = null;
+				for (BusinessHour a : flexiBook.getBusiness().getBusinessHours()) {
+					LocalTime oldStT = LocalTime.parse(startTime);
+					Time oldT = Time.valueOf(oldStT);
+					if (a.getDayOfWeek().toString().equals(day) && a.getStartTime().equals(oldT)) {
+						b = a;
+						break;
+					}
+				}
+				flexiBook.getBusiness().removeBusinessHour(b);
+				b.delete();
+			FlexiBookPersistence.save(flexiBook);
+
+		}
 
 		/**
 		 * @author: Florence
@@ -1668,13 +1753,17 @@ public class FlexiBookController {
 		removeH, Boolean updateH) throws InvalidInputException {
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
 			Business business = flexiBook.getBusiness();
+			String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+					"[a-zA-Z0-9_+&*-]+)*@" +
+					"(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+					"A-Z]{2,7}$";
+			Pattern pat = Pattern.compile(emailRegex);
 			try {
-
-				if (!(FlexiBookApplication.getUser() instanceof Owner)) {
+				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("No permission to set up business information");
-				}
+				}*/
 				if (basic) {
-					if (!(email.matches("\\b[A-Z0-9._%-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"))) {
+					if (!(pat.matcher(email).matches())) {
 						throw new InvalidInputException("Invalid email");
 
 					}else {
@@ -1964,14 +2053,14 @@ public class FlexiBookController {
 		}
 	/**
 	 * Author: Florence Yared
-	 * @param date
 	 * @param
 	 * */
-		public static void registerNoShow(String date,String time) throws InvalidInputException {
+		public static void registerNoShow(TOAppointmentCalendarItem item) throws InvalidInputException {
 			try{
+
 				FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-				Date sDate = Date.valueOf(LocalDate.parse(date,DateTimeFormatter.ofPattern("uuuu-MM-dd")));
-				Time sTime = Time.valueOf(LocalTime.parse(time,DateTimeFormatter.ofPattern("kk:mm")));
+				Date sDate = item.getDate();
+				Time sTime = item.getStartTime();
 
 
 				List<Appointment> appointments = flexiBook.getAppointments();
@@ -1989,15 +2078,5 @@ public class FlexiBookController {
 			catch (RuntimeException e){
 				throw new InvalidInputException(e.getMessage());
 			}
-		}
-		public static void testAppointment(){
-			FlexiBook f = FlexiBookApplication.getFlexiBook();
-			Service s  = new Service("cut",f,10,0,0);
-			Customer c = new Customer("boul","jawn",f);
-			Customer c2 = new Customer("cutie","snack",f);
-			Business b = new Business("Toms","here","302123123","tomasz@tom.c",f);
-			Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
-			Appointment a2 =new Appointment(c2,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
-			FlexiBookPersistence.save(f);
 		}
 }
