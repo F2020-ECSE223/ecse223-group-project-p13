@@ -6,6 +6,7 @@ import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 
 import ca.mcgill.ecse.flexibook.controller.TOService;
+import ca.mcgill.ecse.flexibook.controller.TOBusinessHour;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
@@ -44,8 +45,8 @@ public class FlexiBookPage extends Application {
     HBox customerAppointmentCalendar;
     BorderPane ownerMainScreenBorderPane;
     BorderPane customerScreenBorderPane;
-    TextField textUserName;
-    PasswordField pf;
+    JFXTextField textUserName;
+    JFXPasswordField pf;
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
     ArrayList<CalendarEntry> dbvDays = new ArrayList<>();
     LocalDate renderDate;
@@ -59,6 +60,23 @@ public class FlexiBookPage extends Application {
     String username = null;
     JFXTextField updateUsername;
     JFXPasswordField updatePassword;
+    JFXTextField updateBusName;
+    JFXTextField updateBusEmail;
+    JFXTextField updateBusAdd;
+    JFXTextField updateBusPhone;
+    JFXComboBox<String> addDay;
+    JFXComboBox<String> delBH;
+    JFXTextField startTime;
+    JFXTextField endTime;
+    Label businessError;
+    Label curBussName;
+    Label curBussEmail;
+    Label curBussAdd;
+    Label curBussPN;
+    Label curBussName2;
+    Label curBussEmail2;
+    Label curBussAdd2;
+    Label curBussPN2;
     TextField textUserName1;
     PasswordField pf1;
     private BorderPane mainScreenborderpane;
@@ -75,6 +93,8 @@ public class FlexiBookPage extends Application {
     private ComboBox<String> existingServices1;
     private Label serviceError;
     private HBox changeAcc;
+    private HBox changeBuss;
+    private HBox changeBussCust;
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
@@ -82,6 +102,8 @@ public class FlexiBookPage extends Application {
     FontIcon startAppointmentIcon;
     FontIcon endAppointmentIcon;
     JFXButton startAppointment;
+    GridPane gridP;
+    HBox availableServicesPage;
 
 
 
@@ -98,7 +120,7 @@ public class FlexiBookPage extends Application {
     private void initComponents(){
         //Main Screen
         ownerMainScreenBorderPane = new BorderPane();
-        Label welcome = new Label("Welcome, User");
+        Label welcome = new Label("Welcome, Owner");
         HBox top = new HBox();
         ownerMainScreenBorderPane.setTop(top);
         top.setAlignment(Pos.CENTER_RIGHT);
@@ -157,6 +179,8 @@ public class FlexiBookPage extends Application {
         back.getStyleClass().add("icon");
 
         JFXButton backPage = new JFXButton("Back", back);
+        JFXButton backPage2 = new JFXButton("Back", back);
+        JFXButton backPage3 = new JFXButton("Back", back);
 
         JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
         logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
@@ -237,6 +261,12 @@ public class FlexiBookPage extends Application {
         accountButton1.setOnAction(e->switchToAccount());
         accountButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(accountButton1);
+
+        JFXButton businessButton1 = new JFXButton("Business", businessIcon);
+        businessButton1.setContentDisplay(ContentDisplay.TOP);
+        businessButton1.setOnAction(e->switchToBusinessCust());
+        businessButton1.getStyleClass().add("main-menu-button");
+        buttons1.getChildren().add(businessButton1);
 
 
         center1.getChildren().add(buttons1);
@@ -611,9 +641,9 @@ public class FlexiBookPage extends Application {
         gridP.setHgap(100);
         gridP.setVgap(100);
         Label lblUserName = new Label("Username");
-        textUserName= new TextField();
+        textUserName= new JFXTextField();
         Label lblPassword= new Label("Password");
-        pf=  new PasswordField();
+        pf=  new JFXPasswordField();
         JFXButton btonLogin= new JFXButton("Login",loginIcon);
         btonLogin.setOnAction(e->login());
         final Label lblMessage= new Label();
@@ -634,13 +664,12 @@ public class FlexiBookPage extends Application {
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
-        final TextField textUserName1= new TextField();
+        textUserName1= new TextField();
         Label lblPassword1= new Label("Enter a Password");
-        final PasswordField pf1=  new PasswordField();
+        pf1=  new PasswordField();
         JFXButton btonLogin1= new JFXButton("SignUp",signUp);
-        btonLogin1.setOnAction(e->{
-            mainScene.setRoot(ownerMainScreenBorderPane);
-        });
+        btonLogin1.setOnAction(e->signUp());
+       
         final Label lblMessage1= new Label();
         gridP2.add(lblUserName1,0,0);
         gridP2.add(textUserName1,1,0);
@@ -698,6 +727,130 @@ public class FlexiBookPage extends Application {
 
         backPage.setOnAction(e->back());
 
+        //Business info
+        changeBuss = new HBox(10);
+        changeBuss.setPadding(new Insets(100,100,100,100));
+        changeBuss.setStyle("-fx-background-color: #B0DDE4;");
+        GridPane busPane = new GridPane();
+        busPane.setHgap(100);
+        busPane.setVgap(100);
+        JFXButton updateBusinessButton = new JFXButton("Update Business Info",signUp);
+        updateBusinessButton.setOnAction(e->updateBusinessAction());
+        JFXButton updateBusinessHoursButton = new JFXButton("Update Business Hours", signUp);
+        JFXButton addBusinessHoursButton = new JFXButton("Add Business Hours", signUp);
+        addBusinessHoursButton.setOnAction(e->addBusinessHourAction());
+        JFXButton deleteBusinessHoursButton = new JFXButton("Delete Business Hours", signUp);
+        deleteBusinessHoursButton.setOnAction(e->deleteBusinessHourAction());
+
+
+
+        Label newBussName = new Label("Enter your new name!");
+        updateBusName = new JFXTextField();
+        changeBuss.getChildren().add(updateBusName);
+
+        Label newBussEmail = new Label("Enter your new email!");
+        updateBusEmail = new JFXTextField();
+        changeBuss.getChildren().add(updateBusEmail);
+
+        Label newBussAdd = new Label("Enter your new address!");
+        updateBusAdd = new JFXTextField();
+        changeBuss.getChildren().add(updateBusAdd);
+
+        Label newBussPhone = new Label("Enter your new phone number!");
+        updateBusPhone = new JFXTextField();
+        changeBuss.getChildren().add(updateBusPhone);
+
+        Label dayOfHour = new Label("Day:");
+        addDay = new JFXComboBox<String>();
+        addDay.getItems().add("Monday");
+        addDay.getItems().add("Tuesday");
+        addDay.getItems().add("Wednesday");
+        addDay.getItems().add("Thursday");
+        addDay.getItems().add("Friday");
+        addDay.getItems().add("Saturday");
+        addDay.getItems().add("Sunday");
+        changeBuss.getChildren().add(addDay);
+
+        Label startLabel = new Label("Start Time:");
+        startTime = new JFXTextField();
+        changeBuss.getChildren().add(startTime);
+
+        Label endLabel = new Label("End Time:");
+        endTime = new JFXTextField();
+        changeBuss.getChildren().add(endTime);
+
+        delBH = new JFXComboBox<String>();
+        for(TOBusinessHour a: FlexiBookController.getBH()){
+            delBH.getItems().add(a.getDay() + " " + a.getStartTime().toString() + " " + a.getEndTime().toString());
+        }
+
+
+
+        businessError = new Label("");
+        businessError.getStyleClass().add("error-text");
+
+
+        curBussName = new Label("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail = new Label("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd = new Label("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN = new Label("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+
+        HBox b1 = new HBox(10);
+        b1.getChildren().addAll(newBussName, updateBusName);
+        HBox b2 = new HBox(10);
+        b2.getChildren().addAll(newBussEmail, updateBusEmail);
+        HBox b3 = new HBox(10);
+        b3.getChildren().addAll(newBussAdd, updateBusAdd);
+        HBox b4 = new HBox(10);
+        b4.getChildren().addAll(newBussPhone, updateBusPhone);
+        HBox b5 = new HBox(10);
+        b5.getChildren().addAll(updateBusinessButton, businessError);
+        HBox b6 = new HBox(10);
+        b6.getChildren().addAll(dayOfHour, addDay,startLabel, startTime, endLabel, endTime);
+
+
+
+        busPane.add(b1, 0, 0);
+        busPane.add(b2, 0, 1);
+        busPane.add(b3, 0, 2);
+        busPane.add(b4, 0, 3);
+        busPane.add(b5, 0, 4);
+        busPane.add(b6, 0, 5);
+        busPane.add(addBusinessHoursButton, 1, 5);
+        busPane.add(delBH, 2, 4);
+        busPane.add(deleteBusinessHoursButton, 2, 5);
+        busPane.add(curBussName, 1, 0);
+        busPane.add(curBussEmail, 1, 1);
+        busPane.add(curBussAdd, 1, 2);
+        busPane.add(curBussPN, 1, 3);
+        busPane.add(backPage2, 2, 0);
+
+        busPane.setAlignment(Pos.CENTER_LEFT);
+
+        changeBuss.getChildren().add(busPane);
+
+        backPage2.setOnAction(e->back());
+
+        //cust business info
+        changeBussCust = new HBox();
+        changeBussCust.setPadding(new Insets(100,100,100,100));
+        changeBussCust.setStyle("-fx-background-color: #B0DDE4;");
+        GridPane busPane2 = new GridPane();
+        curBussName2 = new Label("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail2 = new Label("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd2 = new Label("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN2 = new Label("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+        busPane2.setHgap(100);
+        busPane2.setVgap(100);
+        busPane2.add(backPage3, 4, 0);
+        busPane2.add(curBussName2, 3, 0);
+        busPane2.add(curBussEmail2, 3, 1);
+        busPane2.add(curBussAdd2, 3, 2);
+        busPane2.add(curBussPN2, 3, 3);
+        busPane2.setAlignment(Pos.CENTER_LEFT);
+        changeBussCust.getChildren().add(busPane2);
+
+        backPage3.setOnAction(e->back());
     }
 
     private void back() {
@@ -714,6 +867,7 @@ public class FlexiBookPage extends Application {
             FlexiBookController.customerSignUp(username, password);
             mainScene.setRoot(ownerMainScreenBorderPane);
             System.out.println("SignUp Successful");
+            System.out.println("Username = " + username + "," + "Password = " + password);
         }
         catch(Exception e){
             e.getMessage();
@@ -735,6 +889,20 @@ public class FlexiBookPage extends Application {
         }
 
     }
+
+   /* private void updateBusiness() {
+        try{
+            String newName = updateBusName.getText();
+            String newEmail = updateBusEmail.getText();
+            String newAddress = updateBusAdd.getText();
+            String newPhone = updateBusPhone.getText();
+            FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
+            //System.out.println(newName);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+    }*/
 
     private void deleteAcc(){
 
@@ -760,12 +928,36 @@ public class FlexiBookPage extends Application {
     }
      private void login() {
         try{
-            mainStage.setScene(mainScene);
+            
             FlexiBookController.login(textUserName.getText(),pf.getText());
+            mainScene.setRoot(ownerMainScreenBorderPane);
         }
         catch(InvalidInputException e){
-            e.getMessage();
+             e.getMessage();
+            Label error = new Label("invalid username/password");
+            error.setTextFill(Color.RED);
+            gridP.add(error,1,4);
+            textUserName.setText("");
+            pf.setText("");
         }
+    }
+
+    private void refreshBusiness(){
+        updateBusName.setText("");
+        updateBusEmail.setText("");
+        updateBusAdd.setText("");
+        updateBusPhone.setText("");
+        curBussName.setText("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail.setText("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd.setText("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN.setText("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+        startTime.setText("");
+        endTime.setText("");
+        delBH.getItems().clear();
+        for(TOBusinessHour a: FlexiBookController.getBH()){
+            delBH.getItems().add(a.getDay() + " " + a.getStartTime().toString() + " " + a.getEndTime().toString());
+        }
+
     }
 
     private void refreshData(){
@@ -995,8 +1187,14 @@ public class FlexiBookPage extends Application {
         updateDate(listDays,calendarYearCustomer,calendarMonthCustomer);
     }
 
+    private void switchToBusinessCust(){
+        mainScene.setRoot(changeBussCust);
+
+    }
+
     private void switchToBusiness(){
-        //mainStage.setScene(businessInfo);
+        //setUpBusinessPage();
+       mainScene.setRoot(changeBuss);
     }
     private void switchToServices(){
         setUpServicePage();
@@ -1130,6 +1328,10 @@ public class FlexiBookPage extends Application {
         return s;
     }
 
+    private void setUpBusinessPage(){
+
+    }
+
 private void setUpServicePage() {
     	servicePage = new HBox();
     	servicePage.setAlignment(Pos.CENTER);
@@ -1191,14 +1393,17 @@ private void setUpServicePage() {
         spacing.getStyleClass().add("service-text");
         serviceError = new Label("");
         serviceError.getStyleClass().add("error-text");
+        Button viewServices = new Button("View Available Services");
+        viewServices.getStyleClass().add("service-button");
+        viewServices.setOnAction(e->switchToAvailableServices());
 
-        FontIcon homeIcon = new FontIcon("dashicons-admin-home");
-        homeIcon.getStyleClass().add("icon");
+        FontIcon back = new FontIcon("dashicons-arrow-left-alt");
+        back.getStyleClass().add("icon");
 
-        JFXButton homeButton = new JFXButton("Home", homeIcon);
-        homeButton.setContentDisplay(ContentDisplay.TOP);
-        homeButton.getStyleClass().add("main-menu-button");
-        homeButton.setOnAction(e->back());
+        JFXButton backButton = new JFXButton("Back", back);
+        backButton.setContentDisplay(ContentDisplay.TOP);
+        backButton.getStyleClass().add("main-menu-button");
+        backButton.setOnAction(e->back());
 
         VBox col1 = new VBox(20);
         col1.getChildren().addAll(serviceName, downtimeDuration);
@@ -1261,10 +1466,14 @@ private void setUpServicePage() {
         row7.getChildren().add(serviceError);
         row7.setAlignment(Pos.CENTER);
         row7.setTranslateX(75);
+        HBox row8 = new HBox(10);
+        row8.getChildren().add(viewServices);
+        row8.setAlignment(Pos.CENTER);
+        row8.setTranslateX(75);
 
         VBox space = new VBox(20);
         space.setAlignment(Pos.CENTER);
-        space.getChildren().addAll(row4, row1, row5, row2, row6, row3, row7);
+        space.getChildren().addAll(row4, row1, row5, row2, row6, row3, row7, row8);
 
         ImageView view1 = new ImageView(image);
 
@@ -1274,7 +1483,7 @@ private void setUpServicePage() {
 
         HBox topLeft = new HBox();
         topLeft.setAlignment(Pos.TOP_CENTER);
-        topLeft.getChildren().add(homeButton);
+        topLeft.getChildren().add(backButton);
         topLeft.setTranslateX(-140);
 
         servicePage.getChildren().addAll(topLeft, space, topRight);
@@ -1350,5 +1559,146 @@ private void setUpServicePage() {
             }
         }
         refreshData();
+    }
+    
+    private void switchToAvailableServices(){
+        setAvailableServices();
+        mainScene.setRoot(availableServicesPage);
+    }
+
+    private void setAvailableServices(){
+        availableServicesPage = new HBox();
+        availableServicesPage.setAlignment(Pos.CENTER);
+        availableServicesPage.setStyle("-fx-background-color: #B0DDE4;");
+
+        Label availableServices = new Label("Available Services");
+        availableServices.getStyleClass().add("service-heading");
+        availableServices.setAlignment(Pos.CENTER);
+
+        FontIcon back = new FontIcon("dashicons-arrow-left-alt");
+        back.getStyleClass().add("icon");
+
+        JFXButton backButton = new JFXButton("Back", back);
+        backButton.setContentDisplay(ContentDisplay.TOP);
+        backButton.getStyleClass().add("main-menu-button");
+        backButton.setOnAction(e->backToServices());
+
+        TableView<TOService> serviceTable;
+
+        //Columns
+        TableColumn<TOService, String> nameCol = new TableColumn<>("Name");
+        nameCol.setMinWidth(200);
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<TOService, Integer> durationCol = new TableColumn<>("Duration");
+        durationCol.setMinWidth(100);
+        durationCol.setCellValueFactory(new PropertyValueFactory<>("duration"));
+
+        TableColumn<TOService, Integer> downtimeDurationCol = new TableColumn<>("Downtime Duration");
+        downtimeDurationCol.setMinWidth(200);
+        downtimeDurationCol.setCellValueFactory(new PropertyValueFactory<>("downtimeDuration"));
+
+        TableColumn<TOService, Integer> downtimeStartCol = new TableColumn<>("Downtime Start");
+        downtimeStartCol.setMinWidth(100);
+        downtimeStartCol.setCellValueFactory(new PropertyValueFactory<>("downtimeStart"));
+
+        serviceTable = new TableView<>();
+        serviceTable.setItems(getService());
+        serviceTable.setMinWidth(495);
+        serviceTable.setMinHeight(700);
+        serviceTable.getColumns().addAll(nameCol, durationCol, downtimeDurationCol, downtimeStartCol);
+
+        HBox top = new HBox();
+        top.getChildren().addAll(backButton, availableServices);
+
+        VBox row = new VBox();
+        row.setAlignment(Pos.TOP_CENTER);
+        backButton.setTranslateX(-475);
+        availableServices.setTranslateX(-20);
+        row.getChildren().addAll(top, serviceTable);
+
+        availableServicesPage.getChildren().add(row);
+    }
+
+    private ObservableList<TOService> getService() {
+        ObservableList<TOService> services = FXCollections.observableArrayList();
+
+        for (TOService s : FlexiBookController.getServices()){
+            services.add(s);
+        }
+        return services;
+    }
+
+    private void backToServices(){
+        mainScene.setRoot(servicePage);
+    }
+
+    private void updateBusinessAction(){
+        businessError.setText("");
+        if(updateBusName.getText().length() == 0){
+            businessError.setText("All fields must be completed!");
+        }
+        if(updateBusEmail.getText().length() == 0) {
+            businessError.setText("All fields must be completed!");
+        }
+        if(updateBusAdd.getText().length() == 0) {
+            businessError.setText("All fields must be completed!");
+        }
+        if(updateBusPhone.getText().length() == 0) {
+            businessError.setText("All fields must be completed!");
+        }
+        if(businessError.getText().length() == 0){
+            try{
+                String name = updateBusName.getText();
+                String email = updateBusEmail.getText();
+                String address = updateBusAdd.getText();
+                String pn = updateBusPhone.getText();
+                FlexiBookController.updateBusinessInfo(name, address, pn, email, null, null, null, null, null,  null, null, null, null, null, null, true,false,false,false,false,false,false,false,false,false);
+            }
+            catch(InvalidInputException e){
+                businessError.setText(e.getMessage());
+            }
+        }
+        refreshBusiness();
+
+    }
+     private void addBusinessHourAction(){
+        businessError.setText("");
+        if(!startTime.getText().matches("^([0-2][0-9]):[0-5][0-9]$")){
+            businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
+        }if(!endTime.getText().matches("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+            businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
+        }
+        if(addDay.getItems().size()==0){
+            businessError.setText("Please select a day");
+        }
+        if(businessError.getText().length()==0) {
+            try {
+                String day = addDay.getValue();
+                String st = startTime.getText();
+                String et = endTime.getText();
+                FlexiBookController.setUpBusinessHour(day, st, et);
+            } catch (InvalidInputException e) {
+                businessError.setText(e.getMessage());
+            }
+        }
+        refreshBusiness();
+
+    }
+
+    private void deleteBusinessHourAction(){
+
+        businessError.setText("");
+        if(delBH.getItems().size() == 0){
+            businessError.setText("No Hours Selected");
+        }
+        if(businessError.getText().length() ==0){
+            String delims = "[ ]+";
+            String[] tokens = delBH.getValue().split(delims);
+
+            FlexiBookController.deleteBusinessHours(tokens[0], tokens[1]);
+        }
+        refreshBusiness();
+
     }
 }
