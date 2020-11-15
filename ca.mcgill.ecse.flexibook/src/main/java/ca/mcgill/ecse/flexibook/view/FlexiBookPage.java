@@ -633,9 +633,9 @@ public class FlexiBookPage extends Application {
         gridP.setHgap(100);
         gridP.setVgap(100);
         Label lblUserName = new Label("Username");
-        textUserName= new TextField();
+        textUserName= new JFXTextField();
         Label lblPassword= new Label("Password");
-        pf=  new PasswordField();
+        pf=  new JFXPasswordField();
         JFXButton btonLogin= new JFXButton("Login",loginIcon);
         btonLogin.setOnAction(e->login());
         final Label lblMessage= new Label();
