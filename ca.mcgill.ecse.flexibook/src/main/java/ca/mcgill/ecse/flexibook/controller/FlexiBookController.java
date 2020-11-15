@@ -173,8 +173,8 @@ public class FlexiBookController {
 				}
 				else {
 					flexibook.addCustomer(aUsername, aPassword);
-					User user = findUser(aUsername);
-					FlexiBookApplication.setCurrentUser(user);
+					User user1 = findUser(aUsername);
+					FlexiBookApplication.setCurrentUser(user1);
 					FlexiBookPersistence.save(flexibook);
 				}
 				
