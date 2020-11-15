@@ -95,7 +95,9 @@ public abstract class User
   // line 31 "../../../../../FlexiBookPersistence.ump"
    public static  void reinitializeUserByUsername(List<Customer> customers, Owner owner){
     usersByUsername = new HashMap<String,User>();
-        usersByUsername.put(owner.getUsername(),owner);
+	    if (owner != null) {
+            usersByUsername.put(owner.getUsername(), owner);
+        }
 	    for (Customer customer : customers) {
 	        usersByUsername.put(customer.getUsername(),customer);
 	    }

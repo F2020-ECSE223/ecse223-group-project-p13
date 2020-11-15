@@ -19,18 +19,11 @@ public class FlexiBookApplication {
     public static void main(String[] args) {
         // start UI
         Application.launch(FlexiBookPage.class,args);
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                //new FlexiBookPage().setVisible(true);
-            }
-        });
-        //System.out.println(new FlexiBookApplication().getGreeting());
     }
     	
 
     public static FlexiBook getFlexiBook() {
     	if (flexibook == null) {
-    		// for now, we are just creating an empty BTMS
     		flexibook = FlexiBookPersistence.load();
     	}
      	return flexibook;

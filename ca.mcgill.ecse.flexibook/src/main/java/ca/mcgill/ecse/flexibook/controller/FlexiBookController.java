@@ -173,7 +173,7 @@ public class FlexiBookController {
 				}
 				else {
 					flexibook.addCustomer(aUsername, aPassword);
-					User user = findUser(aUsername);
+					user = findUser(aUsername);
 					FlexiBookApplication.setCurrentUser(user);
 					FlexiBookPersistence.save(flexibook);
 				}
@@ -2078,15 +2078,5 @@ public class FlexiBookController {
 			catch (RuntimeException e){
 				throw new InvalidInputException(e.getMessage());
 			}
-		}
-		public static void testAppointment(){
-			FlexiBook f = FlexiBookApplication.getFlexiBook();
-			Service s  = new Service("cut",f,10,0,0);
-			Customer c = new Customer("boul","jawn",f);
-			Customer c2 = new Customer("cutie","snack",f);
-			Business b = new Business("Toms","here","302123123","tomasz@tom.c",f);
-			Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
-			Appointment a2 =new Appointment(c2,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
-			FlexiBookPersistence.save(f);
 		}
 }

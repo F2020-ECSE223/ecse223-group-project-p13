@@ -9,6 +9,7 @@ import ca.mcgill.ecse.flexibook.controller.TOService;
 import ca.mcgill.ecse.flexibook.controller.TOBusinessHour;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -112,7 +113,6 @@ public class FlexiBookPage extends Application {
         mainStage = s;
         mainStage.setTitle("FlexiBook Application");
         renderDate = LocalDate.now();
-        FlexiBookController.testAppointment();
         initComponents();
         mainStage.show();
     }
