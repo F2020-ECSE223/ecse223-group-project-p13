@@ -45,8 +45,8 @@ public class FlexiBookPage extends Application {
     HBox customerAppointmentCalendar;
     BorderPane ownerMainScreenBorderPane;
     BorderPane customerScreenBorderPane;
-    TextField textUserName;
-    PasswordField pf;
+    JFXTextField textUserName;
+    JFXPasswordField pf;
     ArrayList<CalendarEntry> listDays = new ArrayList<>();
     ArrayList<CalendarEntry> dbvDays = new ArrayList<>();
     LocalDate renderDate;
@@ -102,8 +102,6 @@ public class FlexiBookPage extends Application {
     FontIcon startAppointmentIcon;
     FontIcon endAppointmentIcon;
     JFXButton startAppointment;
-    JFXTextField textUserName;
-    JFXPasswordField pf;
     GridPane gridP;
 
 
