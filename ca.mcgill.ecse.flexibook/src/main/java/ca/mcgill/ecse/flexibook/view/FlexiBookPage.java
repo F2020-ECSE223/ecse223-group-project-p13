@@ -103,6 +103,7 @@ public class FlexiBookPage extends Application {
     FontIcon endAppointmentIcon;
     JFXButton startAppointment;
     GridPane gridP;
+    HBox availableServicesPage;
 
 
 
@@ -1386,14 +1387,17 @@ private void setUpServicePage() {
         spacing.getStyleClass().add("service-text");
         serviceError = new Label("");
         serviceError.getStyleClass().add("error-text");
+        Button viewServices = new Button("View Available Services");
+        viewServices.getStyleClass().add("service-button");
+        viewServices.setOnAction(e->switchToAvailableServices());
 
-        FontIcon homeIcon = new FontIcon("dashicons-admin-home");
-        homeIcon.getStyleClass().add("icon");
+        FontIcon back = new FontIcon("dashicons-arrow-left-alt");
+        back.getStyleClass().add("icon");
 
-        JFXButton homeButton = new JFXButton("Home", homeIcon);
-        homeButton.setContentDisplay(ContentDisplay.TOP);
-        homeButton.getStyleClass().add("main-menu-button");
-        homeButton.setOnAction(e->back());
+        JFXButton backButton = new JFXButton("Back", back);
+        backButton.setContentDisplay(ContentDisplay.TOP);
+        backButton.getStyleClass().add("main-menu-button");
+        backButton.setOnAction(e->back());
 
         VBox col1 = new VBox(20);
         col1.getChildren().addAll(serviceName, downtimeDuration);
@@ -1456,10 +1460,14 @@ private void setUpServicePage() {
         row7.getChildren().add(serviceError);
         row7.setAlignment(Pos.CENTER);
         row7.setTranslateX(75);
+        HBox row8 = new HBox(10);
+        row8.getChildren().add(viewServices);
+        row8.setAlignment(Pos.CENTER);
+        row8.setTranslateX(75);
 
         VBox space = new VBox(20);
         space.setAlignment(Pos.CENTER);
-        space.getChildren().addAll(row4, row1, row5, row2, row6, row3, row7);
+        space.getChildren().addAll(row4, row1, row5, row2, row6, row3, row7, row8);
 
         ImageView view1 = new ImageView(image);
 
@@ -1469,7 +1477,7 @@ private void setUpServicePage() {
 
         HBox topLeft = new HBox();
         topLeft.setAlignment(Pos.TOP_CENTER);
-        topLeft.getChildren().add(homeButton);
+        topLeft.getChildren().add(backButton);
         topLeft.setTranslateX(-140);
 
         servicePage.getChildren().addAll(topLeft, space, topRight);
@@ -1545,6 +1553,78 @@ private void setUpServicePage() {
             }
         }
         refreshData();
+    }
+    
+    private void switchToAvailableServices(){
+        setAvailableServices();
+        mainScene.setRoot(availableServicesPage);
+    }
+
+    private void setAvailableServices(){
+        availableServicesPage = new HBox();
+        availableServicesPage.setAlignment(Pos.CENTER);
+        availableServicesPage.setStyle("-fx-background-color: #B0DDE4;");
+
+        Label availableServices = new Label("Available Services");
+        availableServices.getStyleClass().add("service-heading");
+        availableServices.setAlignment(Pos.CENTER);
+
+        FontIcon back = new FontIcon("dashicons-arrow-left-alt");
+        back.getStyleClass().add("icon");
+
+        JFXButton backButton = new JFXButton("Back", back);
+        backButton.setContentDisplay(ContentDisplay.TOP);
+        backButton.getStyleClass().add("main-menu-button");
+        backButton.setOnAction(e->backToServices());
+
+        TableView<TOService> serviceTable;
+
+        //Columns
+        TableColumn<TOService, String> nameCol = new TableColumn<>("Name");
+        nameCol.setMinWidth(200);
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<TOService, Integer> durationCol = new TableColumn<>("Duration");
+        durationCol.setMinWidth(100);
+        durationCol.setCellValueFactory(new PropertyValueFactory<>("duration"));
+
+        TableColumn<TOService, Integer> downtimeDurationCol = new TableColumn<>("Downtime Duration");
+        downtimeDurationCol.setMinWidth(200);
+        downtimeDurationCol.setCellValueFactory(new PropertyValueFactory<>("downtimeDuration"));
+
+        TableColumn<TOService, Integer> downtimeStartCol = new TableColumn<>("Downtime Start");
+        downtimeStartCol.setMinWidth(100);
+        downtimeStartCol.setCellValueFactory(new PropertyValueFactory<>("downtimeStart"));
+
+        serviceTable = new TableView<>();
+        serviceTable.setItems(getService());
+        serviceTable.setMinWidth(495);
+        serviceTable.setMinHeight(700);
+        serviceTable.getColumns().addAll(nameCol, durationCol, downtimeDurationCol, downtimeStartCol);
+
+        HBox top = new HBox();
+        top.getChildren().addAll(backButton, availableServices);
+
+        VBox row = new VBox();
+        row.setAlignment(Pos.TOP_CENTER);
+        backButton.setTranslateX(-475);
+        availableServices.setTranslateX(-20);
+        row.getChildren().addAll(top, serviceTable);
+
+        availableServicesPage.getChildren().add(row);
+    }
+
+    private ObservableList<TOService> getService() {
+        ObservableList<TOService> services = FXCollections.observableArrayList();
+
+        for (TOService s : FlexiBookController.getServices()){
+            services.add(s);
+        }
+        return services;
+    }
+
+    private void backToServices(){
+        mainScene.setRoot(servicePage);
     }
 
     private void updateBusinessAction(){
