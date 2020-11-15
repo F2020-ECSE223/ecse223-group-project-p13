@@ -6,6 +6,7 @@ import ca.mcgill.ecse.flexibook.controller.InvalidInputException;
 import ca.mcgill.ecse.flexibook.controller.TOAppointmentCalendarItem;
 
 import ca.mcgill.ecse.flexibook.controller.TOService;
+import ca.mcgill.ecse.flexibook.controller.TOBusinessHour;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
@@ -63,6 +64,10 @@ public class FlexiBookPage extends Application {
     JFXTextField updateBusEmail;
     JFXTextField updateBusAdd;
     JFXTextField updateBusPhone;
+    JFXComboBox<String> addDay;
+    JFXComboBox<String> delBH;
+    JFXTextField startTime;
+    JFXTextField endTime;
     Label businessError;
     Label curBussName;
     Label curBussEmail;
@@ -714,7 +719,7 @@ public class FlexiBookPage extends Application {
         backPage.setOnAction(e->back());
 
         //Business info
-        changeBuss = new HBox();
+        changeBuss = new HBox(10);
         changeBuss.setPadding(new Insets(100,100,100,100));
         changeBuss.setStyle("-fx-background-color: #B0DDE4;");
         GridPane busPane = new GridPane();
@@ -722,6 +727,11 @@ public class FlexiBookPage extends Application {
         busPane.setVgap(100);
         JFXButton updateBusinessButton = new JFXButton("Update Business Info",signUp);
         updateBusinessButton.setOnAction(e->updateBusinessAction());
+        JFXButton updateBusinessHoursButton = new JFXButton("Update Business Hours", signUp);
+        JFXButton addBusinessHoursButton = new JFXButton("Add Business Hours", signUp);
+        addBusinessHoursButton.setOnAction(e->addBusinessHourAction());
+        JFXButton deleteBusinessHoursButton = new JFXButton("Delete Business Hours", signUp);
+        deleteBusinessHoursButton.setOnAction(e->deleteBusinessHourAction());
 
 
 
@@ -741,6 +751,32 @@ public class FlexiBookPage extends Application {
         updateBusPhone = new JFXTextField();
         changeBuss.getChildren().add(updateBusPhone);
 
+        Label dayOfHour = new Label("Day:");
+        addDay = new JFXComboBox<String>();
+        addDay.getItems().add("Monday");
+        addDay.getItems().add("Tuesday");
+        addDay.getItems().add("Wednesday");
+        addDay.getItems().add("Thursday");
+        addDay.getItems().add("Friday");
+        addDay.getItems().add("Saturday");
+        addDay.getItems().add("Sunday");
+        changeBuss.getChildren().add(addDay);
+
+        Label startLabel = new Label("Start Time:");
+        startTime = new JFXTextField();
+        changeBuss.getChildren().add(startTime);
+
+        Label endLabel = new Label("End Time:");
+        endTime = new JFXTextField();
+        changeBuss.getChildren().add(endTime);
+
+        delBH = new JFXComboBox<String>();
+        for(TOBusinessHour a: FlexiBookController.getBH()){
+            delBH.getItems().add(a.getDay() + " " + a.getStartTime().toString() + " " + a.getEndTime().toString());
+        }
+
+
+
         businessError = new Label("");
         businessError.getStyleClass().add("error-text");
 
@@ -750,23 +786,36 @@ public class FlexiBookPage extends Application {
         curBussAdd = new Label("Address: " + FlexiBookController.showBI().getAddress());
         curBussPN = new Label("Phone: " + FlexiBookController.showBI().getPhoneNumber());
 
+        HBox b1 = new HBox(10);
+        b1.getChildren().addAll(newBussName, updateBusName);
+        HBox b2 = new HBox(10);
+        b2.getChildren().addAll(newBussEmail, updateBusEmail);
+        HBox b3 = new HBox(10);
+        b3.getChildren().addAll(newBussAdd, updateBusAdd);
+        HBox b4 = new HBox(10);
+        b4.getChildren().addAll(newBussPhone, updateBusPhone);
+        HBox b5 = new HBox(10);
+        b5.getChildren().addAll(updateBusinessButton, businessError);
+        HBox b6 = new HBox(10);
+        b6.getChildren().addAll(dayOfHour, addDay,startLabel, startTime, endLabel, endTime);
 
 
-        busPane.add(newBussName,0,0);
-        busPane.add(updateBusName,1,0);
-        busPane.add(newBussEmail,0,1);
-        busPane.add(updateBusEmail,1,1);
-        busPane.add(newBussAdd, 0, 2);
-        busPane.add(updateBusAdd, 1,2);
-        busPane.add(newBussPhone, 0, 3);
-        busPane.add(updateBusPhone, 1, 3);
-        busPane.add(updateBusinessButton, 1, 4);
-        busPane.add(businessError, 1, 5);
-        busPane.add(backPage2, 4, 0);
-        busPane.add(curBussName, 3, 0);
-        busPane.add(curBussEmail, 3, 1);
-        busPane.add(curBussAdd, 3, 2);
-        busPane.add(curBussPN, 3, 3);
+
+        busPane.add(b1, 0, 0);
+        busPane.add(b2, 0, 1);
+        busPane.add(b3, 0, 2);
+        busPane.add(b4, 0, 3);
+        busPane.add(b5, 0, 4);
+        busPane.add(b6, 0, 5);
+        busPane.add(addBusinessHoursButton, 1, 5);
+        busPane.add(delBH, 2, 4);
+        busPane.add(deleteBusinessHoursButton, 2, 5);
+        busPane.add(curBussName, 1, 0);
+        busPane.add(curBussEmail, 1, 1);
+        busPane.add(curBussAdd, 1, 2);
+        busPane.add(curBussPN, 1, 3);
+        busPane.add(backPage2, 2, 0);
+
         busPane.setAlignment(Pos.CENTER_LEFT);
 
         changeBuss.getChildren().add(busPane);
@@ -888,6 +937,12 @@ public class FlexiBookPage extends Application {
         curBussEmail.setText("Email: " + FlexiBookController.showBI().getEmail());
         curBussAdd.setText("Address: " + FlexiBookController.showBI().getAddress());
         curBussPN.setText("Phone: " + FlexiBookController.showBI().getPhoneNumber());
+        startTime.setText("");
+        endTime.setText("");
+        delBH.getItems().clear();
+        for(TOBusinessHour a: FlexiBookController.getBH()){
+            delBH.getItems().add(a.getDay() + " " + a.getStartTime().toString() + " " + a.getEndTime().toString());
+        }
 
     }
 
@@ -1511,6 +1566,45 @@ private void setUpServicePage() {
             catch(InvalidInputException e){
                 businessError.setText(e.getMessage());
             }
+        }
+        refreshBusiness();
+
+    }
+     private void addBusinessHourAction(){
+        businessError.setText("");
+        if(!startTime.getText().matches("^([0-2][0-9]):[0-5][0-9]$")){
+            businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
+        }if(!endTime.getText().matches("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+            businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
+        }
+        if(addDay.getItems().size()==0){
+            businessError.setText("Please select a day");
+        }
+        if(businessError.getText().length()==0) {
+            try {
+                String day = addDay.getValue();
+                String st = startTime.getText();
+                String et = endTime.getText();
+                FlexiBookController.setUpBusinessHour(day, st, et);
+            } catch (InvalidInputException e) {
+                businessError.setText(e.getMessage());
+            }
+        }
+        refreshBusiness();
+
+    }
+
+    private void deleteBusinessHourAction(){
+
+        businessError.setText("");
+        if(delBH.getItems().size() == 0){
+            businessError.setText("No Hours Selected");
+        }
+        if(businessError.getText().length() ==0){
+            String delims = "[ ]+";
+            String[] tokens = delBH.getValue().split(delims);
+
+            FlexiBookController.deleteBusinessHours(tokens[0], tokens[1]);
         }
         refreshBusiness();
 
