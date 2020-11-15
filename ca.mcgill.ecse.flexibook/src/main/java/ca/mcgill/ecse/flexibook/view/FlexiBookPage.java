@@ -461,6 +461,7 @@ public class FlexiBookPage extends Application {
                 StackPane secondaryLayout = new StackPane();
                 Scene secondScene = new Scene(secondaryLayout, 510, 250);
 
+                secondaryLayout.setStyle("-fx-background-color: #b0dde4;");
                 secondaryLayout.getChildren().add(datePickBox);
 
                 // New window (Stage)
@@ -565,27 +566,38 @@ public class FlexiBookPage extends Application {
 
 
         // stuff for cancel/update popup
-
+        JFXTimePicker timepicker = new JFXTimePicker();
 
         HBox timeBox = new HBox(10);
         Label time = new Label("Time:");
+        Label newTime = new Label(" New Time:");
+        newTime.setTextFill(Paint.valueOf("#286fb4"));
         time.setTextFill(Paint.valueOf("#286fb4"));
         TextField timeField = new TextField();
-        timeBox.getChildren().addAll(time,timeField);
+        timeBox.getChildren().addAll(time,timeField,newTime,timepicker);
         timeBox.setAlignment(Pos.CENTER);
 
+        JFXDatePicker datePicker = new JFXDatePicker();
         HBox dateBox = new HBox(10);
         Label date = new Label("Date:");
+        Label newDate = new Label(" New Date:");
+        newDate.setTextFill(Paint.valueOf("#286fb4"));
         date.setTextFill(Paint.valueOf("#286fb4"));
         TextField dateField = new TextField();
-        dateBox.getChildren().addAll(date,dateField);
+        dateBox.getChildren().addAll(date,dateField,newDate,datePicker);
         dateBox.setAlignment(Pos.CENTER);
 
+        JFXComboBox<Label> serviceChooser = new JFXComboBox<Label>();
+
+        serviceChooser.getItems().add(new Label("service1"));
+        serviceChooser.getItems().add(new Label("service2"));
         HBox serviceBox = new HBox(10);
         Label appointmentService = new Label("Service:");
+        Label newService = new Label(" New Service:");
+        newService.setTextFill(Paint.valueOf("#286fb4"));
         appointmentService.setTextFill(Paint.valueOf("#286fb4"));
         TextField serviceField = new TextField();
-        serviceBox.getChildren().addAll(appointmentService,serviceField);
+        serviceBox.getChildren().addAll(appointmentService,serviceField,newService,serviceChooser);
         serviceBox.setAlignment(Pos.CENTER);
 
         HBox apptButtons = new HBox(10);
@@ -603,7 +615,7 @@ public class FlexiBookPage extends Application {
         cancelAppt.setTextFill(Paint.valueOf("#286fb4"));
         apptButtons.getChildren().addAll(updateAppt,cancelAppt);
 
-        makeAndCancelPopUp = new VBox(20);
+        makeAndCancelPopUp = new VBox(50);
         makeAndCancelPopUp.getChildren().addAll(timeBox,dateBox,serviceBox,apptButtons);
 
         makeAndCancelPopUp.setAlignment(Pos.CENTER);
@@ -956,7 +968,7 @@ public class FlexiBookPage extends Application {
                         @Override
                         public void handle(ActionEvent event) {
                             StackPane secondaryLayout = new StackPane();
-                            Scene changeAppt = new Scene(secondaryLayout, 510, 250);
+                            Scene changeAppt = new Scene(secondaryLayout, 650, 300);
 
                             secondaryLayout.setStyle("-fx-background-color: #b0dde4;");
                             secondaryLayout.getChildren().add(makeAndCancelPopUp);
