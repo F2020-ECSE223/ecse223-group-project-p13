@@ -113,7 +113,6 @@ public class TOAppointmentCalendarItem
     wasRemoved = chosenItems.remove(aChosenItem);
     return wasRemoved;
   }
-
   public String getDescription()
   {
     return description;
@@ -178,7 +177,6 @@ public class TOAppointmentCalendarItem
     int index = chosenItems.indexOf(aChosenItem);
     return index;
   }
-
   public void delete()
   {}
 
@@ -189,7 +187,7 @@ public class TOAppointmentCalendarItem
             "description" + ":" + getDescription()+ "," +
             "available" + ":" + getAvailable()+ "," +
             "username" + ":" + getUsername()+ "," +
-            "mainService" + ":" + getMainService()+ "]" + System.getProperties().getProperty("line.separator") +
+            "mainService" + ":" + getMainService()+ "," +
             "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null");

@@ -16,6 +16,7 @@ class TOAppointmentCalendarItem{
     String username;
     String mainService;
     String[] chosenItems;
+    boolean hasStarted;
 }
 
 class TOBookableService {

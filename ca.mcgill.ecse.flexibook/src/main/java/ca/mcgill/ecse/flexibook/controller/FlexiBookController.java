@@ -417,21 +417,22 @@ public class FlexiBookController {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
 
-
-			for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
-				if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null,null);
-					calendar.add(t0);
+			if(flexibook.getBusiness() != null){
+				for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
+					if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
+						TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null,null);
+						calendar.add(t0);
+					}
 				}
-			}
-			for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
-				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
-					addTO(calendar, t, "holiday");
+				for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
+					if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+						addTO(calendar, t, "holiday");
+					}
 				}
-			}
-			for(TimeSlot t: flexibook.getBusiness().getVacation()) {
-				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
-					addTO(calendar,t,"vacation");
+				for(TimeSlot t: flexibook.getBusiness().getVacation()) {
+					if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+						addTO(calendar,t,"vacation");
+					}
 				}
 			}
 			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
@@ -1470,19 +1471,23 @@ public class FlexiBookController {
 		 */
 		public static TOBusinessInfo showBI(){
 			FlexiBook flexiBook = FlexiBookApplication.getFlexiBook();
-			String name = flexiBook.getBusiness().getName();
-			String address = flexiBook.getBusiness().getAddress();
-			String phoneNumber = flexiBook.getBusiness().getPhoneNumber();
-			String email = flexiBook.getBusiness().getEmail();
-			TOBusinessInfo disp = new TOBusinessInfo(name, address, phoneNumber, email);
-			return disp;
+			if(flexiBook.getBusiness() != null){
+				String name = flexiBook.getBusiness().getName();
+				String address = flexiBook.getBusiness().getAddress();
+				String phoneNumber = flexiBook.getBusiness().getPhoneNumber();
+				String email = flexiBook.getBusiness().getEmail();
+				return new TOBusinessInfo(name, address, phoneNumber, email);
+			}
+			return new TOBusinessInfo(null,null,null,null);
 		}
 		public static List<TOBusinessHour> getBH() {
 			ArrayList<TOBusinessHour> bh = new ArrayList<TOBusinessHour>();
-			for (BusinessHour a : FlexiBookApplication.getFlexiBook().getBusiness().getBusinessHours()) {
-				BusinessHour b = a;
-				TOBusinessHour toBH = new TOBusinessHour(b.getDayOfWeek().toString(), b.getStartTime(), b.getEndTime());
-				bh.add(toBH);
+			if(FlexiBookApplication.getFlexiBook().getBusiness() != null){
+				for (BusinessHour a : FlexiBookApplication.getFlexiBook().getBusiness().getBusinessHours()) {
+					BusinessHour b = a;
+					TOBusinessHour toBH = new TOBusinessHour(b.getDayOfWeek().toString(), b.getStartTime(), b.getEndTime());
+					bh.add(toBH);
+				}
 			}
 			return bh;
 		}

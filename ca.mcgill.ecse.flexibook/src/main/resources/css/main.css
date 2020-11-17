@@ -130,5 +130,11 @@
 .calendar-appointment-present{
     -fx-background-color: #03c04A;
 }
+.owner-error-message{
+    -fx-text-fill: #cb2929;
+    -fx-padding: 0.7em 0.57em;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
 
 
