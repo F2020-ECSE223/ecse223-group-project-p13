@@ -1536,6 +1536,9 @@ private void setUpServicePage() {
     }
 
     private void addServiceAction() {
+        Integer duration = 0;
+        Integer downtimeStart = 0;
+        Integer downtimeDuration = 0;
         serviceError.setText("");
         if (serviceNameInput.getText().equals("")){
             serviceError.setText("A service must have a name!");
@@ -1550,10 +1553,18 @@ private void setUpServicePage() {
             serviceError.setText("A service must have a downtime start!");
         }
 
+        try {
+            duration = Integer.parseInt(checkString(durationInput.getText()));
+            downtimeDuration = Integer.parseInt(checkString(downtimeDurationInput.getText()));
+            downtimeStart = Integer.parseInt(checkString(downtimeStartInput.getText()));
+        } catch (NumberFormatException e) {
+            serviceError.setText("Incorrect input!");
+        }
+
         if(serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.addService("owner", serviceNameInput.getText(), Integer.parseInt(durationInput.getText()),
-                        Integer.parseInt(downtimeDurationInput.getText()), Integer.parseInt(downtimeStartInput.getText()));
+                FlexiBookController.addService("owner", serviceNameInput.getText(),
+                        duration, downtimeDuration, downtimeStart);
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
             }
@@ -1563,6 +1574,9 @@ private void setUpServicePage() {
 
     private void updateServiceAction(){
         serviceError.setText("");
+        Integer duration = 0;
+        Integer downtimeStart = 0;
+        Integer downtimeDuration = 0;
 
         if (existingServices.getItems().size() == 0){
             serviceError.setText("An existing service must be selected!");
@@ -1579,10 +1593,19 @@ private void setUpServicePage() {
         else if(downtimeStartInput1.getText().equals("")){
             serviceError.setText("A service must have a downtime start!");
         }
+
+        try {
+            duration = Integer.parseInt(checkString(durationInput1.getText()));
+            downtimeDuration = Integer.parseInt(checkString(downtimeDurationInput1.getText()));
+            downtimeStart = Integer.parseInt(checkString(downtimeStartInput1.getText()));
+        } catch (NumberFormatException e) {
+            serviceError.setText("Incorrect input!");
+        }
+
         if (serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.updateService("owner", existingServices.getValue(), serviceNameInput1.getText(), Integer.parseInt(durationInput1.getText()),
-                        Integer.parseInt(downtimeDurationInput1.getText()), Integer.parseInt(downtimeStartInput1.getText()));
+                FlexiBookController.updateService("owner", existingServices.getValue(),
+                        serviceNameInput1.getText(), duration, downtimeDuration, downtimeStart);
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
             }
@@ -1676,6 +1699,18 @@ private void setUpServicePage() {
 
     private void backToServices(){
         mainScene.setRoot(servicePage);
+    }
+    
+    private String checkString(String str) {
+        if(str.contains("minutes")){
+            String tempStr = " minutes";
+            str = str.replace(tempStr, "");
+        }
+        else if(str.contains("minute")){
+            String tempStr = " minute";
+            str = str.replace(tempStr, "");
+        }
+        return str;
     }
 
     private void updateBusinessAction(){
