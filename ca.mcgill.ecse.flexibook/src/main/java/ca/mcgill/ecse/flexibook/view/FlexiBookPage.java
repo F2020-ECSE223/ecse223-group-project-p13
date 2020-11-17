@@ -334,16 +334,16 @@ public class FlexiBookPage extends Application {
         JFXButton startAppointment = new JFXButton("Start Appointment",startAppointmentIcon);
         startAppointment.setContentDisplay(ContentDisplay.TOP);
         startAppointment.getStyleClass().add("appointment-start-buttons");
-        startAppointment.setDisable(true);
         startAppointment.setOnAction(this::startAppointmentEvent);
+        startAppointment.setDisable(true);
         startAppointment.getStyleClass().add("appointment-start-buttons");
         appointmentButtons.getChildren().add(startAppointment);
 
         JFXButton endAppointment  = new JFXButton("End Appointment",endAppointmentIcon);
         endAppointment.setContentDisplay(ContentDisplay.TOP);
         endAppointment.getStyleClass().add("appointment-start-buttons");
+        endAppointment.setOnAction(this::endAppointmentEvent);
         endAppointment.setDisable(true);
-        endAppointment.setOnAction(this::startAppointmentEvent);
         endAppointment.getStyleClass().add("appointment-start-buttons");
         appointmentButtons.getChildren().add(endAppointment);
 
@@ -374,7 +374,8 @@ public class FlexiBookPage extends Application {
 
 
         AnchorPane.setTopAnchor(startAppointment,5.0);
-        AnchorPane.setTopAnchor(registerNoShow,100.0);
+        AnchorPane.setTopAnchor(endAppointment,100.0);
+        AnchorPane.setTopAnchor(registerNoShow,195.0);
         AnchorPane.setBottomAnchor(homeButton,0.0);
         AnchorPane.setRightAnchor(homeButton,0.0);
 
@@ -387,6 +388,7 @@ public class FlexiBookPage extends Application {
                         appointmentInformation.setVisible(false);
                         registerNoShow.setDisable(true);
                         startAppointment.setDisable(true);
+                        endAppointment.setDisable(true);
                         currentAppointment = null;
                     }
                     for (DayEvent additem : c.getAddedSubList()) {
@@ -398,6 +400,7 @@ public class FlexiBookPage extends Application {
                             ((Label)appointmentDetails.getChildren().get(7)).setText(additem.getAppointment().getMainService());
                             registerNoShow.setDisable(false);
                             startAppointment.setDisable(false);
+                            endAppointment.setDisable(false);
                             appointmentInformation.setVisible(true);
                         }
                     }
@@ -1180,6 +1183,7 @@ public class FlexiBookPage extends Application {
         error = null;
         try{
             FlexiBookController.startAppointment(currentAppointment);
+            errorMessageAppointmentCalendar.setText("");
         }
         catch (InvalidInputException e){
             errorMessageAppointmentCalendar.setText(e.getMessage());
@@ -1190,7 +1194,11 @@ public class FlexiBookPage extends Application {
         error = null;
         try{
             FlexiBookController.endAppointment(currentAppointment);
+            errorMessageAppointmentCalendar.setText("");
+            updateDate(listDays,calendarYearOwner,calendarMonthOwner);
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
         }
+
         catch (InvalidInputException e){
             errorMessageAppointmentCalendar.setText(e.getMessage());
         }
@@ -1201,6 +1209,7 @@ public class FlexiBookPage extends Application {
             FlexiBookController.registerNoShow(currentAppointment);
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
             refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
+            errorMessageAppointmentCalendar.setText("");
         }
         catch (InvalidInputException e){
             errorMessageAppointmentCalendar.setText(e.getMessage());
