@@ -889,8 +889,12 @@ public class FlexiBookPage extends Application {
     }
 
     private void back() {
-    	mainScene.setRoot(ownerMainScreenBorderPane);
-
+    	if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
+    		mainScene.setRoot(ownerMainScreenBorderPane);
+    	}
+    	else {
+    		mainScene.setRoot(customerScreenBorderPane);
+    	}
     }
 
     private void signUp() {
