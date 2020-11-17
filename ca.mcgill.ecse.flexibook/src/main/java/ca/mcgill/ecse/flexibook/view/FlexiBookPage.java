@@ -971,7 +971,7 @@ public class FlexiBookPage extends Application {
               throw new InvalidInputException("no username/password entered");
           }
           FlexiBookController.login(textUserName.getText(),pf.getText());
-         if(FlexiBookApplication.getUser().getUsername().equals(FlexiBookApplication.getFlexiBook().getOwner().getUsername())) {
+         if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
                 mainScene.setRoot(ownerMainScreenBorderPane);
             }
             else{
