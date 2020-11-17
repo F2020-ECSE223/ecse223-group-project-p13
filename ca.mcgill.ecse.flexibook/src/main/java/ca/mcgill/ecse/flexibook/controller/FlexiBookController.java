@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.flexibook.controller;
 
+import java.awt.print.Book;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
@@ -417,23 +418,25 @@ public class FlexiBookController {
 			FlexiBook flexibook = FlexiBookApplication.getFlexiBook();
 			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
 
+			if(flexibook.getBusiness() != null){
+				for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
+					if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
+						TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null,null);
+						calendar.add(t0);
+					}
+				}
+				for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
+					if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+						addTO(calendar, t, "holiday");
+					}
+				}
+				for(TimeSlot t: flexibook.getBusiness().getVacation()) {
+					if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
+						addTO(calendar,t,"vacation");
+					}
+				}
+			}
 
-			for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
-				if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
-					TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null,null);
-					calendar.add(t0);
-				}
-			}
-			for(TimeSlot t: flexibook.getBusiness().getHolidays()) {
-				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
-					addTO(calendar, t, "holiday");
-				}
-			}
-			for(TimeSlot t: flexibook.getBusiness().getVacation()) {
-				if(t.getStartDate().equals(sqlDate)|| t.getEndDate().equals(sqlDate)) {
-					addTO(calendar,t,"vacation");
-				}
-			}
 			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
 			int count=0;
 			int start = 0;
@@ -2086,4 +2089,6 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
+
 }
+
