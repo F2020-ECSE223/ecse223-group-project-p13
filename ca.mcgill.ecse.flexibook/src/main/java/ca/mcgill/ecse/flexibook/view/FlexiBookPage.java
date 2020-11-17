@@ -963,9 +963,13 @@ public class FlexiBookPage extends Application {
     }
      private void login() {
         try{
-            
-            FlexiBookController.login(textUserName.getText(),pf.getText());
-            mainScene.setRoot(ownerMainScreenBorderPane);
+          FlexiBookController.login(textUserName.getText(),pf.getText());
+         if(FlexiBookApplication.getUser().getUsername().equals(FlexiBookApplication.getFlexiBook().getOwner().getUsername())) {
+                mainScene.setRoot(ownerMainScreenBorderPane);
+            }
+            else{
+                mainScene.setRoot(customerScreenBorderPane);
+            }
         }
         catch(InvalidInputException e){
              e.getMessage();
