@@ -77,7 +77,6 @@ public class FlexiBookPage extends Application {
     Label curBussPN2;
     TextField textUserName1;
     PasswordField pf1;
-    private BorderPane mainScreenborderpane;
     HBox servicePage;
     private JFXTextField serviceNameInput;
     private JFXTextField downtimeDurationInput;
@@ -718,15 +717,7 @@ public class FlexiBookPage extends Application {
         change2.getChildren().add(temp);
         change2.getChildren().add(gridP2);
 
-        mainScene = new Scene(change2,1440,810,colors[3]);
-        ownerMainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        mainStage.setScene(mainScene);
-        mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-        ownerMainScreenBorderPane.requestFocus();
 
-        mainScene.setRoot(ownerMainScreenBorderPane);
-        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        customerScreenBorderPane.requestFocus();
 
                 //Account
         changeAcc = new HBox();
@@ -886,6 +877,16 @@ public class FlexiBookPage extends Application {
         changeBussCust.getChildren().add(busPane2);
 
         backPage3.setOnAction(e->back());
+
+        mainScene = new Scene(change2,1440,810,colors[3]);
+        ownerMainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        mainStage.setScene(mainScene);
+        mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        ownerMainScreenBorderPane.requestFocus();
+
+        mainScene.setRoot(change2);
+        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        customerScreenBorderPane.requestFocus();
     }
 
     private void back() {
