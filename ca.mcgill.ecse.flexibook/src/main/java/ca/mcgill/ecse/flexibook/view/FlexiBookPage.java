@@ -953,6 +953,7 @@ public class FlexiBookPage extends Application {
         try{
         	String username = FlexiBookApplication.getUser().getUsername();
             FlexiBookController.deleteCustomerAccount(username);
+            mainScene.setRoot(change2);
             System.out.println("Delete successfull");
         }
         catch(Exception e){
