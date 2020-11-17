@@ -235,6 +235,11 @@ public class FlexiBookPage extends Application {
         view1.setFitHeight(200);
         center1.getChildren().add(view1);
 
+        HBox bottom1 = new HBox();
+        customerScreenBorderPane.setBottom(bottom1);
+        bottom1.setAlignment(Pos.BASELINE_RIGHT);
+        bottom1.getChildren().add(logoutButton);
+        
         HBox buttons1 = new HBox(75);
 
         buttons1.setAlignment(Pos.CENTER);
