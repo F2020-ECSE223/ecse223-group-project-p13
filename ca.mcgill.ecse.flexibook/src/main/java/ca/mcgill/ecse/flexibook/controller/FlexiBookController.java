@@ -1480,13 +1480,10 @@ public class FlexiBookController {
 				String email = flexiBook.getBusiness().getEmail();
 				return new TOBusinessInfo(name, address, phoneNumber, email);
 			}
-			else{
-				return new TOBusinessInfo(null,null,null,null);
-			}
+			return new TOBusinessInfo(null,null,null,null);
 		}
 		public static List<TOBusinessHour> getBH() {
 			ArrayList<TOBusinessHour> bh = new ArrayList<TOBusinessHour>();
-			FlexiBook f = FlexiBookApplication.getFlexiBook();
 			if(FlexiBookApplication.getFlexiBook().getBusiness() != null){
 				for (BusinessHour a : FlexiBookApplication.getFlexiBook().getBusiness().getBusinessHours()) {
 					BusinessHour b = a;
@@ -2089,6 +2086,14 @@ public class FlexiBookController {
 				throw new InvalidInputException(e.getMessage());
 			}
 		}
-
+	public static void testAppointment(){
+		FlexiBook f = FlexiBookApplication.getFlexiBook();
+		Service s  = new Service("cut",f,10,0,0);
+		Customer c = new Customer("boul","jawn",f);
+		Customer c2 = new Customer("cutie","snack",f);
+		Business b = new Business("Toms","here","302123123","tomasz@tom.c",f);
+		Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
+		Appointment a2 =new Appointment(c2,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
+		FlexiBookPersistence.save(f);
+	}
 }
-

@@ -5,7 +5,7 @@ package ca.mcgill.ecse.flexibook.model;
 import java.io.Serializable;
 import java.util.*;
 
-// line 79 "../../../../../FlexiBookPersistence.ump"
+// line 85 "../../../../../FlexiBookPersistence.ump"
 // line 31 "../../../../../FlexiBook.ump"
 public class Business implements Serializable
 {
@@ -430,7 +430,7 @@ public class Business implements Serializable
   // DEVELOPER CODE - PROVIDED AS-IS
   //------------------------
   
-  // line 82 "../../../../../FlexiBookPersistence.ump"
+  // line 88 "../../../../../FlexiBookPersistence.ump"
   private static final long serialVersionUID = -59764821534565658L ;
 
   
