@@ -1065,6 +1065,7 @@ public class FlexiBookPage extends Application {
         leftArrowButton.setOnAction(e-> {
             renderDate= renderDate.minusYears(1);
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
+            updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
         });
         leftArrowButton.getStyleClass().add("icon-calendar-button");
         Region space = new Region();
@@ -1075,6 +1076,7 @@ public class FlexiBookPage extends Application {
         rightArrowButton.setOnAction(e-> {
             renderDate= renderDate.plusYears(1);
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
+            updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
         });
         rightArrowButton.getStyleClass().add("icon-calendar-button");
         calendarMain.setPrefSize(500,100);
