@@ -481,23 +481,7 @@ public class FlexiBookPage extends Application {
             mainScene.setRoot(customerScreenBorderPane);
                 });
 
-        //home.setAlignment(Pos.BOTTOM_RIGHT);
-        HBox bottomSpace = new HBox(10);
-        bottomSpace.getChildren().add(home);
-        bottomSpace.setAlignment(Pos.BOTTOM_RIGHT);
-
-        VBox rightSide = new VBox(50);
-
-        rightSide.getChildren().add(datePickBox);
-
-        //rightSide.getChildren().add(bottomSpace);
-
-        rightSide.setAlignment(Pos.CENTER);
-        rightSide.setPrefHeight(200);
-        rightSide.setPrefWidth(550);
-        rightSide.setStyle("-fx-background-color: #b0dde4;");
-
-
+        //placing home button
         AnchorPane rightPane = new AnchorPane();
         AnchorPane.setBottomAnchor(home,10.0);
         rightPane.setPrefHeight(300);
@@ -508,6 +492,17 @@ public class FlexiBookPage extends Application {
         stackPane.setAlignment(Pos.BOTTOM_RIGHT);
 
         customerAppointmentCalendar.getChildren().add(stackPane);
+
+        //right side layout
+
+        StackPane rightSide = new StackPane();
+
+        rightSide.getChildren().add(datePickBox);
+
+
+        rightSide.setAlignment(Pos.CENTER);
+        rightSide.setPrefHeight(200);
+        rightSide.setPrefWidth(550);
 
         customerAppointmentCalendar.getChildren().add(rightSide);
 
