@@ -229,7 +229,7 @@ public class FlexiBookPage extends Application {
 
         //Customer Home Page
         customerScreenBorderPane = new BorderPane();
-        Label welcome1 = new Label("Welcome, User");
+        Label welcome1 = new Label("Welcome,User");
         HBox top1 = new HBox();
         customerScreenBorderPane.setTop(top1);
         top1.setAlignment(Pos.BASELINE_RIGHT);
@@ -538,11 +538,6 @@ public class FlexiBookPage extends Application {
         StackPane rightSide = new StackPane();
 
         rightSide.getChildren().add(datePickBox);
-
-                // Specifies the modality for new window.
-                newWindow.initModality(Modality.WINDOW_MODAL);
-                // Specifies the owner Window (parent) for new window
-                newWindow.initOwner(mainStage);
 
         rightSide.setAlignment(Pos.CENTER);
         rightSide.setPrefHeight(200);
