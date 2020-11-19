@@ -63,7 +63,6 @@ public class FlexiBookPage extends Application {
     Label calendarYearOwner;
     Label calendarMonthCustomer;
     Label calendarYearCustomer;
-    //String username = "f10na_ryan";
     TableView<DayEvent> dailyAppointmentTable;
     String username = null;
     JFXTextField updateUsername;
@@ -232,7 +231,7 @@ public class FlexiBookPage extends Application {
 
         //Customer Home Page
         customerScreenBorderPane = new BorderPane();
-        Label welcome1 = new Label("Welcome, User");
+        Label welcome1 = new Label("Welcome,User");
         HBox top1 = new HBox();
         customerScreenBorderPane.setTop(top1);
         top1.setAlignment(Pos.BASELINE_RIGHT);
@@ -438,6 +437,7 @@ public class FlexiBookPage extends Application {
         ((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
 
 
+
         customerAppointmentCalendar = new HBox();
         customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays,false));
         customerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
@@ -564,7 +564,6 @@ public class FlexiBookPage extends Application {
         StackPane rightSide = new StackPane();
 
         rightSide.getChildren().add(datePickBox);
-
 
         rightSide.setAlignment(Pos.CENTER);
         rightSide.setPrefHeight(200);
@@ -713,15 +712,7 @@ public class FlexiBookPage extends Application {
         change2.getChildren().add(temp);
         change2.getChildren().add(gridP2);
 
-        mainScene = new Scene(change2,1440,810,colors[3]);
-        ownerMainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        mainStage.setScene(mainScene);
-        mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
-        ownerMainScreenBorderPane.requestFocus();
 
-        mainScene.setRoot(customerScreenBorderPane);
-        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
-        customerScreenBorderPane.requestFocus();
 
                 //Account
         changeAcc = new HBox();
@@ -881,6 +872,16 @@ public class FlexiBookPage extends Application {
         changeBussCust.getChildren().add(busPane2);
 
         backPage3.setOnAction(e->back());
+
+        mainScene = new Scene(change2,1440,810,colors[3]);
+        ownerMainScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        mainStage.setScene(mainScene);
+        mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
+        ownerMainScreenBorderPane.requestFocus();
+
+        mainScene.setRoot(change2);
+        customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
+        customerScreenBorderPane.requestFocus();
     }
 
     private void back() {
