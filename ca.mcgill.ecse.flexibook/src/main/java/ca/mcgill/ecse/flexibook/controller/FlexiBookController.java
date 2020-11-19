@@ -1,5 +1,6 @@
 package ca.mcgill.ecse.flexibook.controller;
 
+import java.awt.print.Book;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
@@ -435,6 +436,7 @@ public class FlexiBookController {
 					}
 				}
 			}
+
 			ArrayList<Appointment> DayAppointments = new ArrayList<Appointment>();
 			int count=0;
 			int start = 0;
