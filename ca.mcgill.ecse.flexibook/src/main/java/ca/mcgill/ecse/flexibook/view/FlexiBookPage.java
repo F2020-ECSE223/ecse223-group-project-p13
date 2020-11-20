@@ -84,8 +84,8 @@ public class FlexiBookPage extends Application {
     Label curBussEmail2;
     Label curBussAdd2;
     Label curBussPN2;
-    TextField textUserName1;
-    PasswordField pf1;
+    JFXTextField textUserName1;
+    JFXPasswordField pf1;
     VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
@@ -690,15 +690,12 @@ public class FlexiBookPage extends Application {
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
-        textUserName1= new TextField();
+        textUserName1= new JFXTextField();
         Label lblPassword1= new Label("Enter a Password");
-        pf1=  new PasswordField();
+        pf1=  new JFXPasswordField();
         JFXButton btonLogin1= new JFXButton("SignUp",signUp);
         btonLogin1.setOnAction(e->signUp());
 
-        btonLogin1.setOnAction(e->{
-            mainScene.setRoot(customerScreenBorderPane);
-        });
         final Label lblMessage1= new Label();
         gridP2.add(lblUserName1,0,0);
         gridP2.add(textUserName1,1,0);
@@ -900,7 +897,7 @@ public class FlexiBookPage extends Application {
         	String username = textUserName1.getText();
         	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
-            mainScene.setRoot(ownerMainScreenBorderPane);
+            mainScene.setRoot(customerScreenBorderPane);
             System.out.println("SignUp Successful");
             System.out.println("Username = " + username + "," + "Password = " + password);
         }
