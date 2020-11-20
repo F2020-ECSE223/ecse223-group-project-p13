@@ -760,6 +760,8 @@ public class FlexiBookPage extends Application {
         addBusPane.setVgap(100);
         JFXButton addBusinessButton = new JFXButton("Add Business", signUp);
         addBusinessButton.setOnAction(e->setBusinessAction());
+        JFXButton submit = new JFXButton("Submit");
+        submit.setOnAction(e->switchToOwnerMain());
 
         Label newBussName2 = new Label("Enter your new name!");
         updateBusName2 = new JFXTextField();
@@ -789,7 +791,8 @@ public class FlexiBookPage extends Application {
         addBusPane.add(updateBusAdd2, 1, 2);
         addBusPane.add(updateBusPhone2, 1, 3);
         addBusPane.add(addBusinessButton, 0, 4);
-        addBusPane.add(businessError2, 1, 4);
+        //addBusPane.add(submit, 1, 4);
+        addBusPane.add(businessError2, 0, 5);
 
         addBuss.getChildren().add(addBusPane);
 
@@ -1327,6 +1330,9 @@ public class FlexiBookPage extends Application {
         mainScene.setRoot(changeBussCust);
 
     }
+    private void switchToOwnerMain(){
+        mainScene.setRoot(ownerMainScreenBorderPane);
+    }
 
     private void switchToSetUpBusiness(){
         mainScene.setRoot(addBuss);
@@ -1335,6 +1341,7 @@ public class FlexiBookPage extends Application {
     private void switchToBusiness(){
         //setUpBusinessPage();
        mainScene.setRoot(changeBuss);
+       refreshBusiness();
     }
     private void switchToServices(){
         setUpServicePage();
@@ -1852,19 +1859,23 @@ private void setUpServicePage() {
         if(updateBusPhone2.getText().length() == 0) {
             businessError2.setText("All fields must be completed!");
         }
+        String name = updateBusName2.getText();
+        String email = updateBusEmail2.getText();
+        String address = updateBusAdd2.getText();
+        String pn = updateBusPhone2.getText();
         if(businessError2.getText().length() == 0){
             try{
-                String name = updateBusName2.getText();
-                String email = updateBusEmail2.getText();
-                String address = updateBusAdd2.getText();
-                String pn = updateBusPhone2.getText();
-                FlexiBookController.updateBusinessInfo(name, address, pn, email, null, null, null, null, null,  null, null, null, null, null, null, true,false,false,false,false,false,false,false,false,false);
-                mainScene.setRoot(ownerMainScreenBorderPane);
+
+                FlexiBookController.setUpBusinessInfo(name, address, pn, email, null, null, null, null, null,  null, null, true, false, false, false);
+
             }
             catch(InvalidInputException e){
                 businessError2.setText(e.getMessage());
             }
         }
+       if(FlexiBookApplication.getFlexiBook().getBusiness().getName().equals(name)){
+           mainScene.setRoot(ownerMainScreenBorderPane);
+       }
         //refreshBusiness();
 
     }
