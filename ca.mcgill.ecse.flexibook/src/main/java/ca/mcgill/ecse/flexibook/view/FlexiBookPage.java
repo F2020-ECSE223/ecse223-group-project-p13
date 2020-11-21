@@ -1479,7 +1479,12 @@ public class FlexiBookPage extends Application {
 
     }
 
-private void setUpServicePage() {
+    
+    /**
+     * @author Hana Gustyn
+     * Sets up the service page.
+     */
+    private void setUpServicePage() {
     	servicePage = new HBox();
     	servicePage.setAlignment(Pos.CENTER);
         servicePage.setStyle("-fx-background-color: #B0DDE4;");
@@ -1636,7 +1641,11 @@ private void setUpServicePage() {
         servicePage.getChildren().addAll(topLeft, space, topRight);
         refreshData();
     }
-
+    
+    /**
+     * @author Hana Gustyn
+     * Calls controller to add a service.
+     */
     private void addServiceAction() {
         Integer duration = 0;
         Integer downtimeStart = 0;
@@ -1674,6 +1683,10 @@ private void setUpServicePage() {
         refreshData();
     }
 
+    /**
+     * @author Hana Gustyn
+     * Calls controller to update a service.
+     */
     private void updateServiceAction(){
         serviceError.setText("");
         Integer duration = 0;
@@ -1715,6 +1728,10 @@ private void setUpServicePage() {
         refreshData();
     }
 
+    /**
+     * @author Hana Gustyn
+     * Calls controller to delete a service.
+     */
     private void deleteServiceAction(){
         serviceError.setText("");
 
@@ -1731,11 +1748,19 @@ private void setUpServicePage() {
         refreshData();
     }
 
+    /**
+     * @author Hana Gustyn
+     * Switches to the available services page.
+     */
     private void switchToAvailableServices(){
         setAvailableServices();
         mainScene.setRoot(availableServicesPage);
     }
 
+    /**
+     * @author Hana Gustyn
+     * Sets up the available services page.
+     */
     private void setAvailableServices(){
         availableServicesPage = new HBox();
         availableServicesPage.setAlignment(Pos.CENTER);
