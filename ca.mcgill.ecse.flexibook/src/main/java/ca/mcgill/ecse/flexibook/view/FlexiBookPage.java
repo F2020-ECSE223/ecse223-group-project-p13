@@ -1665,7 +1665,7 @@ private void setUpServicePage() {
 
         if(serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.addService("owner", serviceNameInput.getText(),
+                FlexiBookController.addService(FlexiBookApplication.getUser().getUsername(), serviceNameInput.getText(),
                         duration, downtimeDuration, downtimeStart);
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
@@ -1706,7 +1706,7 @@ private void setUpServicePage() {
 
         if (serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.updateService("owner", existingServices.getValue(),
+                FlexiBookController.updateService(FlexiBookApplication.getUser().getUsername(), existingServices.getValue(),
                         serviceNameInput1.getText(), duration, downtimeDuration, downtimeStart);
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
@@ -1723,7 +1723,7 @@ private void setUpServicePage() {
         }
         if (serviceError.getText().length() == 0) {
             try {
-                FlexiBookController.deleteService("owner", existingServices1.getValue());
+                FlexiBookController.deleteService(FlexiBookApplication.getUser().getUsername(), existingServices1.getValue());
             } catch (InvalidInputException e) {
                 serviceError.setText(e.getMessage());
             }
