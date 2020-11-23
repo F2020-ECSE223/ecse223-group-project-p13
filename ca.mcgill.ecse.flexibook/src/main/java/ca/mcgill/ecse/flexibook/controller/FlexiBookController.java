@@ -821,7 +821,8 @@ public class FlexiBookController {
 						throw new InvalidInputException("A customer can only cancel their own appointments");
 
 					}
-					if (a.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))) {
+					Date current = Date.valueOf(SystemTime.getDate().toLocalDate());
+					if (a.getTimeSlot().getStartDate().equals(current)) {
 						throw new InvalidInputException("Cannot cancel an appointment on the appointment date");
 					}
 				}
@@ -871,8 +872,8 @@ public class FlexiBookController {
 				}
 
 				//updating time and date
-				//(newComboItem == null || newComboItem.equals("null"))
-				if ((action == null || action.equals("null")) && (newComboItem == null || newComboItem.equals("null"))) {
+				// && (newComboItem == null || newComboItem.equals("null"))
+				if ((action == null || action.equals("null"))&& (serviceType == null || serviceType.equals("null"))) {
 					Date sDate = Date.valueOf(LocalDate.parse(newDate, DateTimeFormatter.ofPattern("uuuu-MM-dd")));
 					Time sTime;
 					if (newTime.length() == 4) {
@@ -913,9 +914,12 @@ public class FlexiBookController {
 					//slot is occupied by an existing appointment
 					for (Appointment r : flexibook.getAppointments()) {
 						if (!(r == appt)) {
-							if (r.getTimeSlot().getStartTime().equals(sTime)) {
-								throw new InvalidInputException("unsuccessful");
+							if(r.getTimeSlot().getStartDate().equals(sDate)){
+								if (r.getTimeSlot().getStartTime().equals(sTime)) {
+									throw new InvalidInputException("unsuccessful");
+								}
 							}
+
 						}
 					}
 

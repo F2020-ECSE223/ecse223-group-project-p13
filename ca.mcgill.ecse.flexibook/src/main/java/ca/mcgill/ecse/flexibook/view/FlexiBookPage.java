@@ -573,12 +573,13 @@ public class FlexiBookPage extends Application {
             try {
                 appointmentError.setText("");
                 FlexiBookController.updateAppointment(FlexiBookApplication.getUser().getUsername(),
-                        serviceChooser.getSelectionModel().getSelectedItem().getText(), String.valueOf(timePicker1.getValue()),
+                        null, String.valueOf(timePicker1.getValue()),
                         String.valueOf(datePicker.getValue()), String.valueOf(removeAdd.getValue()), serviceChooser.getSelectionModel().getSelectedItem().getText());
 
-                newWindow1.hide();
+                newWindow1.close();
             } catch (InvalidInputException e) {
                 appointmentError.setText(e.getMessage());
+
             }
         });
 
@@ -1274,7 +1275,7 @@ public class FlexiBookPage extends Application {
                                             if (!c.wasPermutated()) {
                                                 for (DayEvent additem : c.getAddedSubList()) {
                                                     if (additem.getAppointment().getDescription().equals("appointment")) {
-                                                        newWindow2.hide();
+                                                        newWindow2.close();
                                                         secondaryLayout.getChildren().add(makeAndCancelPopUp);
                                                         newWindow1.show();
 
@@ -1300,6 +1301,7 @@ public class FlexiBookPage extends Application {
 
                                     } catch (InvalidInputException e) {
                                         appointmentError.setText(e.getMessage());
+
                                     }
                                 });
 
@@ -1307,6 +1309,9 @@ public class FlexiBookPage extends Application {
                                 error = e.getMessage();
 
                             }
+                            appointmentError.setStyle("-fx-background-color: #ffcccb");
+                            secondaryLayout.getChildren().add(appointmentError);
+
 
                         });
                     }
