@@ -92,6 +92,9 @@ public class FlexiBookPage extends Application {
     Label loginError;
     JFXTextField textUserName1;
     JFXPasswordField pf1;
+    private GridPane gridP2;
+	private GridPane pane;
+	private Label errorMsg;
     VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
@@ -706,7 +709,7 @@ public class FlexiBookPage extends Application {
         gridP.add(loginError, 1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
-        GridPane gridP2= new GridPane();
+        gridP2= new GridPane();
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
@@ -735,7 +738,7 @@ public class FlexiBookPage extends Application {
         changeAcc = new HBox();
         changeAcc.setPadding(new Insets(100,100,100,100));
         changeAcc.setStyle("-fx-background-color: #B0DDE4;");
-        GridPane pane= new GridPane();
+        pane= new GridPane();
         pane.setHgap(100);
         pane.setVgap(100);
         JFXButton updateButton = new JFXButton("Update Account",signUp);
@@ -961,15 +964,27 @@ public class FlexiBookPage extends Application {
         customerScreenBorderPane.requestFocus();
     }
 
+    
+    /**
+     * @author cesar
+     * goes to the main menu
+     */
     private void back() {
     	if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
     		mainScene.setRoot(ownerMainScreenBorderPane);
+    		pane.getChildren().remove(errorMsg);
     	}
     	else {
     		mainScene.setRoot(customerScreenBorderPane);
+    		pane.getChildren().remove(errorMsg);
     	}
     }
-
+    
+    /**
+     * @author cesar
+     * Creates the account 
+     * If the account cannot be created a message pops up showing what the problem is
+     */
     private void signUp() {
 
      	try{
@@ -983,10 +998,20 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            gridP2.add(errorMsg,1,4);
+            textUserName1.setText("");
+            pf1.setText("");
         }
 
     }
-
+    
+    /**
+     * @author cesar
+     * Updates the account
+     * if the account cannot be updated a message pops up showing why
+     */
     private void updateAcc() {
 
         try{
@@ -998,24 +1023,19 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            pane.add(errorMsg,1,4);
+
         }
 
     }
-
-   /* private void updateBusiness() {
-        try{
-            String newName = updateBusName.getText();
-            String newEmail = updateBusEmail.getText();
-            String newAddress = updateBusAdd.getText();
-            String newPhone = updateBusPhone.getText();
-            FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
-            //System.out.println(newName);
-        }
-        catch(Exception e){
-            e.getMessage();
-        }
-    }*/
-
+    
+    /**
+     * @author cesar
+     * delete the account
+     * If the account cannot be deleted a messages pops up showing why
+     */
     private void deleteAcc(){
 
         try{
@@ -1026,6 +1046,9 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            pane.add(errorMsg,1,4);
         }
 
     }
