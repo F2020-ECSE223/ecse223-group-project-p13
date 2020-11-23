@@ -7,12 +7,23 @@ public class DayEvent {
     private String startTime;
     private String endTime;
     private String username;
+    private String date;
+    private String service;
+
+
     public DayEvent(TOAppointmentCalendarItem item){
         startTime = item.getStartTime().toString();
         endTime = item.getEndTime().toString();
         username = item.getUsername();
         appointment = item;
+        date = item.getDate().toString();
+        service = item.getMainService();
     }
+
+    public String getService() { return service;}
+    public void setService(String service) { this.service = service; }
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
     public String getUsername() { return username;}
     public void setUsername(String username) { this.username = username; }
     public String getStartTime() { return startTime; }
