@@ -949,7 +949,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToUpdateTheirAppointmentOnAtToAt(String customer, String type, String date, String startTime, String newDate, String newStartTime) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer,type,newStartTime,newDate,null,null);
+			FlexiBookController.updateAppointment(customer,type,null,newStartTime,newDate,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1024,7 +1024,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToFromTheirAppointmentOnAt(String customer, String action, String comboItem, String type, String date, String time) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer,type,null,null,action,comboItem);
+			FlexiBookController.updateAppointment(customer,type,null,null,null,action,comboItem);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1046,7 +1046,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToUpdateSAppointmentOnAtToAt(String customer1, String customer2, String type, String date, String time, String newDate, String newTime) {
 		numAppt = flexiBook.numberOfAppointments();
 		try{
-			FlexiBookController.updateAppointment(customer1,type,newTime,newDate,null,null);
+			FlexiBookController.updateAppointment(customer1,type,null,newTime,newDate,null,null);
 		}
 		catch(InvalidInputException e){
 			error+=e.getMessage();
@@ -1962,7 +1962,7 @@ public class CucumberStepDefinitions {
 		try {
 			SystemTime.setTime(systemTime);
 			appointmentName=service;
-			FlexiBookController.updateAppointment(customer, null,null,null, null, service);
+			FlexiBookController.updateAppointment(customer, null,null,null,null, null, service);
 		}
 		catch(InvalidInputException e){
 			error +=e;
@@ -2088,7 +2088,7 @@ public class CucumberStepDefinitions {
 
 			}
 			SystemTime.setTime(arg3);
-			FlexiBookController.updateAppointment(arg0,null,arg2,arg1,null,null);
+			FlexiBookController.updateAppointment(arg0,null,null,arg2,arg1,null,null);
 
 		}
 		catch(InvalidInputException e){
@@ -2161,7 +2161,7 @@ public class CucumberStepDefinitions {
 	public void attemptsToAddTheOptionalServiceToTheServiceComboInTheAppointmentAt(String username, String service, String arg2) {
 		try{
 			SystemTime.setTime(arg2);
-			FlexiBookController.updateAppointment(username,null,null,null,"add",service);
+			FlexiBookController.updateAppointment(username,null,null,null,null,"add",service);
 		}
 		catch (InvalidInputException e){
 			errorCounter+=1;
