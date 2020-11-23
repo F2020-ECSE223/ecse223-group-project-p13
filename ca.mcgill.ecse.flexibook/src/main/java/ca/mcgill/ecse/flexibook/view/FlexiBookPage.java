@@ -196,11 +196,12 @@ public class FlexiBookPage extends Application {
         JFXButton backPage2 = new JFXButton("Back", back);
         JFXButton backPage3 = new JFXButton("Back", back);
 
-        JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
-        logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
-        logoutButton.getStyleClass().add("main-menu-button");
-        logoutButton.setOnAction(e->logout());
-        bottom.getChildren().add(logoutButton);
+        JFXButton logoutButton1 = new JFXButton("LogOut", logoutIcon);
+        logoutButton1.setContentDisplay(ContentDisplay.BOTTOM);
+        logoutButton1.getStyleClass().add("main-menu-button");
+        logoutButton1.setOnAction(e->logout());
+        bottom.getChildren().add(logoutButton1);
+        
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
         appointmentButton.setOnAction(e-> switchToOwnerAppointment());
@@ -252,7 +253,13 @@ public class FlexiBookPage extends Application {
         view1.setPreserveRatio(true);
         view1.setFitHeight(200);
         center1.getChildren().add(view1);
-
+        
+        JFXButton logoutButton1 = new JFXButton("LogOut", logoutIcon);
+        logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
+        logoutButton.getStyleClass().add("main-menu-button");
+        logoutButton.setOnAction(e->logout());
+  
+        
         HBox bottom1 = new HBox();
         customerScreenBorderPane.setBottom(bottom1);
         bottom1.setAlignment(Pos.BASELINE_RIGHT);
