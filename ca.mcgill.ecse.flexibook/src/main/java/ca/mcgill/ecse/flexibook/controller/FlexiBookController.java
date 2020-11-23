@@ -1472,17 +1472,17 @@ public class FlexiBookController {
 			try {
 
 
-				if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
+				/*if (!(FlexiBookApplication.getUser().getUsername().equals("owner"))) {
 					throw new InvalidInputException("No permission to set up business information");
-				}
+				}*/
 				if (!(pat.matcher(email).matches())) {
 					throw new InvalidInputException("Invalid email");
 				}
 
 				if (addB) {
 
-					//biz = new Business(name, address, phoneNumber, email, flexiBook);
-					flexiBook.setBusiness(new Business(name, address, phoneNumber, email, flexiBook));
+					biz = new Business(name, address, phoneNumber, email, flexiBook);
+					flexiBook.setBusiness(biz);
 					//flexiBook.getBusiness().setName(name);
 					//flexiBook.getBusiness().setAddress(address);
 					//flexiBook.getBusiness().setPhoneNumber(phoneNumber);
