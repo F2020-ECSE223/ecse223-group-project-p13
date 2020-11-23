@@ -89,6 +89,7 @@ public class FlexiBookPage extends Application {
     Label curBussEmail2;
     Label curBussAdd2;
     Label curBussPN2;
+    Label loginError;
     JFXTextField textUserName1;
     JFXPasswordField pf1;
     VBox makeAndCancelPopUp;
@@ -681,6 +682,9 @@ public class FlexiBookPage extends Application {
         GridPane gridP= new GridPane();
         gridP.setHgap(100);
         gridP.setVgap(100);
+         loginError= new Label("");
+        loginError.getStyleClass().add("error-text");
+        loginError.setVisible(true);
         Label lblUserName = new Label("Username");
         textUserName= new JFXTextField();
         Label lblPassword= new Label("Password");
@@ -699,6 +703,7 @@ public class FlexiBookPage extends Application {
         gridP.add(pf,1,1);
         gridP.add(btonLogin, 1,2 );
         gridP.add(lblMessage,1,2);
+        gridP.add(loginError, 1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
         GridPane gridP2= new GridPane();
@@ -1024,10 +1029,14 @@ public class FlexiBookPage extends Application {
         }
 
     }
-
+/**
+@author Victoria Sanchez
+defines logout action for both customers and owners
+*/
     private void logout() {
         try{
             FlexiBookController.logout();
+             loginError.setText("");
             mainScene.setRoot(change2);
         }
         catch(Exception e){
@@ -1055,12 +1064,7 @@ public class FlexiBookPage extends Application {
             }
         }
         catch(InvalidInputException e){
-             e.getMessage();
-            Label error = new Label("invalid username/password");
-            error.setTextFill(Color.RED);
-            gridP.add(error,1,4);
-            textUserName.setText("");
-            pf.setText("");
+          loginError.setText(e.getMessage());
         }
     }
 
