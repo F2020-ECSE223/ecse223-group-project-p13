@@ -1256,6 +1256,7 @@ public class FlexiBookPage extends Application {
                                 if(calendarItems.size() == 0){
                                     Label noAppointments = new Label("No Appointments on This Day");
                                     secondaryLayout.getChildren().add(noAppointments);
+                                    newWindow1.show();
                                 }
 
                                 else if (calendarItems.size() > 0) {
