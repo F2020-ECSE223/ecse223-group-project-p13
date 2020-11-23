@@ -254,7 +254,7 @@ public class FlexiBookPage extends Application {
         view1.setFitHeight(200);
         center1.getChildren().add(view1);
         
-        JFXButton logoutButton1 = new JFXButton("LogOut", logoutIcon);
+        JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
         logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
         logoutButton.getStyleClass().add("main-menu-button");
         logoutButton.setOnAction(e->logout());
