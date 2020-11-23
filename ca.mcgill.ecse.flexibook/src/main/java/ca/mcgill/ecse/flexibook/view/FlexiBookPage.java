@@ -93,8 +93,9 @@ public class FlexiBookPage extends Application {
     JFXTextField textUserName1;
     JFXPasswordField pf1;
     private GridPane gridP2;
-	private GridPane pane;
-	private Label errorMsg;
+    private GridPane pane;
+    private Label errorMsg;
+    private GripPane gridP;
     VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
@@ -682,7 +683,7 @@ public class FlexiBookPage extends Application {
         change2= new HBox();
         change2.setPadding(new Insets(200,200,200,200));
         change2.setStyle("-fx-background-color: #B0DDE4");
-        GridPane gridP= new GridPane();
+        gridP= new GridPane();
         gridP.setHgap(100);
         gridP.setVgap(100);
          loginError= new Label("");
