@@ -573,8 +573,8 @@ public class FlexiBookPage extends Application {
             try {
                 appointmentError.setText("");
                 FlexiBookController.updateAppointment(FlexiBookApplication.getUser().getUsername(),
-                        null, String.valueOf(timePicker1.getValue()),
-                        String.valueOf(datePicker.getValue()), String.valueOf(removeAdd.getValue()), serviceChooser.getSelectionModel().getSelectedItem().getText());
+                        null, String.valueOf(timePicker1.getValue()), String.valueOf(datePicker.getValue()),
+                        String.valueOf(removeAdd.getValue()), serviceChooser.getSelectionModel().getSelectedItem().getText());
 
                 newWindow1.close();
             } catch (InvalidInputException e) {

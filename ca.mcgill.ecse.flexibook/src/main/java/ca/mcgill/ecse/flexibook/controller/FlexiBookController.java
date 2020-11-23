@@ -933,15 +933,16 @@ public class FlexiBookController {
 					//updating action or comboItem
 				} else if ((newTime == null || newTime.equals("null")) && (newDate == null || newDate.equals("null"))) {
 					BookableService serv = appt.getBookableService();
+
 					if (serv instanceof Service) {
-						if(!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))){
+						if (!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate()))) {
 							Service s = (Service) BookableService.getWithName(newComboItem);
 
 							Time start = appt.getTimeSlot().getStartTime();
 							Time end = Time.valueOf(start.toLocalTime().plusMinutes(s.getDuration()));
 							for (Appointment r : flexibook.getAppointments()) {
-								if(!(r == appt)){
-									if(r.getTimeSlot().getStartDate().equals(appt.getTimeSlot().getStartDate()) && r.getTimeSlot().getStartTime().compareTo(end) < 0){
+								if (!(r == appt)) {
+									if (r.getTimeSlot().getStartDate().equals(appt.getTimeSlot().getStartDate()) && r.getTimeSlot().getStartTime().compareTo(end) < 0) {
 										throw new InvalidInputException("unsuccessful");
 									}
 								}
@@ -950,8 +951,11 @@ public class FlexiBookController {
 							appt.updateService(s);
 							appt.getTimeSlot().setEndTime(end);
 							FlexiBookPersistence.save(flexibook);
+
+
 						}
-					} else {
+
+					}else {
 						ServiceCombo name = (ServiceCombo) serv;
 						//if action is add
 						if (!appt.getTimeSlot().getStartDate().equals(Date.valueOf(SystemTime.getDate().toLocalDate())) || appt.getExistStatusFullName().equals("InProgress")) {
@@ -1001,7 +1005,7 @@ public class FlexiBookController {
 
 								appt.getTimeSlot().setEndTime(end);
 								FlexiBookPersistence.save(flexibook);
-								throw new InvalidInputException("successful");
+								//throw new InvalidInputException("successful");
 							} else if (action != null && action.equals("remove")) {
 								//cannot remove main service
 								ServiceCombo s = (ServiceCombo) appt.getBookableService();
@@ -1018,7 +1022,7 @@ public class FlexiBookController {
 								}
 								//remove chosenItem
 								appt.removeChosenItem(new ComboItem(false, ((Service) BookableService.getWithName(newComboItem)), s));
-								throw new InvalidInputException("successful");
+								//throw new InvalidInputException("successful");
 							}
 						}
 					}
