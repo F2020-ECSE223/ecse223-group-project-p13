@@ -115,7 +115,7 @@ public class FlexiBookPage extends Application {
     GridPane gridP;
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
-
+    int j = 0;
 
 
 
@@ -271,9 +271,11 @@ public class FlexiBookPage extends Application {
 
         FontIcon appointmentIcon1 = new FontIcon("eli-calendar");
         FontIcon accountIcon1 = new FontIcon("dashicons-businessperson");
+        FontIcon businessIcon1 = new FontIcon("icm-briefcase");
 
         appointmentIcon1.getStyleClass().add("icon-main-menu");
         accountIcon1.getStyleClass().add("icon-main-menu");
+        businessIcon1.getStyleClass().add("icon-main-menu");
 
 
         JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
@@ -288,7 +290,7 @@ public class FlexiBookPage extends Application {
         accountButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(accountButton1);
 
-        JFXButton businessButton1 = new JFXButton("Business", businessIcon);
+        JFXButton businessButton1 = new JFXButton("Business", businessIcon1);
         businessButton1.setContentDisplay(ContentDisplay.TOP);
         businessButton1.setOnAction(e->switchToBusinessCust());
         businessButton1.getStyleClass().add("main-menu-button");
@@ -813,11 +815,11 @@ public class FlexiBookPage extends Application {
         JFXButton updateBusinessButton = new JFXButton("Update Business Info",signUp);
         updateBusinessButton.setOnAction(e->updateBusinessAction());
         JFXButton businessHoursButton = new JFXButton("Business Hours", signUp);
-        JFXButton updateBusinessHoursButton = new JFXButton("Update Business Hours", signUp);
+        JFXButton updateBusinessHoursButton = new JFXButton("Update Hours", signUp);
         updateBusinessHoursButton.setOnAction(e->updateBusinessHourAction());
-        JFXButton addBusinessHoursButton = new JFXButton("Add Business Hours", signUp);
+        JFXButton addBusinessHoursButton = new JFXButton("Add Hours", signUp);
         addBusinessHoursButton.setOnAction(e->addBusinessHourAction());
-        JFXButton deleteBusinessHoursButton = new JFXButton("Delete Business Hours", signUp);
+        JFXButton deleteBusinessHoursButton = new JFXButton("Delete Hours", signUp);
         deleteBusinessHoursButton.setOnAction(e->deleteBusinessHourAction());
 
 
@@ -1039,7 +1041,14 @@ public class FlexiBookPage extends Application {
           }
           FlexiBookController.login(textUserName.getText(),pf.getText());
          if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
-                mainScene.setRoot(addBuss);
+             if(j == 0){
+                 j++;
+                 mainScene.setRoot(addBuss);
+             }
+             else{
+                 mainScene.setRoot(ownerMainScreenBorderPane);
+
+             }
             }
             else{
                 mainScene.setRoot(customerScreenBorderPane);
@@ -1071,6 +1080,12 @@ public class FlexiBookPage extends Application {
             delBH.getItems().add(a.getDay() + " " + a.getStartTime().toString() + " " + a.getEndTime().toString());
         }
 
+    }
+    private void refreshBusCust(){
+        curBussName2.setText("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail2.setText("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd2.setText("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN2.setText("Phone: " + FlexiBookController.showBI().getPhoneNumber());
     }
 
     private void refreshData(){
@@ -1334,6 +1349,7 @@ public class FlexiBookPage extends Application {
     }
 
     private void switchToBusinessCust(){
+        refreshBusCust();
         mainScene.setRoot(changeBussCust);
 
     }
