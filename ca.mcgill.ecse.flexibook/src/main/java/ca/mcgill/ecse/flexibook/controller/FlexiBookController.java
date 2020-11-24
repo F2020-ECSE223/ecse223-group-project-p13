@@ -2090,7 +2090,9 @@ public class FlexiBookController {
 		Service s = new Service("cut", f,18,0,0);
 		Service s2 = new Service("wash", f,18,0,0);
 		Customer c = new Customer("jawnie","boul",f);
-		Owner o = new Owner("owner","bro",f);
+		Owner o = new Owner("owner","bo",f);
+		//f.setOwner(o);
+		BusinessHour h = new BusinessHour(BusinessHour.DayOfWeek.Monday, Time.valueOf("09:00:00"),Time.valueOf("13:00:00"),f);
 		Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
 		Appointment a2 =new Appointment(c,s2,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
 		//Service s  = (Service) f.getBookableService(0);

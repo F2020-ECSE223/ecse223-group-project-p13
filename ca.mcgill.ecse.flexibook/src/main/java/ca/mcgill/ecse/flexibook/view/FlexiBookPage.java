@@ -109,14 +109,14 @@ public class FlexiBookPage extends Application {
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
-    GridPane gridP;
+
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
     int j = 0;
     String apptStartTime;
     String apptStartDate;
     String apptStartService;
-    private HBox addBuss;
+
 
     JFXButton cancelAppt = new JFXButton("Cancel Appointment");
     JFXButton updateAppt = new JFXButton("Update Appointment");
@@ -146,7 +146,7 @@ public class FlexiBookPage extends Application {
         chooseAppointment.initModality(Modality.APPLICATION_MODAL);
 
         changeAppointment.initOwner(mainStage);
-        //FlexiBookController.testAppointment();
+        FlexiBookController.testAppointment();
         mainStage.setTitle("FlexiBook Application");
         renderDate = LocalDate.now();
         initComponents();
@@ -573,11 +573,14 @@ public class FlexiBookPage extends Application {
 
             } catch (InvalidInputException e) {
                 appointmentError.setText(e.getMessage());
+                appointmentError.setVisible(true);
+                appointmentError.setStyle("-fx-background-color: #ffcccb");
+
             }
         });
         makeApptButton.setAlignment(Pos.CENTER);
 
-        datePickBox.getChildren().addAll(appointmentDatePicker, makeTimePicker, choosingServices, makeApptButton);
+        datePickBox.getChildren().addAll(appointmentDatePicker, makeTimePicker, choosingServices, makeApptButton,appointmentError);
 
         datePickBox.setAlignment(Pos.CENTER);
 
@@ -708,7 +711,7 @@ public class FlexiBookPage extends Application {
         GridPane gridP = new GridPane();
         gridP.setHgap(100);
         gridP.setVgap(100);
-         loginError= new Label("");
+        loginError= new Label("");
         loginError.getStyleClass().add("error-text");
         loginError.setVisible(true);
         Label lblUserName = new Label("Username");
@@ -928,7 +931,7 @@ public class FlexiBookPage extends Application {
         mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         ownerMainScreenBorderPane.requestFocus();
 
-        mainScene.setRoot(ownerMainScreenBorderPane);
+        mainScene.setRoot(change2);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         customerScreenBorderPane.requestFocus();
     }
