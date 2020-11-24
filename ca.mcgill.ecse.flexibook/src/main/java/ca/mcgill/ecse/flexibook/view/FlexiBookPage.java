@@ -63,11 +63,16 @@ public class FlexiBookPage extends Application {
     JFXTextField updateBusEmail;
     JFXTextField updateBusAdd;
     JFXTextField updateBusPhone;
+    JFXTextField updateBusName2;
+    JFXTextField updateBusEmail2;
+    JFXTextField updateBusAdd2;
+    JFXTextField updateBusPhone2;
     JFXComboBox<String> addDay;
     JFXComboBox<String> delBH;
     JFXTextField startTime;
     JFXTextField endTime;
     Label businessError;
+    Label businessError2;
     Label curBussName;
     Label curBussEmail;
     Label curBussAdd;
@@ -99,10 +104,12 @@ public class FlexiBookPage extends Application {
     private Label serviceError;
     private HBox changeAcc;
     private HBox changeBuss;
+    private HBox addBuss;
     private HBox changeBussCust;
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
+    GridPane gridP;
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
     int j = 0;
@@ -156,10 +163,11 @@ public class FlexiBookPage extends Application {
         top.getChildren().add(welcome);
         welcome.getStyleClass().add("user-text");
 
-        ImageView imageView = null;
-        try {
-            imageView = new ImageView("/img/" + username + ".png");
-        } catch (IllegalArgumentException e) {
+        /*ImageView imageView = null;
+        try{
+            imageView = new ImageView("/img/" +username+".png");
+        }
+        catch (IllegalArgumentException e){
             imageView = new ImageView("/img/default.png");
         }
         imageView.setPreserveRatio(true);
@@ -168,7 +176,11 @@ public class FlexiBookPage extends Application {
         imageView.setClip(clip);
         top.getChildren().add(imageView);
         top.setPadding(new Insets(10, 20, 0, 0));
+
+
         top.getChildren().add(imageView);
+
+         */
         top.setPadding(new Insets(10,20,0,0));
 
         HBox bottom = new HBox();
@@ -219,10 +231,10 @@ public class FlexiBookPage extends Application {
         logoutButton1.getStyleClass().add("main-menu-button");
         logoutButton1.setOnAction(e->logout());
         bottom.getChildren().add(logoutButton1);
-
+        
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
-        appointmentButton.setOnAction(e -> switchToOwnerAppointment());
+        appointmentButton.setOnAction(e-> switchToOwnerAppointment());
         appointmentButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(appointmentButton);
 
@@ -232,25 +244,26 @@ public class FlexiBookPage extends Application {
         loginButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(loginButton);*/
 
-        JFXButton accountButton = new JFXButton("Account", accountIcon);
+        JFXButton accountButton = new JFXButton("Account",accountIcon);
         accountButton.setContentDisplay(ContentDisplay.TOP);
-        accountButton.setOnAction(e -> switchToAccount());
+        accountButton.setOnAction(e->switchToAccount());
         accountButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(accountButton);
 
-        JFXButton businessButton = new JFXButton("Business", businessIcon);
+        JFXButton businessButton = new JFXButton("Business",businessIcon);
         businessButton.setContentDisplay(ContentDisplay.TOP);
-        businessButton.setOnAction(e -> switchToBusiness());
+        businessButton.setOnAction(e->switchToBusiness());
         businessButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(businessButton);
 
-        JFXButton serviceButton = new JFXButton("Service", serviceIcon);
+        JFXButton serviceButton = new JFXButton("Service",serviceIcon);
         serviceButton.setContentDisplay(ContentDisplay.TOP);
-        serviceButton.setOnAction(e -> switchToServices());
+        serviceButton.setOnAction(e->switchToServices());
         serviceButton.getStyleClass().add("main-menu-button");
         buttons.getChildren().add(serviceButton);
 
         center.getChildren().add(buttons);
+
 
 
         //Customer Home Page
@@ -270,13 +283,13 @@ public class FlexiBookPage extends Application {
         view1.setPreserveRatio(true);
         view1.setFitHeight(200);
         center1.getChildren().add(view1);
-
+        
         JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
         logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
         logoutButton.getStyleClass().add("main-menu-button");
         logoutButton.setOnAction(e->logout());
-
-
+  
+        
         HBox bottom1 = new HBox();
         customerScreenBorderPane.setBottom(bottom1);
         bottom1.setAlignment(Pos.BASELINE_RIGHT);
@@ -295,21 +308,21 @@ public class FlexiBookPage extends Application {
         businessIcon1.getStyleClass().add("icon-main-menu");
 
 
-        JFXButton appointmentButton1 = new JFXButton("Appointments", appointmentIcon1);
+        JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
         appointmentButton1.setContentDisplay(ContentDisplay.TOP);
-        appointmentButton1.setOnAction(e -> switchToCustomerAppointment());
+        appointmentButton1.setOnAction(e->switchToCustomerAppointment());
         appointmentButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(appointmentButton1);
 
-        JFXButton accountButton1 = new JFXButton("Account", accountIcon1);
+        JFXButton accountButton1 = new JFXButton("Account",accountIcon1);
         accountButton1.setContentDisplay(ContentDisplay.TOP);
-        accountButton1.setOnAction(e -> switchToAccount());
+        accountButton1.setOnAction(e->switchToAccount());
         accountButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(accountButton1);
 
         JFXButton businessButton1 = new JFXButton("Business", businessIcon1);
         businessButton1.setContentDisplay(ContentDisplay.TOP);
-        businessButton1.setOnAction(e -> switchToBusinessCust());
+        businessButton1.setOnAction(e->switchToBusinessCust());
         businessButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(businessButton1);
 
@@ -319,7 +332,7 @@ public class FlexiBookPage extends Application {
 
         //Appointment Calendar
         ownerAppointmentCalendar = new HBox();
-        ownerAppointmentCalendar.getChildren().add(setCalendar(listDays, true));
+        ownerAppointmentCalendar.getChildren().add(setCalendar(listDays,true));
         ownerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
 
         VBox appointments = new VBox(20);
@@ -341,13 +354,13 @@ public class FlexiBookPage extends Application {
         column3.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
 
         column3.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        dailyAppointmentTable.getColumns().addAll(column1, column2, column3);
+        dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
         selectionModel = dailyAppointmentTable.getSelectionModel();
 
         dailyAppointmentTable.setPlaceholder(new Label("No Appointments Today"));
         appointments.getChildren().add(dailyAppointmentTable);
         dailyAppointmentTable.getStyleClass().add("daily-appointment-table");
-        dailyAppointmentTable.setPadding(new Insets(20, 20, 20, 20));
+        dailyAppointmentTable.setPadding(new Insets(20,20,20,20));
 
         AnchorPane individualAppointment = new AnchorPane();
         appointments.getChildren().add(individualAppointment);
@@ -358,13 +371,13 @@ public class FlexiBookPage extends Application {
         AnchorPane appointmentButtons = new AnchorPane();
 
         appointmentButtons.prefHeightProperty().bind(dailyAppointmentTable.prefHeightProperty());
-        AnchorPane.setTopAnchor(appointmentButtons, 2.0);
-        AnchorPane.setRightAnchor(appointmentButtons, 2.0);
+        AnchorPane.setTopAnchor(appointmentButtons,2.0);
+        AnchorPane.setRightAnchor(appointmentButtons,2.0);
 
         Label appointmentTitle = new Label("Appointment Info");
         appointmentTitle.getStyleClass().add("user-text");
-        AnchorPane.setLeftAnchor(individualAppointment, 2.0);
-        AnchorPane.setTopAnchor(individualAppointment, 2.0);
+        AnchorPane.setLeftAnchor(individualAppointment,2.0);
+        AnchorPane.setTopAnchor(individualAppointment,2.0);
         appointmentInformation.getChildren().add(appointmentTitle);
 
         appointmentInformation.getChildren().add(appointmentDetails);
@@ -380,7 +393,7 @@ public class FlexiBookPage extends Application {
         FontIcon endAppointmentIcon = new FontIcon("ri-stop-sign");
         endAppointmentIcon.getStyleClass().add("icon-start-buttons");
 
-        JFXButton startAppointment = new JFXButton("Start Appointment", startAppointmentIcon);
+        JFXButton startAppointment = new JFXButton("Start Appointment",startAppointmentIcon);
         startAppointment.setContentDisplay(ContentDisplay.TOP);
         startAppointment.getStyleClass().add("appointment-start-buttons");
         startAppointment.setOnAction(this::startAppointmentEvent);
@@ -388,7 +401,7 @@ public class FlexiBookPage extends Application {
         startAppointment.getStyleClass().add("appointment-start-buttons");
         appointmentButtons.getChildren().add(startAppointment);
 
-        JFXButton endAppointment = new JFXButton("End Appointment", endAppointmentIcon);
+        JFXButton endAppointment  = new JFXButton("End Appointment",endAppointmentIcon);
         endAppointment.setContentDisplay(ContentDisplay.TOP);
         endAppointment.getStyleClass().add("appointment-start-buttons");
         endAppointment.setOnAction(this::endAppointmentEvent);
@@ -400,7 +413,7 @@ public class FlexiBookPage extends Application {
         registerNoShowIcon.getStyleClass().add("icon-start-buttons");
         //registerNoShowIcon.setStyle("-fx-pref-width: 150px;");
 
-        JFXButton registerNoShow = new JFXButton("Register No Show", registerNoShowIcon);
+        JFXButton registerNoShow = new JFXButton("Register No Show",registerNoShowIcon);
         registerNoShow.setContentDisplay(ContentDisplay.TOP);
         registerNoShow.setOnAction(this::registerNoShowEvent);
         registerNoShow.setDisable(true);
@@ -409,7 +422,7 @@ public class FlexiBookPage extends Application {
 
         FontIcon homeButtonIcon = new FontIcon("dashicons-admin-home");
         homeButtonIcon.getStyleClass().add("icon-calendar");
-        JFXButton homeButton = new JFXButton("", homeButtonIcon);
+        JFXButton homeButton = new JFXButton("",homeButtonIcon);
         homeButton.setContentDisplay(ContentDisplay.TOP);
         homeButton.setOnAction(event -> {
             mainScene.setRoot(ownerMainScreenBorderPane);
@@ -421,20 +434,20 @@ public class FlexiBookPage extends Application {
         errorMessageAppointmentCalendar.getStyleClass().add("owner-error-message");
         errorMessageAppointmentCalendar.setVisible(true);
         individualAppointment.getChildren().add(errorMessageAppointmentCalendar);
-        AnchorPane.setBottomAnchor(errorMessageAppointmentCalendar, 2.0);
-        AnchorPane.setLeftAnchor(errorMessageAppointmentCalendar, 2.0);
+        AnchorPane.setBottomAnchor(errorMessageAppointmentCalendar,2.0);
+        AnchorPane.setLeftAnchor(errorMessageAppointmentCalendar,2.0);
 
 
-        AnchorPane.setTopAnchor(startAppointment, 5.0);
-        AnchorPane.setTopAnchor(endAppointment, 100.0);
-        AnchorPane.setTopAnchor(registerNoShow, 195.0);
-        AnchorPane.setBottomAnchor(homeButton, 0.0);
-        AnchorPane.setRightAnchor(homeButton, 0.0);
+        AnchorPane.setTopAnchor(startAppointment,5.0);
+        AnchorPane.setTopAnchor(endAppointment,100.0);
+        AnchorPane.setTopAnchor(registerNoShow,195.0);
+        AnchorPane.setBottomAnchor(homeButton,0.0);
+        AnchorPane.setRightAnchor(homeButton,0.0);
 
 
         ObservableList<DayEvent> observableList = selectionModel.getSelectedItems();
         observableList.addListener((ListChangeListener<DayEvent>) c -> {
-            while (c.next()) {
+            while(c.next()) {
                 if (!c.wasPermutated()) {
                     for (DayEvent removeitem : c.getRemoved()) {
                         appointmentInformation.setVisible(false);
@@ -444,12 +457,12 @@ public class FlexiBookPage extends Application {
                         currentAppointment = null;
                     }
                     for (DayEvent additem : c.getAddedSubList()) {
-                        if (additem.getAppointment().getDescription().equals("appointment")) {
+                        if(additem.getAppointment().getDescription().equals("appointment")){
                             currentAppointment = additem.getAppointment();
-                            ((Label) appointmentDetails.getChildren().get(1)).setText(additem.getAppointment().getUsername());
-                            ((Label) appointmentDetails.getChildren().get(3)).setText(additem.getStartTime());
-                            ((Label) appointmentDetails.getChildren().get(5)).setText(additem.getEndTime());
-                            ((Label) appointmentDetails.getChildren().get(7)).setText(additem.getAppointment().getMainService());
+                            ((Label)appointmentDetails.getChildren().get(1)).setText(additem.getAppointment().getUsername());
+                            ((Label)appointmentDetails.getChildren().get(3)).setText(additem.getStartTime());
+                            ((Label)appointmentDetails.getChildren().get(5)).setText(additem.getEndTime());
+                            ((Label)appointmentDetails.getChildren().get(7)).setText(additem.getAppointment().getMainService());
                             registerNoShow.setDisable(false);
                             startAppointment.setDisable(false);
                             endAppointment.setDisable(false);
@@ -460,31 +473,32 @@ public class FlexiBookPage extends Application {
             }
             c.reset();
         });
-        for (int i = 0; i < 10; i++) {
+        for(int i = 0; i< 10;i++){
             Label l = new Label("");
             appointmentDetails.getChildren().add(l);
             l.getStyleClass().add("user-text");
         }
-        ((Label) appointmentDetails.getChildren().get(0)).setText("Username: ");
-        ((Label) appointmentDetails.getChildren().get(2)).setText("Start Time: ");
-        ((Label) appointmentDetails.getChildren().get(4)).setText("End Time: ");
-        ((Label) appointmentDetails.getChildren().get(6)).setText("Main Service: ");
-        ((Label) appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
+        ((Label)appointmentDetails.getChildren().get(0)).setText("Username: ");
+        ((Label)appointmentDetails.getChildren().get(2)).setText("Start Time: ");
+        ((Label)appointmentDetails.getChildren().get(4)).setText("End Time: ");
+        ((Label)appointmentDetails.getChildren().get(6)).setText("Main Service: ");
+        //((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
+
 
 
         customerAppointmentCalendar = new HBox();
-        customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays, false));
+        customerAppointmentCalendar.getChildren().add(setCalendar(dbvDays,false));
         customerAppointmentCalendar.setStyle("-fx-background-color: #B0DDE4;");
 
 
         //Make appointment stuff
         HBox choosingServices = new HBox(10);
         choosingServices.setAlignment(Pos.CENTER);
-
         //service
         JFXComboBox<Label> services = new JFXComboBox<Label>();
 
-        for (TOService s : FlexiBookController.getServices()) {
+
+        for(TOService s: FlexiBookController.getServices()) {
             services.getItems().add(new Label(s.getName()));
         }
         services.setPromptText("Choose Service");
@@ -494,21 +508,25 @@ public class FlexiBookPage extends Application {
         optionalServiceChooser.getItems().add(new Label("wash"));
         optionalServiceChooser.setPromptText("Choose Optional Service");
 
-
-        services.setOnAction(event -> {
-            String selectedService = services.getSelectionModel().getSelectedItem().getText();
-            for (TOService s : FlexiBookController.getServices()) {
-                if (selectedService.equals(s.getName())) {
-                    optionalServiceChooser.setDisable(true);
-                } else {
-                    optionalServiceChooser.setDisable(false);
+        /*
+        services.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                for(TOService s: FlexiBookController.getServices()) {
+                    services.getItems().add(new Label(s.getName()));
+                    if (!String.valueOf(services.getValue()).equals(s.getName())) {
+                        optionalServiceChooser.setOpacity(0.2);
+                        optionalServiceChooser.setPromptText("No optional services available");
+                        optionalServiceChooser.getItems().clear();
+                    }
                 }
             }
 
         });
 
+         */
 
-        choosingServices.getChildren().addAll(services, optionalServiceChooser);
+        choosingServices.getChildren().addAll(services,optionalServiceChooser);
 
         // make appt button and date picker
         VBox datePickBox = new VBox(40);
@@ -543,7 +561,6 @@ public class FlexiBookPage extends Application {
         makeApptButton.setButtonType(JFXButton.ButtonType.RAISED);
         makeApptButton.setOpacity(0.8);
         makeApptButton.setTextFill(Paint.valueOf("#286fb4"));
-
 
         makeApptButton.setOnAction(event -> {
             try {
@@ -965,8 +982,12 @@ public class FlexiBookPage extends Application {
             String newUsername = updateUsername.getText();
             String newPassword = updatePassword.getText();
             FlexiBookController.updateAccount(username, newUsername, newPassword);
-            System.out.println(username + "," + newUsername + "," + newPassword);
-        } catch (Exception e) {
+            errorMsg = new Label("Account Succesfully updated");
+            errorMsg.setTextFill(Color.BLACK);
+            pane.add(errorMsg, 1, 4);
+            System.out.println(username + "," + newUsername  + "," + newPassword);
+        }
+        catch(Exception e){
             e.getMessage();
             errorMsg = new Label(e.getMessage());
             errorMsg.setTextFill(Color.RED);
