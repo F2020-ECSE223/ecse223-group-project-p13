@@ -82,8 +82,8 @@ public class FlexiBookPage extends Application {
     Label curBussEmail2;
     Label curBussAdd2;
     Label curBussPN2;
-    TextField textUserName1;
-    PasswordField pf1;
+    JFXTextField textUserName1;
+    JFXPasswordField pf1;
     Label loginError;
     private GridPane gridP2;
     private GridPane pane;
@@ -768,9 +768,9 @@ public class FlexiBookPage extends Application {
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
-        textUserName1 = new TextField();
+        textUserName1 = new JFXTextField();
         Label lblPassword1 = new Label("Enter a Password");
-        pf1 = new PasswordField();
+        pf1 = new JFXPasswordField();
         JFXButton btonLogin1 = new JFXButton("SignUp", signUp);
         btonLogin1.setOnAction(e -> signUp());
 
