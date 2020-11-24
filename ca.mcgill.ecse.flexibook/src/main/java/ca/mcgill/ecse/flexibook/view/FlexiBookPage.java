@@ -1074,8 +1074,7 @@ defines logout action for both customers and owners
           }
           FlexiBookController.login(textUserName.getText(),pf.getText());
          if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
-             if(j == 0){
-                 j++;
+             if(FlexiBookApplication.getFlexiBook().getBusiness() == null){
                  mainScene.setRoot(addBuss);
              }
              else{
@@ -1083,9 +1082,9 @@ defines logout action for both customers and owners
 
              }
             }
-            else{
-                mainScene.setRoot(customerScreenBorderPane);
-            }
+          else{
+              mainScene.setRoot(customerScreenBorderPane);
+          }
         }
         catch(InvalidInputException e){
           loginError.setText(e.getMessage());
