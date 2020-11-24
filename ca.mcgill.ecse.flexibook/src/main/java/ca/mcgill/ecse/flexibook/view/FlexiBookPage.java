@@ -1340,6 +1340,7 @@ defines logout action for both customers and owners
                         calendarEntry.setOnAction(event -> {
                             //CHOOSE APPT
 
+                            appointmentError.setText("");
                             removeAdd.setPromptText("Change Service");
                             removeAdd.getSelectionModel().clearSelection();
 
