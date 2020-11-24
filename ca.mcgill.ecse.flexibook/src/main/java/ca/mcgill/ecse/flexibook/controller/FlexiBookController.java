@@ -228,7 +228,7 @@ public class FlexiBookController {
 
 				}
 				
-				if(user.getUsername()!=FlexiBookApplication.getUser().getUsername()) {
+				if(newUsername!=FlexiBookApplication.getUser().getUsername()) {
 					for (User customer : flexiBook.getCustomers()) {
 						if (customer.getUsername().equals(newUsername)) {
 							throw new InvalidInputException("Username not available");
