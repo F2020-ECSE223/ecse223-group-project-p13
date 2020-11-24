@@ -1642,7 +1642,7 @@ defines logout action for both customers and owners
         spacing.getStyleClass().add("service-text");
         serviceError = new Label("");
         serviceError.getStyleClass().add("error-text");
-        Button viewServices = new Button("View Available Services");
+        Button viewServices = new Button("View Services");
         viewServices.getStyleClass().add("service-button");
         viewServices.setOnAction(e -> switchToAvailableServices());
 
