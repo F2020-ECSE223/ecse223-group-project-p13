@@ -689,8 +689,8 @@ public class FlexiBookController {
 										int mainServiceTime = s.getMainService().getService().getDuration();
 										int optionalServiceTime = 0;
 										String[] services = optionalServices.split(",");
-										for (String string : services) {
-											optionalServiceTime += ((Service) BookableService.getWithName(string)).getDuration();
+										for(String string: services){
+											optionalServiceTime += ((Service)BookableService.getWithName(string)).getDuration();
 
 										}
 										for (ComboItem c : ((ServiceCombo) a.getBookableService()).getServices()) {
@@ -1992,6 +1992,9 @@ public class FlexiBookController {
 				if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(timeSlot.getDate())){
 					appt.setIsDayOf(true);
 				}
+				else{
+					throw new InvalidInputException("Cannot Start Appointment on a different day");
+				}
 				appt.toggleStart();
 				FlexiBookPersistence.save(flexiBook);
 			}
@@ -2054,7 +2057,12 @@ public class FlexiBookController {
 					}
 				}
 				if(apt != null){
-
+					if(Date.valueOf(SystemTime.getDate().toLocalDate()).equals(item.getDate())){
+						apt.setIsDayOf(true);
+					}
+					else{
+						throw new InvalidInputException("Cannot register a no show for an Appointment on a different day");
+					}
 					apt.updateNoShow(apt.getCustomer());
 					FlexiBookPersistence.save(flexiBook);
 				}
@@ -2072,6 +2080,11 @@ public class FlexiBookController {
 		Owner o = new Owner("owner","bro",f);
 		Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
 		Appointment a2 =new Appointment(c,s2,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
+		//Service s  = (Service) f.getBookableService(0);
+		//Customer c = new Customer("jawnie","boul",f);
+		//Service s = new Service("cut",f,10,0,0);
+		//Appointment a =new Appointment(f.getCustomer(0),s,new TimeSlot(Date.valueOf(LocalDate.now().plusDays(1)),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now().plusDays(1)),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
+		//Appointment a2 =new Appointment(c2,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
 		FlexiBookPersistence.save(f);
 	}
 }
