@@ -109,7 +109,7 @@ public class FlexiBookPage extends Application {
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
-
+    JFXComboBox<Label> services = new JFXComboBox<Label>();
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
     int j = 0;
@@ -146,7 +146,7 @@ public class FlexiBookPage extends Application {
         chooseAppointment.initModality(Modality.APPLICATION_MODAL);
 
         changeAppointment.initOwner(mainStage);
-        FlexiBookController.testAppointment();
+        //FlexiBookController.testAppointment();
         mainStage.setTitle("FlexiBook Application");
         renderDate = LocalDate.now();
         initComponents();
@@ -309,8 +309,26 @@ public class FlexiBookPage extends Application {
 
 
         JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
+
+
+
         appointmentButton1.setContentDisplay(ContentDisplay.TOP);
-        appointmentButton1.setOnAction(e->switchToCustomerAppointment());
+
+        appointmentButton1.setOnAction(e->{
+
+            services.getItems().clear();
+            for(TOService s: FlexiBookController.getServices()) {
+                services.getItems().add(new Label(s.getName()));
+                serviceChooser.getItems().add(new Label(s.getName()));
+            }
+            serviceChooser.setPromptText("Choose Service");
+            services.setPromptText("Choose Service");
+
+
+            switchToCustomerAppointment();
+        });
+
+
         appointmentButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(appointmentButton1);
 
@@ -495,18 +513,24 @@ public class FlexiBookPage extends Application {
         HBox choosingServices = new HBox(10);
         choosingServices.setAlignment(Pos.CENTER);
         //service
-        JFXComboBox<Label> services = new JFXComboBox<Label>();
 
+/*
 
         for(TOService s: FlexiBookController.getServices()) {
             services.getItems().add(new Label(s.getName()));
         }
         services.setPromptText("Choose Service");
 
+ */
 
+
+
+/*
         JFXComboBox<Label> optionalServiceChooser = new JFXComboBox<Label>();
         optionalServiceChooser.getItems().add(new Label("wash"));
         optionalServiceChooser.setPromptText("Choose Optional Service");
+
+ */
 
         /*
         services.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
@@ -526,7 +550,7 @@ public class FlexiBookPage extends Application {
 
          */
 
-        choosingServices.getChildren().addAll(services,optionalServiceChooser);
+        choosingServices.getChildren().addAll(services);
 
         // make appt button and date picker
         VBox datePickBox = new VBox(40);
@@ -565,6 +589,7 @@ public class FlexiBookPage extends Application {
         makeApptButton.setOnAction(event -> {
             try {
                 appointmentError.setText("");
+                String s = FlexiBookApplication.getUser().getUsername();
                 FlexiBookController.makeAppointment(FlexiBookApplication.getUser().getUsername(), String.valueOf(appointmentDatePicker.getValue()),
                         String.valueOf(makeTimePicker.getValue()), String.valueOf(services.getSelectionModel().getSelectedItem().getText()),
                        null);
@@ -601,11 +626,15 @@ public class FlexiBookPage extends Application {
         rightPane.setPrefHeight(300);
         rightPane.getChildren().add(home);
 
-
+/*
         serviceChooser.setPromptText("Choose Service");
         for(TOService s: FlexiBookController.getServices()){
             serviceChooser.getItems().add(new Label(s.getName()));
         }
+
+ */
+
+
 
         updateAppt.setOnAction(event -> {
             try {
@@ -1051,7 +1080,7 @@ defines logout action for both customers and owners
           FlexiBookController.login(textUserName.getText(),pf.getText());
          if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
              if(FlexiBookApplication.getFlexiBook().getBusiness() == null){
-                 mainScene.setRoot(addBuss);
+                 mainScene.setRoot(ownerMainScreenBorderPane);
              }
              else{
                  mainScene.setRoot(ownerMainScreenBorderPane);
