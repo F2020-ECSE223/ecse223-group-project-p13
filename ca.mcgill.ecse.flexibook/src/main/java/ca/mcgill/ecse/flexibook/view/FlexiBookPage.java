@@ -729,6 +729,8 @@ public class FlexiBookPage extends Application {
         gridP.add(pf, 1, 1);
         gridP.add(btonLogin, 1, 2);
         gridP.add(lblMessage, 1, 2);
+        errorMsg = new Label("");
+        gridP.add(errorMsg,1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
         GridPane gridP2 = new GridPane();
@@ -751,6 +753,8 @@ public class FlexiBookPage extends Application {
         gridP2.add(pf1, 1, 1);
         gridP2.add(btonLogin1, 1, 2);
         gridP2.add(lblMessage1, 1, 2);
+        errorMsg = new Label("");
+        gridP2.add(errorMsg,1,4);
         gridP2.setAlignment(Pos.CENTER_RIGHT);
 
         change2.getChildren().add(gridP);
@@ -787,6 +791,8 @@ public class FlexiBookPage extends Application {
         pane.add(updateButton, 1, 2);
         pane.add(deleteAcc, 2, 2);
         pane.add(backPage, 3, 0);
+        errorMsg = new Label("");
+        pane.add(errorMsg,1,4);
         pane.setAlignment(Pos.CENTER_LEFT);
 
         changeAcc.getChildren().add(pane);
