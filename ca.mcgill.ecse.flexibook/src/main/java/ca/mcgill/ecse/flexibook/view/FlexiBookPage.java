@@ -87,7 +87,7 @@ public class FlexiBookPage extends Application {
     private GridPane gridP2;
     private GridPane pane;
     private Label errorMsg;
-    private GripPane gridP;
+    private GridPane gridP;
     VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
@@ -109,7 +109,6 @@ public class FlexiBookPage extends Application {
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
-    GridPane gridP;
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
     int j = 0;
