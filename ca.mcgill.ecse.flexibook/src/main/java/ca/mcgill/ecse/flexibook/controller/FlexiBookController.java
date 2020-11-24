@@ -218,6 +218,7 @@ public class FlexiBookController {
 					if(oldUsername.equals(owner.getUsername())) {
 						if(oldUsername.equals(newUsername)) {
 							owner.setPassword(newPassword);
+							FlexiBookPersistence.save(flexiBook);
 							return;
 						}
 						else {
