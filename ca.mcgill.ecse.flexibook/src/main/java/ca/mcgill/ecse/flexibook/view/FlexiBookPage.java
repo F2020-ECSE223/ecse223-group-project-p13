@@ -594,14 +594,15 @@ public class FlexiBookPage extends Application {
             } catch (InvalidInputException e) {
                 appointmentError.setText(e.getMessage());
                 appointmentError.setVisible(true);
+                datePickBox.getChildren().add(appointmentError);
                 appointmentError.setStyle("-fx-background-color: #ffcccb");
 
             }
         });
         makeApptButton.setAlignment(Pos.CENTER);
 
-        datePickBox.getChildren().addAll(appointmentDatePicker, makeTimePicker, choosingServices, makeApptButton,appointmentError);
-
+        datePickBox.getChildren().addAll(appointmentDatePicker, makeTimePicker, choosingServices, makeApptButton, appointmentError);
+        appointmentError.setStyle("-fx-background-color: #ffcccb");
         datePickBox.setAlignment(Pos.CENTER);
 
 
