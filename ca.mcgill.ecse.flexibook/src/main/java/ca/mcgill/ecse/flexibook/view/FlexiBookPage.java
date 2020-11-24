@@ -81,8 +81,13 @@ public class FlexiBookPage extends Application {
     Label curBussEmail2;
     Label curBussAdd2;
     Label curBussPN2;
+    Label loginError;
     JFXTextField textUserName1;
     JFXPasswordField pf1;
+    private GridPane gridP2;
+    private GridPane pane;
+    private Label errorMsg;
+    private GripPane gridP;
     VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
@@ -107,7 +112,7 @@ public class FlexiBookPage extends Application {
     GridPane gridP;
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
-
+    int j = 0;
 
 
 
@@ -188,11 +193,12 @@ public class FlexiBookPage extends Application {
         JFXButton backPage2 = new JFXButton("Back", back);
         JFXButton backPage3 = new JFXButton("Back", back);
 
-        JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
-        logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
-        logoutButton.getStyleClass().add("main-menu-button");
-        logoutButton.setOnAction(e->logout());
-        bottom.getChildren().add(logoutButton);
+        JFXButton logoutButton1 = new JFXButton("LogOut", logoutIcon);
+        logoutButton1.setContentDisplay(ContentDisplay.BOTTOM);
+        logoutButton1.getStyleClass().add("main-menu-button");
+        logoutButton1.setOnAction(e->logout());
+        bottom.getChildren().add(logoutButton1);
+        
         JFXButton appointmentButton = new JFXButton("Appointments",appointmentIcon);
         appointmentButton.setContentDisplay(ContentDisplay.TOP);
         appointmentButton.setOnAction(e-> switchToOwnerAppointment());
@@ -244,7 +250,13 @@ public class FlexiBookPage extends Application {
         view1.setPreserveRatio(true);
         view1.setFitHeight(200);
         center1.getChildren().add(view1);
-
+        
+        JFXButton logoutButton = new JFXButton("LogOut", logoutIcon);
+        logoutButton.setContentDisplay(ContentDisplay.BOTTOM);
+        logoutButton.getStyleClass().add("main-menu-button");
+        logoutButton.setOnAction(e->logout());
+  
+        
         HBox bottom1 = new HBox();
         customerScreenBorderPane.setBottom(bottom1);
         bottom1.setAlignment(Pos.BASELINE_RIGHT);
@@ -256,9 +268,11 @@ public class FlexiBookPage extends Application {
 
         FontIcon appointmentIcon1 = new FontIcon("eli-calendar");
         FontIcon accountIcon1 = new FontIcon("dashicons-businessperson");
+        FontIcon businessIcon1 = new FontIcon("icm-briefcase");
 
         appointmentIcon1.getStyleClass().add("icon-main-menu");
         accountIcon1.getStyleClass().add("icon-main-menu");
+        businessIcon1.getStyleClass().add("icon-main-menu");
 
 
         JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
@@ -273,7 +287,7 @@ public class FlexiBookPage extends Application {
         accountButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(accountButton1);
 
-        JFXButton businessButton1 = new JFXButton("Business", businessIcon);
+        JFXButton businessButton1 = new JFXButton("Business", businessIcon1);
         businessButton1.setContentDisplay(ContentDisplay.TOP);
         businessButton1.setOnAction(e->switchToBusinessCust());
         businessButton1.getStyleClass().add("main-menu-button");
@@ -664,9 +678,12 @@ public class FlexiBookPage extends Application {
         change2= new HBox();
         change2.setPadding(new Insets(200,200,200,200));
         change2.setStyle("-fx-background-color: #B0DDE4");
-        GridPane gridP= new GridPane();
+        gridP= new GridPane();
         gridP.setHgap(100);
         gridP.setVgap(100);
+         loginError= new Label("");
+        loginError.getStyleClass().add("error-text");
+        loginError.setVisible(true);
         Label lblUserName = new Label("Username");
         textUserName= new JFXTextField();
         Label lblPassword= new Label("Password");
@@ -685,9 +702,10 @@ public class FlexiBookPage extends Application {
         gridP.add(pf,1,1);
         gridP.add(btonLogin, 1,2 );
         gridP.add(lblMessage,1,2);
+        gridP.add(loginError, 1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
-        GridPane gridP2= new GridPane();
+        gridP2= new GridPane();
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
@@ -716,7 +734,7 @@ public class FlexiBookPage extends Application {
         changeAcc = new HBox();
         changeAcc.setPadding(new Insets(100,100,100,100));
         changeAcc.setStyle("-fx-background-color: #B0DDE4;");
-        GridPane pane= new GridPane();
+        pane= new GridPane();
         pane.setHgap(100);
         pane.setVgap(100);
         JFXButton updateButton = new JFXButton("Update Account",signUp);
@@ -801,11 +819,11 @@ public class FlexiBookPage extends Application {
         JFXButton updateBusinessButton = new JFXButton("Update Business Info",signUp);
         updateBusinessButton.setOnAction(e->updateBusinessAction());
         JFXButton businessHoursButton = new JFXButton("Business Hours", signUp);
-        JFXButton updateBusinessHoursButton = new JFXButton("Update Business Hours", signUp);
+        JFXButton updateBusinessHoursButton = new JFXButton("Update Hours", signUp);
         updateBusinessHoursButton.setOnAction(e->updateBusinessHourAction());
-        JFXButton addBusinessHoursButton = new JFXButton("Add Business Hours", signUp);
+        JFXButton addBusinessHoursButton = new JFXButton("Add Hours", signUp);
         addBusinessHoursButton.setOnAction(e->addBusinessHourAction());
-        JFXButton deleteBusinessHoursButton = new JFXButton("Delete Business Hours", signUp);
+        JFXButton deleteBusinessHoursButton = new JFXButton("Delete Hours", signUp);
         deleteBusinessHoursButton.setOnAction(e->deleteBusinessHourAction());
 
 
@@ -942,15 +960,27 @@ public class FlexiBookPage extends Application {
         customerScreenBorderPane.requestFocus();
     }
 
+    
+    /**
+     * @author cesar
+     * goes to the main menu
+     */
     private void back() {
     	if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
     		mainScene.setRoot(ownerMainScreenBorderPane);
+    		pane.getChildren().remove(errorMsg);
     	}
     	else {
     		mainScene.setRoot(customerScreenBorderPane);
+    		pane.getChildren().remove(errorMsg);
     	}
     }
-
+    
+    /**
+     * @author cesar
+     * Creates the account 
+     * If the account cannot be created a message pops up showing what the problem is
+     */
     private void signUp() {
 
      	try{
@@ -964,10 +994,20 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            gridP2.add(errorMsg,1,4);
+            textUserName1.setText("");
+            pf1.setText("");
         }
 
     }
-
+    
+    /**
+     * @author cesar
+     * Updates the account
+     * if the account cannot be updated a message pops up showing why
+     */
     private void updateAcc() {
 
         try{
@@ -979,24 +1019,19 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            pane.add(errorMsg,1,4);
+
         }
 
     }
-
-   /* private void updateBusiness() {
-        try{
-            String newName = updateBusName.getText();
-            String newEmail = updateBusEmail.getText();
-            String newAddress = updateBusAdd.getText();
-            String newPhone = updateBusPhone.getText();
-            FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
-            //System.out.println(newName);
-        }
-        catch(Exception e){
-            e.getMessage();
-        }
-    }*/
-
+    
+    /**
+     * @author cesar
+     * delete the account
+     * If the account cannot be deleted a messages pops up showing why
+     */
     private void deleteAcc(){
 
         try{
@@ -1007,13 +1042,20 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            pane.add(errorMsg,1,4);
         }
 
     }
-
+/**
+@author Victoria Sanchez
+defines logout action for both customers and owners
+*/
     private void logout() {
         try{
             FlexiBookController.logout();
+             loginError.setText("");
             mainScene.setRoot(change2);
         }
         catch(Exception e){
@@ -1027,19 +1069,20 @@ public class FlexiBookPage extends Application {
           }
           FlexiBookController.login(textUserName.getText(),pf.getText());
          if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
-                mainScene.setRoot(addBuss);
+             if(FlexiBookApplication.getFlexiBook().getBusiness() == null){
+                 mainScene.setRoot(addBuss);
+             }
+             else{
+                 mainScene.setRoot(ownerMainScreenBorderPane);
+
+             }
             }
-            else{
-                mainScene.setRoot(customerScreenBorderPane);
-            }
+          else{
+              mainScene.setRoot(customerScreenBorderPane);
+          }
         }
         catch(InvalidInputException e){
-             e.getMessage();
-            Label error = new Label("invalid username/password");
-            error.setTextFill(Color.RED);
-            gridP.add(error,1,4);
-            textUserName.setText("");
-            pf.setText("");
+          loginError.setText(e.getMessage());
         }
     }
 
@@ -1059,6 +1102,12 @@ public class FlexiBookPage extends Application {
             delBH.getItems().add(a.getDay() + " " + a.getStartTime().toString() + " " + a.getEndTime().toString());
         }
 
+    }
+    private void refreshBusCust(){
+        curBussName2.setText("Name: " + FlexiBookController.showBI().getName());
+        curBussEmail2.setText("Email: " + FlexiBookController.showBI().getEmail());
+        curBussAdd2.setText("Address: " + FlexiBookController.showBI().getAddress());
+        curBussPN2.setText("Phone: " + FlexiBookController.showBI().getPhoneNumber());
     }
 
     private void refreshData(){
@@ -1322,6 +1371,7 @@ public class FlexiBookPage extends Application {
     }
 
     private void switchToBusinessCust(){
+        refreshBusCust();
         mainScene.setRoot(changeBussCust);
 
     }
