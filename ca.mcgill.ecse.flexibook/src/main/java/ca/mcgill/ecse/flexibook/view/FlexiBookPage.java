@@ -1015,6 +1015,9 @@ public class FlexiBookPage extends Application {
         	String newUsername = updateUsername.getText();
         	String newPassword = updatePassword.getText();
             FlexiBookController.updateAccount(username, newUsername, newPassword);
+            errorMsg = new Label("Account Succesfully updated");
+            errorMsg.setTextFill(Color.BLACK);
+            pane.add(errorMsg, 1, 4);
             System.out.println(username + "," + newUsername  + "," + newPassword);
         }
         catch(Exception e){
