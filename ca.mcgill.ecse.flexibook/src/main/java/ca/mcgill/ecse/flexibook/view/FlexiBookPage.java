@@ -9,8 +9,6 @@ import ca.mcgill.ecse.flexibook.controller.TOService;
 import ca.mcgill.ecse.flexibook.controller.TOBusinessHour;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -32,12 +30,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 
 //import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.xml.soap.Text;
-import java.sql.Date;
-import java.sql.Time;
-import java.text.CollationElementIterator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -139,7 +131,7 @@ public class FlexiBookPage extends Application {
         top.getChildren().add(welcome);
         welcome.getStyleClass().add("user-text");
 
-        ImageView imageView = null;
+        /*ImageView imageView = null;
         try{
             imageView = new ImageView("/img/" +username+".png");
         }
@@ -150,7 +142,7 @@ public class FlexiBookPage extends Application {
         imageView.setFitWidth(60.0);
         final Circle clip = new Circle(25, 25, 25);
         imageView.setClip(clip);
-        top.getChildren().add(imageView);
+        top.getChildren().add(imageView);*/
         top.setPadding(new Insets(10,20,0,0));
 
         HBox bottom = new HBox();
@@ -385,10 +377,13 @@ public class FlexiBookPage extends Application {
         homeButtonIcon.getStyleClass().add("icon-calendar");
         JFXButton homeButton = new JFXButton("",homeButtonIcon);
         homeButton.setContentDisplay(ContentDisplay.TOP);
-        homeButton.setOnAction(event -> mainScene.setRoot(ownerMainScreenBorderPane));
+        homeButton.setOnAction(event -> {
+            mainScene.setRoot(ownerMainScreenBorderPane);
+            ownerMainScreenBorderPane.requestFocus();
+        });
         appointmentButtons.getChildren().add(homeButton);
 
-        errorMessageAppointmentCalendar = new Label("GANG GANG GANG GANG");
+        errorMessageAppointmentCalendar = new Label();
         errorMessageAppointmentCalendar.getStyleClass().add("owner-error-message");
         errorMessageAppointmentCalendar.setVisible(true);
         individualAppointment.getChildren().add(errorMessageAppointmentCalendar);
@@ -440,7 +435,7 @@ public class FlexiBookPage extends Application {
         ((Label)appointmentDetails.getChildren().get(2)).setText("Start Time: ");
         ((Label)appointmentDetails.getChildren().get(4)).setText("End Time: ");
         ((Label)appointmentDetails.getChildren().get(6)).setText("Main Service: ");
-        ((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
+        //((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
 
 
 
@@ -942,7 +937,7 @@ public class FlexiBookPage extends Application {
         mainScene.getStylesheets().add(FlexiBookPage.class.getResource("/css/main.css").toExternalForm());
         ownerMainScreenBorderPane.requestFocus();
 
-        mainScene.setRoot(change2);
+        mainScene.setRoot(ownerMainScreenBorderPane);
         customerScreenBorderPane.setStyle("-fx-background-color: #B0DDE4;");
         customerScreenBorderPane.requestFocus();
     }
@@ -1297,7 +1292,7 @@ public class FlexiBookPage extends Application {
             FlexiBookController.endAppointment(currentAppointment);
             errorMessageAppointmentCalendar.setText("");
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
-            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)));
         }
 
         catch (InvalidInputException e){
@@ -1309,7 +1304,7 @@ public class FlexiBookPage extends Application {
         try{
             FlexiBookController.registerNoShow(currentAppointment);
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
-            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)));
             errorMessageAppointmentCalendar.setText("");
         }
         catch (InvalidInputException e){
@@ -1351,7 +1346,7 @@ public class FlexiBookPage extends Application {
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
             try{
-                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(date)));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)));
             }
             catch (InvalidInputException e){
                 error = e.getMessage();
@@ -1363,7 +1358,7 @@ public class FlexiBookPage extends Application {
         if(e.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
             try{
-                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(date)));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)));
             }
             catch (InvalidInputException errr){
                 error = errr.getMessage();
@@ -1402,7 +1397,7 @@ public class FlexiBookPage extends Application {
             c.setText(String.valueOf(calendarDate.getDayOfMonth()));
             c.getStyleClass().removeAll("calendar-appointment-present","not-in-month");
             try{
-                List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(generateLocalDate(calendarDate));
+                List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(localDateToString(calendarDate));
                 if(list1.size() >0){
                     c.setStyle("-fx-background-color: #03c04A80");
                 }
@@ -1462,7 +1457,7 @@ public class FlexiBookPage extends Application {
             updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
         }
     }
-    private String generateLocalDate(LocalDate date){
+    private String localDateToString(LocalDate date){
         String s = ""+ date.getYear() + "-";
         if(date.getMonthValue() <10){
             s+="0";
