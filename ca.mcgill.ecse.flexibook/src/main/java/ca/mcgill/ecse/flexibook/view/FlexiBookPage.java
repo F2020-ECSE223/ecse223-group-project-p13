@@ -9,8 +9,6 @@ import ca.mcgill.ecse.flexibook.controller.TOService;
 import ca.mcgill.ecse.flexibook.controller.TOBusinessHour;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -32,12 +30,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 
 //import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.xml.soap.Text;
-import java.sql.Date;
-import java.sql.Time;
-import java.text.CollationElementIterator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -89,8 +81,13 @@ public class FlexiBookPage extends Application {
     Label curBussEmail2;
     Label curBussAdd2;
     Label curBussPN2;
+    Label loginError;
     JFXTextField textUserName1;
     JFXPasswordField pf1;
+    private GridPane gridP2;
+    private GridPane pane;
+    private Label errorMsg;
+    private GridPane gridP;
     VBox makeAndCancelPopUp;
     private BorderPane mainScreenborderpane;
     HBox servicePage;
@@ -112,7 +109,7 @@ public class FlexiBookPage extends Application {
     TableView.TableViewSelectionModel<DayEvent> selectionModel;
     private TilePane appointmentDetails;
     TOAppointmentCalendarItem currentAppointment = null;
-    GridPane gridP;
+    //GridPane gridP;
     HBox availableServicesPage;
     Label errorMessageAppointmentCalendar;
     int j = 0;
@@ -139,7 +136,7 @@ public class FlexiBookPage extends Application {
         top.getChildren().add(welcome);
         welcome.getStyleClass().add("user-text");
 
-        ImageView imageView = null;
+        /*ImageView imageView = null;
         try{
             imageView = new ImageView("/img/" +username+".png");
         }
@@ -150,7 +147,7 @@ public class FlexiBookPage extends Application {
         imageView.setFitWidth(60.0);
         final Circle clip = new Circle(25, 25, 25);
         imageView.setClip(clip);
-        top.getChildren().add(imageView);
+        top.getChildren().add(imageView);*/
         top.setPadding(new Insets(10,20,0,0));
 
         HBox bottom = new HBox();
@@ -394,10 +391,13 @@ public class FlexiBookPage extends Application {
         homeButtonIcon.getStyleClass().add("icon-calendar");
         JFXButton homeButton = new JFXButton("",homeButtonIcon);
         homeButton.setContentDisplay(ContentDisplay.TOP);
-        homeButton.setOnAction(event -> mainScene.setRoot(ownerMainScreenBorderPane));
+        homeButton.setOnAction(event -> {
+            mainScene.setRoot(ownerMainScreenBorderPane);
+            ownerMainScreenBorderPane.requestFocus();
+        });
         appointmentButtons.getChildren().add(homeButton);
 
-        errorMessageAppointmentCalendar = new Label("GANG GANG GANG GANG");
+        errorMessageAppointmentCalendar = new Label();
         errorMessageAppointmentCalendar.getStyleClass().add("owner-error-message");
         errorMessageAppointmentCalendar.setVisible(true);
         individualAppointment.getChildren().add(errorMessageAppointmentCalendar);
@@ -449,7 +449,7 @@ public class FlexiBookPage extends Application {
         ((Label)appointmentDetails.getChildren().get(2)).setText("Start Time: ");
         ((Label)appointmentDetails.getChildren().get(4)).setText("End Time: ");
         ((Label)appointmentDetails.getChildren().get(6)).setText("Main Service: ");
-        ((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
+        //((Label)appointmentDetails.getChildren().get(8)).setText("Chosen Items: ");
 
 
 
@@ -678,9 +678,12 @@ public class FlexiBookPage extends Application {
         change2= new HBox();
         change2.setPadding(new Insets(200,200,200,200));
         change2.setStyle("-fx-background-color: #B0DDE4");
-        GridPane gridP= new GridPane();
+        gridP= new GridPane();
         gridP.setHgap(100);
         gridP.setVgap(100);
+         loginError= new Label("");
+        loginError.getStyleClass().add("error-text");
+        loginError.setVisible(true);
         Label lblUserName = new Label("Username");
         textUserName= new JFXTextField();
         Label lblPassword= new Label("Password");
@@ -699,9 +702,10 @@ public class FlexiBookPage extends Application {
         gridP.add(pf,1,1);
         gridP.add(btonLogin, 1,2 );
         gridP.add(lblMessage,1,2);
+        gridP.add(loginError, 1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
-        GridPane gridP2= new GridPane();
+        gridP2= new GridPane();
         gridP2.setVgap(100);
         gridP2.setHgap(100);
         Label lblUserName1 = new Label("Enter a Username");
@@ -730,7 +734,7 @@ public class FlexiBookPage extends Application {
         changeAcc = new HBox();
         changeAcc.setPadding(new Insets(100,100,100,100));
         changeAcc.setStyle("-fx-background-color: #B0DDE4;");
-        GridPane pane= new GridPane();
+        pane= new GridPane();
         pane.setHgap(100);
         pane.setVgap(100);
         JFXButton updateButton = new JFXButton("Update Account",signUp);
@@ -956,15 +960,27 @@ public class FlexiBookPage extends Application {
         customerScreenBorderPane.requestFocus();
     }
 
+    
+    /**
+     * @author cesar
+     * goes to the main menu
+     */
     private void back() {
     	if(FlexiBookApplication.getUser().getUsername().equals("owner")) {
     		mainScene.setRoot(ownerMainScreenBorderPane);
+    		pane.getChildren().remove(errorMsg);
     	}
     	else {
     		mainScene.setRoot(customerScreenBorderPane);
+    		pane.getChildren().remove(errorMsg);
     	}
     }
-
+    
+    /**
+     * @author cesar
+     * Creates the account 
+     * If the account cannot be created a message pops up showing what the problem is
+     */
     private void signUp() {
 
      	try{
@@ -978,10 +994,20 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            gridP2.add(errorMsg,1,4);
+            textUserName1.setText("");
+            pf1.setText("");
         }
 
     }
-
+    
+    /**
+     * @author cesar
+     * Updates the account
+     * if the account cannot be updated a message pops up showing why
+     */
     private void updateAcc() {
 
         try{
@@ -993,24 +1019,19 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            pane.add(errorMsg,1,4);
+
         }
 
     }
-
-   /* private void updateBusiness() {
-        try{
-            String newName = updateBusName.getText();
-            String newEmail = updateBusEmail.getText();
-            String newAddress = updateBusAdd.getText();
-            String newPhone = updateBusPhone.getText();
-            FlexiBookController.updateBusinessInfo(newName,newAddress, newPhone, newEmail,null,null,null,null,null,null,null,null,null,null,null,true,false,false,false,false,false,false,false,false,false);
-            //System.out.println(newName);
-        }
-        catch(Exception e){
-            e.getMessage();
-        }
-    }*/
-
+    
+    /**
+     * @author cesar
+     * delete the account
+     * If the account cannot be deleted a messages pops up showing why
+     */
     private void deleteAcc(){
 
         try{
@@ -1021,13 +1042,20 @@ public class FlexiBookPage extends Application {
         }
         catch(Exception e){
             e.getMessage();
+            errorMsg = new Label(e.getMessage());
+            errorMsg.setTextFill(Color.RED);
+            pane.add(errorMsg,1,4);
         }
 
     }
-
+/**
+@author Victoria Sanchez
+defines logout action for both customers and owners
+*/
     private void logout() {
         try{
             FlexiBookController.logout();
+             loginError.setText("");
             mainScene.setRoot(change2);
         }
         catch(Exception e){
@@ -1049,17 +1077,12 @@ public class FlexiBookPage extends Application {
 
              }
             }
-            else{
-                mainScene.setRoot(customerScreenBorderPane);
-            }
+          else{
+              mainScene.setRoot(customerScreenBorderPane);
+          }
         }
         catch(InvalidInputException e){
-             e.getMessage();
-            Label error = new Label("invalid username/password");
-            error.setTextFill(Color.RED);
-            gridP.add(error,1,4);
-            textUserName.setText("");
-            pf.setText("");
+          loginError.setText(e.getMessage());
         }
     }
 
@@ -1318,7 +1341,7 @@ public class FlexiBookPage extends Application {
             FlexiBookController.endAppointment(currentAppointment);
             errorMessageAppointmentCalendar.setText("");
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
-            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)));
         }
 
         catch (InvalidInputException e){
@@ -1330,7 +1353,7 @@ public class FlexiBookPage extends Application {
         try{
             FlexiBookController.registerNoShow(currentAppointment);
             updateDate(listDays,calendarYearOwner,calendarMonthOwner);
-            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(renderDate)));
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)));
             errorMessageAppointmentCalendar.setText("");
         }
         catch (InvalidInputException e){
@@ -1373,7 +1396,7 @@ public class FlexiBookPage extends Application {
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
             try{
-                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(date)));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)));
             }
             catch (InvalidInputException e){
                 error = e.getMessage();
@@ -1385,7 +1408,7 @@ public class FlexiBookPage extends Application {
         if(e.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
             try{
-                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(generateLocalDate(date)));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)));
             }
             catch (InvalidInputException errr){
                 error = errr.getMessage();
@@ -1424,7 +1447,7 @@ public class FlexiBookPage extends Application {
             c.setText(String.valueOf(calendarDate.getDayOfMonth()));
             c.getStyleClass().removeAll("calendar-appointment-present","not-in-month");
             try{
-                List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(generateLocalDate(calendarDate));
+                List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(localDateToString(calendarDate));
                 if(list1.size() >0){
                     c.setStyle("-fx-background-color: #03c04A80");
                 }
@@ -1484,7 +1507,7 @@ public class FlexiBookPage extends Application {
             updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
         }
     }
-    private String generateLocalDate(LocalDate date){
+    private String localDateToString(LocalDate date){
         String s = ""+ date.getYear() + "-";
         if(date.getMonthValue() <10){
             s+="0";
