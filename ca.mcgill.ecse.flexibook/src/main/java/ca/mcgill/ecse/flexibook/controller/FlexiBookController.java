@@ -432,7 +432,7 @@ public class FlexiBookController {
 			ArrayList<TOAppointmentCalendarItem> calendar = new ArrayList<TOAppointmentCalendarItem>();
 
 			if(flexibook.getBusiness() != null){
-				for(BusinessHour b: flexibook.getBusiness().getBusinessHours()) {
+				for(BusinessHour b: flexibook.getHours()) {
 					if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
 						TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("business hours", sqlDate, b.getStartTime(),b.getEndTime(),true,null,null);
 						calendar.add(t0);
@@ -460,16 +460,21 @@ public class FlexiBookController {
 					count++;
 					if (a.getBookableService() instanceof Service) {
 						if (((Service) a.getBookableService()).getDowntimeDuration() != 0) {
-							calendar.remove(calendar.size() - 1);
+							if(calendar.size()>0) {
+								calendar.remove(calendar.size() - 1);
+							}
 							LocalTime n1 = a.getTimeSlot().getStartTime().toLocalTime();
 							LocalTime n2 = n1.plusMinutes(((Service) a.getBookableService()).getDowntimeStart());
 							LocalTime n3 = n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
 							Time newT = Time.valueOf(n2);
 							Time newT2 = Time.valueOf(n3);
-							calendar.remove(count-1);
+							if(calendar.size()>0){
+								calendar.remove(count-1);
+							}
+
 							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(),
 									newT, false,a.getCustomer().getUsername(),a.getBookableService().getName());
-							TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("appointment", sqlDate, newT, newT2, false,a.getCustomer().getUsername(),a.getBookableService().getName());
+							TOAppointmentCalendarItem t1 = new TOAppointmentCalendarItem("available", sqlDate, newT, newT2, true,a.getCustomer().getUsername(),a.getBookableService().getName());
 							TOAppointmentCalendarItem t2 = new TOAppointmentCalendarItem("appointment", sqlDate, newT2, a.getTimeSlot().getEndTime(), false,a.getCustomer().getUsername(),a.getBookableService().getName());
 							calendar.add(t0);
 							calendar.add(t1);
@@ -490,7 +495,9 @@ public class FlexiBookController {
 									Time durationStart = Time.valueOf(startTime.toLocalTime().plusMinutes(start));
 									Time durationEnd = Time.valueOf(durationStart.toLocalTime().plusMinutes(duration));
 									Time endTime = a.getTimeSlot().getEndTime();
-									calendar.remove(count-1);
+									if(calendar.size()>0) {
+										calendar.remove(count - 1);
+									}
 									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), startTime, durationStart,false,a.getCustomer().getUsername(),a.getBookableService().getName()));
 									calendar.add(new TOAppointmentCalendarItem("available",a.getTimeSlot().getStartDate(), durationStart,durationEnd,true,null,null));
 									calendar.add(new TOAppointmentCalendarItem("appointment",a.getTimeSlot().getStartDate(), durationEnd, endTime,false,a.getCustomer().getUsername(),a.getBookableService().getName()));
@@ -618,8 +625,10 @@ public class FlexiBookController {
 							//not in business hour
 							for (BusinessHour f : flexibook.getHours()) {
 								if(DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek()) ){
-									if(f.getEndTime().compareTo(eTime) <0 ){
-										throw new InvalidInputException("unsuccessful");
+									if(f.getEndTime().compareTo(sTime) > 0) {
+										if (f.getEndTime().compareTo(eTime) < 0) {
+											throw new InvalidInputException("unsuccessful");
+										}
 									}
 								}
 							}
@@ -749,8 +758,10 @@ public class FlexiBookController {
 										//not in business hour
 										for (BusinessHour f : flexibook.getHours()) {
 											if(DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek()) ){
-												if(f.getEndTime().compareTo(eTime) <0 ){
-													throw new InvalidInputException("unsuccessful");
+												if(f.getEndTime().compareTo(sTime) > 0) {
+													if (f.getEndTime().compareTo(eTime) < 0) {
+														throw new InvalidInputException("unsuccessful");
+													}
 												}
 											}
 										}
@@ -940,8 +951,10 @@ public class FlexiBookController {
 					//business hours
 					for (BusinessHour f : flexibook.getHours()) {
 						if(DayOfWeek.valueOf(f.getDayOfWeek().toString().toUpperCase()).equals(cleanDate(sDate).toLocalDate().getDayOfWeek()) ){
-							if(f.getEndTime().compareTo(eTime) <0 ){
-								throw new InvalidInputException("unsuccessful");
+							if(f.getEndTime().compareTo(sTime) > 0) {
+								if (f.getEndTime().compareTo(eTime) < 0) {
+									throw new InvalidInputException("unsuccessful");
+								}
 							}
 						}
 					}
@@ -950,7 +963,7 @@ public class FlexiBookController {
 					for (Appointment r : flexibook.getAppointments()) {
 						if (!(r == appt)) {
 							if(r.getTimeSlot().getStartDate().equals(sDate)){
-								if (r.getTimeSlot().getStartTime().equals(sTime)) {
+								if (r.getTimeSlot().getStartTime().compareTo(eTime) < 0) {
 									throw new InvalidInputException("unsuccessful");
 								}
 							}
@@ -2087,12 +2100,22 @@ public class FlexiBookController {
 	public static void testAppointment(){
 		FlexiBook f = FlexiBookApplication.getFlexiBook();
 		//Service s  = (Service) f.getBookableService(0);
-		Service s = new Service("cut", f,18,0,0);
-		Service s2 = new Service("wash", f,18,0,0);
+		//Service s = new Service("cut", f,18,0,0);
+		//Service s2 = new Service("wash", f,18,0,0);
 		Customer c = new Customer("jawnie","boul",f);
+		Customer c2 = new Customer("jawnie2","boul2",f);
 		Owner o = new Owner("owner","owner",f);
 		//f.setOwner(o);
-		BusinessHour h = new BusinessHour(BusinessHour.DayOfWeek.Monday, Time.valueOf("09:00:00"),Time.valueOf("13:00:00"),f);
+		BusinessHour h = new BusinessHour(BusinessHour.DayOfWeek.Wednesday, Time.valueOf("09:00:00"),Time.valueOf("13:00:00"),f);
+		BusinessHour h2 = new BusinessHour(BusinessHour.DayOfWeek.Wednesday, Time.valueOf("14:00:00"),Time.valueOf("18:00:00"),f);
+		new BusinessHour(BusinessHour.DayOfWeek.Monday, Time.valueOf("09:00:00"),Time.valueOf("18:00:00"),f);
+		new BusinessHour(BusinessHour.DayOfWeek.Tuesday, Time.valueOf("09:00:00"),Time.valueOf("18:00:00"),f);
+
+		new BusinessHour(BusinessHour.DayOfWeek.Thursday, Time.valueOf("09:00:00"),Time.valueOf("18:00:00"),f);
+		new BusinessHour(BusinessHour.DayOfWeek.Friday, Time.valueOf("09:00:00"),Time.valueOf("18:00:00"),f);
+		new Business("jawn","conscious","yknow","bet",f);
+
+
 		//Appointment a =new Appointment(c,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
 		//Appointment a2 =new Appointment(c,s2,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
 		//Service s  = (Service) f.getBookableService(0);

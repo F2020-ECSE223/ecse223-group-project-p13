@@ -31,6 +31,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 //import java.awt.*;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -369,7 +370,7 @@ public class FlexiBookPage extends Application {
         dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
         selectionModel = dailyAppointmentTable.getSelectionModel();
 
-        dailyAppointmentTable.setPlaceholder(new Label("No Appointments Today"));
+        dailyAppointmentTable.setPlaceholder(new Label("Business Not Open Today"));
         appointments.getChildren().add(dailyAppointmentTable);
         dailyAppointmentTable.getStyleClass().add("daily-appointment-table");
         dailyAppointmentTable.setPadding(new Insets(20,20,20,20));
@@ -627,8 +628,7 @@ public class FlexiBookPage extends Application {
         }
 
  */
-
-
+/*
 
         updateAppt.setOnAction(event -> {
             try {
@@ -640,15 +640,19 @@ public class FlexiBookPage extends Application {
                         appt.getStartTime(), String.valueOf(timePicker1.getValue()),
                         String.valueOf(datePicker.getValue()), String.valueOf(removeAdd.getValue()),
                         serviceChooser.getSelectionModel().getSelectedItem().getText());
+
                 updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
 
                 changeAppointment.close();
+
             } catch (InvalidInputException e) {
                 appointmentError.setText(e.getMessage());
                 layoutChange.getChildren().add(appointmentError);
 
             }
         });
+
+ */
 
 
         customerAppointmentCalendar.getChildren().add(rightPane);
@@ -1279,40 +1283,43 @@ defines logout action for both customers and owners
         calendarMain.getChildren().add(calendarDays);
 
         //table
-        TableColumn<DayEvent, String> column1 = new TableColumn<>("Start Time");
-        column1.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        column1.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
-        column1.getStyleClass().add("appointment-table-rows");
+        if(!owner){
+            TableColumn<DayEvent, String> column1 = new TableColumn<>("Start Time");
+            column1.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+            column1.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
+            column1.getStyleClass().add("appointment-table-rows");
 
-        TableColumn<DayEvent, String> column2 = new TableColumn<>("Start Date");
-        column2.setCellValueFactory(new PropertyValueFactory<>("date"));
-        column2.getStyleClass().add("appointment-table-rows");
-        column2.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
+            TableColumn<DayEvent, String> column2 = new TableColumn<>("Start Date");
+            column2.setCellValueFactory(new PropertyValueFactory<>("date"));
+            column2.getStyleClass().add("appointment-table-rows");
+            column2.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
 
-        TableColumn<DayEvent, String> column3 = new TableColumn<>("Service");
-        column3.setCellValueFactory(new PropertyValueFactory<>("service"));
-        column3.getStyleClass().add("appointment-table-rows");
-        column3.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
+            TableColumn<DayEvent, String> column3 = new TableColumn<>("Service");
+            column3.setCellValueFactory(new PropertyValueFactory<>("service"));
+            column3.getStyleClass().add("appointment-table-rows");
+            column3.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
 
-        appointmentTable.getColumns().addAll(column1,column2,column3);
+            appointmentTable.getColumns().addAll(column1,column2,column3);
 
 
-        ObservableList<DayEvent> observableList = appointmentTable.getSelectionModel().getSelectedItems();
-        observableList.addListener((ListChangeListener<DayEvent>) c -> {
-            while (c.next()) {
-                if (!c.wasPermutated()) {
-                    for (DayEvent additem : c.getAddedSubList()) {
-                        if (additem.getAppointment().getDescription().equals("appointment")) {
-                            chooseAppointment.close();
-                            layoutChange.getChildren().add(makeAndCancelPopUp);
-                            changeAppointment.show();
+            ObservableList<DayEvent> observableList = appointmentTable.getSelectionModel().getSelectedItems();
+            observableList.addListener((ListChangeListener<DayEvent>) c -> {
+                while (c.next()) {
+                    if (!c.wasPermutated()) {
+                        for (DayEvent additem : c.getAddedSubList()) {
+                            if (additem.getAppointment().getDescription().equals("appointment")) {
+                                chooseAppointment.close();
+                                layoutChange.getChildren().add(makeAndCancelPopUp);
+                                changeAppointment.show();
 
+                            }
                         }
                     }
                 }
-            }
-            c.reset();
-        });
+                c.reset();
+            });
+        }
+
 
         for (int i = 1; i < 7; i++) {
             for (int j = 1; j < 8; j++) {
@@ -1332,6 +1339,7 @@ defines logout action for both customers and owners
                     if (calendarEntry.getStyle().contains("-fx-background-color: #FFFFFF")) {
                         calendarEntry.setOnAction(event -> {
                             //CHOOSE APPT
+
                             removeAdd.setPromptText("Change Service");
                             removeAdd.getSelectionModel().clearSelection();
 
@@ -1367,6 +1375,7 @@ defines logout action for both customers and owners
                             try {
                                 layoutChange.getChildren().clear();
                                 List<TOAppointmentCalendarItem> calendarItems = FlexiBookController.getAppointmentCalendar(localDateToString(calendarDate1));
+
                                 if(calendarItems.size() == 0){
                                     layoutChange.getChildren().clear();
                                     Label noAppointments = new Label("No Appointments on This Day");
@@ -1374,17 +1383,67 @@ defines logout action for both customers and owners
                                     changeAppointment.show();
                                 }
 
+
                                 else if (calendarItems.size() > 0) {
-                                    if (calendarItems != null) {
-                                        appointmentTable.getItems().clear();
-                                        for (TOAppointmentCalendarItem item : calendarItems) {
-                                            appointmentTable.getItems().add(new DayEvent(item));
+                                    appointmentTable.getItems().clear();
+                                    ArrayList<TOAppointmentCalendarItem> addItems = new ArrayList<>();
+                                    ArrayList<TOAppointmentCalendarItem> removeItems = new ArrayList<>();
+                                    for(TOAppointmentCalendarItem item:calendarItems){
+                                        if (item.getDescription().equals("business hours")) {
+                                            removeItems.add(item);
                                         }
                                     }
+                                    for (int k = 0; k < calendarItems.size() - 2; k++) {
+                                        if (calendarItems.get(k).getUsername() == null) {
+                                            removeItems.add(calendarItems.get(k));
+                                        }
+                                        if (calendarItems.get(k).getDescription().equals("appointment") && calendarItems.get(k).getUsername() != null && calendarItems.get(k).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                                            if (calendarItems.get(k + 1).getDescription().equals("available") && calendarItems.get(k+1).getUsername() != null && calendarItems.get(k+1).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                                                if (calendarItems.get(k + 2).getDescription().equals("appointment") && calendarItems.get(k+2).getUsername() != null && calendarItems.get(k+2).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                                                    removeItems.add(calendarItems.get(k));
+                                                    removeItems.add(calendarItems.get(k + 1));
+                                                    removeItems.add(calendarItems.get(k + 2));
+                                                    addItems.add(new TOAppointmentCalendarItem("appointment",
+                                                            calendarItems.get(k).getDate(),calendarItems.get(k).getStartTime(),calendarItems.get(k+2).getEndTime(),
+                                                            false,calendarItems.get(k).getUsername(),calendarItems.get(k).getMainService()));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    calendarItems.removeAll(removeItems);
+                                    calendarItems.addAll(addItems);
+
+                                    //addItems.get(0).getMainService().getDuration();
+                                    for(TOAppointmentCalendarItem item:calendarItems){
+                                        appointmentTable.getItems().add(new DayEvent(item));
+                                    }
+
 
                                     chooseAppointment.show();
 
                                 }
+
+                                updateAppt.setOnAction(event4 -> {
+                                    try {
+
+                                        appointmentError.setText("");
+                                        DayEvent appt = (DayEvent) appointmentTable.getSelectionModel().getSelectedItem();
+                                        FlexiBookController.updateAppointment(FlexiBookApplication.getUser().getUsername(),
+                                                ((DayEvent) appointmentTable.getSelectionModel().getSelectedItem()).getService(),
+                                                appt.getStartTime(), String.valueOf(timePicker1.getValue()),
+                                                String.valueOf(datePicker.getValue()), String.valueOf(removeAdd.getValue()),
+                                                serviceChooser.getSelectionModel().getSelectedItem().getText());
+
+                                        updateDate(dbvDays,calendarYearCustomer,calendarMonthCustomer);
+
+                                        changeAppointment.close();
+
+                                    } catch (InvalidInputException e) {
+                                        appointmentError.setText(e.getMessage());
+                                        //layoutChange.getChildren().add(appointmentError);
+
+                                    }
+                                });
 
                                 cancelAppt.setOnAction(event3 -> {
                                     try {
@@ -1542,7 +1601,13 @@ defines logout action for both customers and owners
             try{
                 List<TOAppointmentCalendarItem> list1 = FlexiBookController.getAppointmentCalendar(localDateToString(calendarDate));
                 if(list1.size() >0){
-                    c.setStyle("-fx-background-color: #03c04A80");
+                    for(TOAppointmentCalendarItem item : list1){
+                        if(item.getUsername() != null && item.getUsername().equals(FlexiBookApplication.getUser().getUsername())){
+                            c.setStyle("-fx-background-color: #03c04A80");
+                        }
+
+                    }
+                    //c.setStyle("-fx-background-color: #03c04A80");
                 }
             } catch (InvalidInputException e) {
                 error = e.getMessage();
@@ -2013,7 +2078,6 @@ defines logout action for both customers and owners
         refreshBusiness();
 
     }
-
 
 }
 
