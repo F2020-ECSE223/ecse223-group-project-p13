@@ -951,15 +951,18 @@ public class FlexiBookPage extends Application {
      */
     private void signUp() {
 
-        try {
+     	try{
 
-            String username = textUserName1.getText();
-            String password = pf1.getText();
+        	String username = textUserName1.getText();
+        	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
-            mainScene.setRoot(ownerMainScreenBorderPane);
+            textUserName1.setText("");
+            pf1.setText("");
+            mainScene.setRoot(customerScreenBorderPane);
             System.out.println("SignUp Successful");
             System.out.println("Username = " + username + "," + "Password = " + password);
-        } catch (Exception e) {
+        }
+        catch(Exception e){
             e.getMessage();
             errorMsg = new Label(e.getMessage());
             errorMsg.setTextFill(Color.RED);
@@ -969,7 +972,7 @@ public class FlexiBookPage extends Application {
         }
 
     }
-
+    
     /**
      * @author cesar
      * Updates the account
@@ -977,15 +980,15 @@ public class FlexiBookPage extends Application {
      */
     private void updateAcc() {
 
-        try {
-            String username = FlexiBookApplication.getUser().getUsername();
-            String newUsername = updateUsername.getText();
-            String newPassword = updatePassword.getText();
-            FlexiBookController.updateAccount(username, newUsername, newPassword);
+        try{
+        	String username = FlexiBookApplication.getUser().getUsername();
+            FlexiBookController.updateAccount(username, updateUsername.getText(), updatePassword.getText());
             errorMsg = new Label("Account Succesfully updated");
             errorMsg.setTextFill(Color.BLACK);
             pane.add(errorMsg, 1, 4);
-            System.out.println(username + "," + newUsername  + "," + newPassword);
+            System.out.println(username + "," + updateUsername.getText()  + "," + updatePassword.getText());
+            updateUsername.setText("");
+            updatePassword.setText("");
         }
         catch(Exception e){
             e.getMessage();
