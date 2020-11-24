@@ -174,13 +174,7 @@ public class FlexiBookPage extends Application {
         imageView.setFitWidth(60.0);
         final Circle clip = new Circle(25, 25, 25);
         imageView.setClip(clip);
-        top.getChildren().add(imageView);
-        top.setPadding(new Insets(10, 20, 0, 0));
-
-
-        top.getChildren().add(imageView);
-
-         */
+        top.getChildren().add(imageView);*/
         top.setPadding(new Insets(10,20,0,0));
 
         HBox bottom = new HBox();
