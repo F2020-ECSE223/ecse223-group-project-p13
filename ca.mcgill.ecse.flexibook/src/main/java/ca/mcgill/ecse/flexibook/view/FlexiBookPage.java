@@ -693,6 +693,10 @@ public class FlexiBookPage extends Application {
         temp.setAlignment(Pos.CENTER);
         temp.setPadding(new Insets(100,100,100,100));
 
+        gridP2= new GridPane();
+        gridP2.setVgap(100);
+        gridP2.setHgap(100);
+
         gridP.add(lblUserName,0,0);
         gridP.add(textUserName,1,0);
         gridP.add(lblPassword,0,1);
@@ -703,9 +707,7 @@ public class FlexiBookPage extends Application {
         gridP2.add(errorMsg,1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
-        gridP2= new GridPane();
-        gridP2.setVgap(100);
-        gridP2.setHgap(100);
+
         Label lblUserName1 = new Label("Enter a Username");
         textUserName1= new JFXTextField();
         Label lblPassword1= new Label("Enter a Password");
