@@ -1980,7 +1980,7 @@ defines logout action for both customers and owners
                 String st = startTime.getText();
                 String et = endTime.getText();
                 if(et.equals("00:00") && st.equals("00:00")){
-                    et = "13:59";
+                    et = "23:59";
                 }
                 FlexiBookController.setUpBusinessHour(day, st, et);
             } catch (InvalidInputException e) {
@@ -2029,7 +2029,7 @@ defines logout action for both customers and owners
                 String st = startTime.getText();
                 String et = endTime.getText();
                 if(et.equals("00:00") && st.equals("00:00")){
-                    et = "13:59";
+                    et = "23:59";
                 }
                 FlexiBookController.setUpBusinessHour(day, st, et);
             } catch (InvalidInputException e) {
