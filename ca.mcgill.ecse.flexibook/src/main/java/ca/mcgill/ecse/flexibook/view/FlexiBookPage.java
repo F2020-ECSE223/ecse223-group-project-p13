@@ -702,7 +702,8 @@ public class FlexiBookPage extends Application {
         gridP.add(pf,1,1);
         gridP.add(btonLogin, 1,2 );
         gridP.add(lblMessage,1,2);
-        gridP.add(loginError, 1,4);
+        errorMsg = new Label("");
+        gridP2.add(errorMsg,1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
         gridP2= new GridPane();
@@ -722,6 +723,8 @@ public class FlexiBookPage extends Application {
         gridP2.add(pf1,1,1);
         gridP2.add(btonLogin1, 1,2 );
         gridP2.add(lblMessage1,1,2);
+        errorMsg = new Label("");
+        gridP2.add(errorMsg,1,4);
         gridP2.setAlignment(Pos.CENTER_RIGHT);
 
         change2.getChildren().add(gridP);
@@ -758,6 +761,8 @@ public class FlexiBookPage extends Application {
         pane.add(updateButton, 1, 2);
         pane.add(deleteAcc, 2, 2);
         pane.add(backPage, 3, 0);
+        errorMsg = new Label("");
+        pane.add(errorMsg,1,4);
         pane.setAlignment(Pos.CENTER_LEFT);
 
         changeAcc.getChildren().add(pane);
@@ -988,6 +993,8 @@ public class FlexiBookPage extends Application {
         	String username = textUserName1.getText();
         	String password = pf1.getText();
             FlexiBookController.customerSignUp(username, password);
+            textUserName1.setText("");
+            pf1.setText("");
             mainScene.setRoot(customerScreenBorderPane);
             System.out.println("SignUp Successful");
             System.out.println("Username = " + username + "," + "Password = " + password);
@@ -1011,11 +1018,14 @@ public class FlexiBookPage extends Application {
     private void updateAcc() {
 
         try{
-        	String username = FlexiBookApplication.getUser().getUsername();
-        	String newUsername = updateUsername.getText();
-        	String newPassword = updatePassword.getText();
-            FlexiBookController.updateAccount(username, newUsername, newPassword);
-            System.out.println(username + "," + newUsername  + "," + newPassword);
+       	String username = FlexiBookApplication.getUser().getUsername();
+            FlexiBookController.updateAccount(username, updateUsername.getText(), updatePassword.getText());
+            errorMsg = new Label("Account Succesfully updated");
+            errorMsg.setTextFill(Color.BLACK);
+            pane.add(errorMsg, 1, 4);
+            System.out.println(username + "," + updateUsername.getText()  + "," + updatePassword.getText());
+            updateUsername.setText("");
+            updatePassword.setText("");
         }
         catch(Exception e){
             e.getMessage();
