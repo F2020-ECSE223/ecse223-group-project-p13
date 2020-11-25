@@ -704,7 +704,7 @@ public class FlexiBookPage extends Application {
         gridP.add(btonLogin, 1,2 );
         gridP.add(lblMessage,1,2);
         errorMsg = new Label("");
-        gridP2.add(errorMsg,1,4);
+        gridP.add(errorMsg,1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
 
 
