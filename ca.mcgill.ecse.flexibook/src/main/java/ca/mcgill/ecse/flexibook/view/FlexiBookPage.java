@@ -1968,7 +1968,7 @@ defines logout action for both customers and owners
         businessError.setText("");
         if(!startTime.getText().matches("^([0-2][0-9]):[0-5][0-9]$")){
             businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
-        }if(!endTime.getText().matches("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+        }if(!endTime.getText().matches("^([0-2][0-9]):[0-5][0-9]$")) {
             businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
         }
         if(addDay.getItems().size()==0){
@@ -2011,7 +2011,7 @@ defines logout action for both customers and owners
         }
         if(!startTime.getText().matches("^([0-2][0-9]):[0-5][0-9]$")){
             businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
-        }if(!endTime.getText().matches("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")) {
+        }if(!endTime.getText().matches("^([0-2][0-9]):[0-5][0-9]$")) {
             businessError.setText("Please Enter 24 Hour Time, ex: 06:00");
         }
         if(addDay.getItems().size()==0){
