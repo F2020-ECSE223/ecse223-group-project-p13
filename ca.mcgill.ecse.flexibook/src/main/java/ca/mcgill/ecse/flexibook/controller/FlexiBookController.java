@@ -30,6 +30,7 @@ import ca.mcgill.ecse.flexibook.model.User;
 import ca.mcgill.ecse.flexibook.persistence.FlexiBookPersistence;
 import ca.mcgill.ecse.flexibook.util.SystemTime;
 import javafx.application.Application;
+import org.checkerframework.checker.units.qual.A;
 
 
 public class FlexiBookController {
@@ -964,7 +965,9 @@ public class FlexiBookController {
 						if (!(r == appt)) {
 							if(r.getTimeSlot().getStartDate().equals(sDate)){
 								if (r.getTimeSlot().getStartTime().compareTo(eTime) < 0) {
-									throw new InvalidInputException("unsuccessful");
+									if(r.getTimeSlot().getEndTime().compareTo(sTime) > 0) {
+										throw new InvalidInputException("unsuccessful");
+									}
 								}
 							}
 
@@ -2099,10 +2102,15 @@ public class FlexiBookController {
 		}
 	public static void testAppointment(){
 		FlexiBook f = FlexiBookApplication.getFlexiBook();
+		ArrayList<Appointment> appt = new ArrayList<>();
+		for(Appointment a:f.getAppointments()){
+			appt.add(a);
+		}
+		f.getAppointments().removeAll(appt);
 		//Service s  = (Service) f.getBookableService(0);
 		//Service s = new Service("cut", f,18,0,0);
 		//Service s2 = new Service("wash", f,18,0,0);
-		Customer c = new Customer("jawnie","boul",f);
+		/*Customer c = new Customer("jawnie","boul",f);
 		Customer c2 = new Customer("jawnie2","boul2",f);
 		Owner o = new Owner("owner","owner",f);
 		//f.setOwner(o);
@@ -2123,6 +2131,7 @@ public class FlexiBookController {
 		//Service s = new Service("cut",f,10,0,0);
 		//Appointment a =new Appointment(f.getCustomer(0),s,new TimeSlot(Date.valueOf(LocalDate.now().plusDays(1)),Time.valueOf(LocalTime.now()),Date.valueOf(LocalDate.now().plusDays(1)),Time.valueOf(LocalTime.now().plusMinutes(10)),f),f);
 		//Appointment a2 =new Appointment(c2,s,new TimeSlot(Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(30)),Date.valueOf(LocalDate.now()),Time.valueOf(LocalTime.now().plusMinutes(40)),f),f);
+		*/
 		FlexiBookPersistence.save(f);
 	}
 }

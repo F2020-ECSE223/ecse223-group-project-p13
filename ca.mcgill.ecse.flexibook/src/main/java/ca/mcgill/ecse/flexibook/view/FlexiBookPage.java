@@ -9,8 +9,6 @@ import ca.mcgill.ecse.flexibook.controller.TOService;
 import ca.mcgill.ecse.flexibook.controller.TOBusinessHour;
 import com.jfoenix.controls.*;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -25,7 +23,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -131,7 +128,7 @@ public class FlexiBookPage extends Application {
     StackPane layoutChange = new StackPane();
     Scene changeAppt = new Scene(layoutChange, 650, 300);
     TableView appointmentTable = new TableView<>();
-
+    //JFXComboBox<Label> services = new JFXComboBox<Label>();
 
     public void start(Stage s){
         mainStage = s;
@@ -299,7 +296,7 @@ public class FlexiBookPage extends Application {
 
         JFXButton appointmentButton1 = new JFXButton("Appointments",appointmentIcon1);
         appointmentButton1.setContentDisplay(ContentDisplay.TOP);
-        appointmentButton1.setOnAction(e->switchToCustomerAppointment());
+
         appointmentButton1.getStyleClass().add("main-menu-button");
         buttons1.getChildren().add(appointmentButton1);
 
@@ -341,6 +338,8 @@ public class FlexiBookPage extends Application {
         TableColumn<DayEvent, String> column3 = new TableColumn<>("End Time");
         column3.getStyleClass().add("appointment-table-rows");
         column3.prefWidthProperty().bind(dailyAppointmentTable.widthProperty().multiply(0.33));
+
+        dailyAppointmentTable.getSortOrder().add(column1);
 
         column3.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         dailyAppointmentTable.getColumns().addAll(column1,column2,column3);
@@ -486,7 +485,17 @@ public class FlexiBookPage extends Application {
         //service
         JFXComboBox<Label> services = new JFXComboBox<Label>();
 
+        appointmentButton1.setOnAction(e->{
+            services.getItems().clear();
+            for(TOService s: FlexiBookController.getServices()) {
+                services.getItems().add(new Label(s.getName()));
+                serviceChooser.getItems().add(new Label(s.getName()));
+            }
+            serviceChooser.setPromptText("Choose Service");
+            services.setPromptText("Choose Service");
 
+            switchToCustomerAppointment();
+        });
         for(TOService s: FlexiBookController.getServices()) {
             services.getItems().add(new Label(s.getName()));
         }
@@ -562,9 +571,14 @@ public class FlexiBookPage extends Application {
             } catch (InvalidInputException e) {
                 appointmentError.setText(e.getMessage());
                 appointmentError.setVisible(true);
-                datePickBox.getChildren().add(appointmentError);
                 appointmentError.setStyle("-fx-background-color: #ffcccb");
-
+                datePickBox.getChildren().add(appointmentError);
+            }
+            catch (NullPointerException e){
+                appointmentError.setText("Selected Values cannot be Empty");
+                appointmentError.setVisible(true);
+                appointmentError.setStyle("-fx-background-color: #ffcccb");
+                datePickBox.getChildren().add(appointmentError);
             }
         });
         makeApptButton.setAlignment(Pos.CENTER);
@@ -607,7 +621,7 @@ public class FlexiBookPage extends Application {
 
 
         // stuff for cancel/update popup
-        JFXTimePicker timePicker1 = new JFXTimePicker();
+        //JFXTimePicker timePicker1 = new JFXTimePicker();
 
 
         Label apptTime = new Label();
@@ -622,7 +636,7 @@ public class FlexiBookPage extends Application {
         timeBox.getChildren().addAll(apptTime,newTime,timePicker1);
         timeBox.setAlignment(Pos.CENTER);
 
-        JFXDatePicker datePicker = new JFXDatePicker();
+        //JFXDatePicker datePicker = new JFXDatePicker();
         HBox dateBox = new HBox(10);
         Label date = new Label("Date:");
         Label newDate = new Label(" New Date:");
@@ -1315,6 +1329,8 @@ defines logout action for both customers and owners
             column3.getStyleClass().add("appointment-table-rows");
             column3.prefWidthProperty().bind(appointmentTable.widthProperty().multiply(0.33));
 
+            appointmentTable.getSortOrder().add(column1);
+
             appointmentTable.getColumns().addAll(column1,column2,column3);
 
 
@@ -1392,59 +1408,23 @@ defines logout action for both customers and owners
                             try {
                                 layoutChange.getChildren().clear();
                                 List<TOAppointmentCalendarItem> calendarItems = FlexiBookController.getAppointmentCalendar(localDateToString(calendarDate1));
-
+                                refreshDailyAppointments(calendarItems, false);
                                 if(calendarItems.size() == 0){
                                     layoutChange.getChildren().clear();
                                     Label noAppointments = new Label("No Appointments on This Day");
                                     layoutChange.getChildren().add(noAppointments);
                                     changeAppointment.show();
                                 }
-
-
-                                else if (calendarItems.size() > 0) {
-                                    appointmentTable.getItems().clear();
-                                    ArrayList<TOAppointmentCalendarItem> addItems = new ArrayList<>();
-                                    ArrayList<TOAppointmentCalendarItem> removeItems = new ArrayList<>();
-                                    for(TOAppointmentCalendarItem item:calendarItems){
-                                        if (item.getDescription().equals("business hours")) {
-                                            removeItems.add(item);
-                                        }
-                                    }
-                                    for (int k = 0; k < calendarItems.size() - 2; k++) {
-                                        if (calendarItems.get(k).getUsername() == null) {
-                                            removeItems.add(calendarItems.get(k));
-                                        }
-                                        if (calendarItems.get(k).getDescription().equals("appointment") && calendarItems.get(k).getUsername() != null && calendarItems.get(k).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
-                                            if (calendarItems.get(k + 1).getDescription().equals("available") && calendarItems.get(k+1).getUsername() != null && calendarItems.get(k+1).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
-                                                if (calendarItems.get(k + 2).getDescription().equals("appointment") && calendarItems.get(k+2).getUsername() != null && calendarItems.get(k+2).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
-                                                    removeItems.add(calendarItems.get(k));
-                                                    removeItems.add(calendarItems.get(k + 1));
-                                                    removeItems.add(calendarItems.get(k + 2));
-                                                    addItems.add(new TOAppointmentCalendarItem("appointment",
-                                                            calendarItems.get(k).getDate(),calendarItems.get(k).getStartTime(),calendarItems.get(k+2).getEndTime(),
-                                                            false,calendarItems.get(k).getUsername(),calendarItems.get(k).getMainService()));
-                                                }
-                                            }
-                                        }
-                                    }
-                                    calendarItems.removeAll(removeItems);
-                                    calendarItems.addAll(addItems);
-
-                                    //addItems.get(0).getMainService().getDuration();
-                                    for(TOAppointmentCalendarItem item:calendarItems){
-                                        appointmentTable.getItems().add(new DayEvent(item));
-                                    }
-
-
-                                    chooseAppointment.show();
-
-                                }
+                                chooseAppointment.show();
 
                                 updateAppt.setOnAction(event4 -> {
                                     try {
 
                                         appointmentError.setText("");
                                         DayEvent appt = (DayEvent) appointmentTable.getSelectionModel().getSelectedItem();
+
+                                        String time = String.valueOf(timePicker1.getValue());
+
                                         FlexiBookController.updateAppointment(FlexiBookApplication.getUser().getUsername(),
                                                 ((DayEvent) appointmentTable.getSelectionModel().getSelectedItem()).getService(),
                                                 appt.getStartTime(), String.valueOf(timePicker1.getValue()),
@@ -1459,6 +1439,9 @@ defines logout action for both customers and owners
                                         appointmentError.setText(e.getMessage());
                                         //layoutChange.getChildren().add(appointmentError);
 
+                                    }
+                                    catch (NullPointerException e){
+                                        appointmentError.setText("Selected Values cant be null");
                                     }
                                 });
 
@@ -1481,7 +1464,6 @@ defines logout action for both customers and owners
 
                             } catch (InvalidInputException e) {
                                 error = e.getMessage();
-
                             }
                             appointmentError.setStyle("-fx-background-color: #ffcccb");
                             layoutChange.getChildren().add(appointmentError);
@@ -1514,7 +1496,7 @@ defines logout action for both customers and owners
             FlexiBookController.endAppointment(currentAppointment);
             errorMessageAppointmentCalendar.setText("");
             updateDate(listDays, calendarYearOwner, calendarMonthOwner,true);
-            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)));
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)), true);
         } catch (InvalidInputException e) {
             errorMessageAppointmentCalendar.setText(e.getMessage());
         }
@@ -1525,7 +1507,7 @@ defines logout action for both customers and owners
         try {
             FlexiBookController.registerNoShow(currentAppointment);
             updateDate(listDays,calendarYearOwner,calendarMonthOwner,true);
-            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)));
+            refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(renderDate)), true);
             errorMessageAppointmentCalendar.setText("");
         } catch (InvalidInputException e) {
             errorMessageAppointmentCalendar.setText(e.getMessage());
@@ -1568,7 +1550,7 @@ defines logout action for both customers and owners
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
             try{
-                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)), true);
             }
             catch (InvalidInputException e){
                 error = e.getMessage();
@@ -1580,7 +1562,7 @@ defines logout action for both customers and owners
         if (e.getTarget() instanceof CalendarEntry) {
             LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
             try {
-                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)));
+                refreshDailyAppointments(FlexiBookController.getAppointmentCalendar(localDateToString(date)), false);
             } catch (InvalidInputException errr) {
                 error = errr.getMessage();
             }
@@ -1596,12 +1578,84 @@ defines logout action for both customers and owners
     }
 
     private void switchToCustomerAccount(){}
-    private void refreshDailyAppointments(List<TOAppointmentCalendarItem> calendarItems){
-        dailyAppointmentTable.getItems().clear();
-        if(calendarItems != null ){
+    private void refreshDailyAppointments(List<TOAppointmentCalendarItem> calendarItems, boolean owner){
+        ArrayList<TOAppointmentCalendarItem> addItems = new ArrayList<>();
+        ArrayList<TOAppointmentCalendarItem> removeItems = new ArrayList<>();
+        for(TOAppointmentCalendarItem item:calendarItems){
+            if(!owner){
+                if (item.getDescription().equals("business hours")) {
+                    removeItems.add(item);
+                }
+                if (item.getUsername() == null || !item.getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                    removeItems.add(item);
+                }
+            }
+            else{
+                if (item.getUsername() == null) {
+                    removeItems.add(item);
+                }
+            }
+        }
+        calendarItems.removeAll(removeItems);
+        removeItems.clear();
+        for (int k = 0; k < calendarItems.size() - 2; k++) {
+            if (calendarItems.get(k).getUsername() == null) {
+                removeItems.add(calendarItems.get(k));
+            }
+            if (calendarItems.get(k).getDescription().equals("appointment") && calendarItems.get(k).getUsername() != null && calendarItems.get(k).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                if (calendarItems.get(k + 1).getDescription().equals("available") && calendarItems.get(k+1).getUsername() != null && calendarItems.get(k+1).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                    if (calendarItems.get(k + 2).getDescription().equals("appointment") && calendarItems.get(k+2).getUsername() != null && calendarItems.get(k+2).getUsername().equals(FlexiBookApplication.getUser().getUsername())) {
+                        removeItems.add(calendarItems.get(k));
+                        removeItems.add(calendarItems.get(k + 1));
+                        removeItems.add(calendarItems.get(k + 2));
+                        addItems.add(new TOAppointmentCalendarItem("appointment",
+                                calendarItems.get(k).getDate(),calendarItems.get(k).getStartTime(),calendarItems.get(k+2).getEndTime(),
+                                false,calendarItems.get(k).getUsername(),calendarItems.get(k).getMainService()));
+                    }
+                }
+            }
+        }
+        calendarItems.removeAll(removeItems);
+        calendarItems.addAll(addItems);
+        removeItems.clear();
+        //addItems.get(0).getMainService().getDuration();
+        boolean end = false;
+        while(!end){
+            for(int a = 0; a<calendarItems.size();a++){
+                for(int b = 0;b<calendarItems.size();b++){
+                    if(a!= b){
+                        if(calendarItems.get(a).getUsername().equals(calendarItems.get(b).getUsername())){
+                            if(calendarItems.get(a).getStartTime().equals(calendarItems.get(b).getStartTime())){
+                                if(calendarItems.get(a).getDate().equals(calendarItems.get(b).getDate())){
+                                    removeItems.add(calendarItems.get(a));
+                                    end = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(end){
+                    break;
+                }
+            }
+            end = true;
+        }
+
+        calendarItems.removeAll(removeItems);
+        if(owner){
+            dailyAppointmentTable.getItems().clear();
             for(TOAppointmentCalendarItem item:calendarItems){
                 dailyAppointmentTable.getItems().add(new DayEvent(item));
             }
+            dailyAppointmentTable.sort();
+        }
+        else{
+            appointmentTable.getItems().clear();
+            for(TOAppointmentCalendarItem item:calendarItems){
+                appointmentTable.getItems().add(new DayEvent(item));
+            }
+            appointmentTable.sort();
         }
     }
     private void updateDate(ArrayList<CalendarEntry> list,Label year,Label month,boolean owner){
