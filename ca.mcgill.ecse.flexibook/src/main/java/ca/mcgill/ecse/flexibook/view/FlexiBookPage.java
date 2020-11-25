@@ -678,9 +678,9 @@ public class FlexiBookPage extends Application {
         gridP= new GridPane();
         gridP.setHgap(100);
         gridP.setVgap(100);
-         loginError= new Label("");
+        loginError= new Label("");
         loginError.getStyleClass().add("error-text");
-        loginError.setVisible(true);
+        loginError.setVisible(false);
         Label lblUserName = new Label("Username");
         textUserName= new JFXTextField();
         Label lblPassword= new Label("Password");
@@ -703,6 +703,7 @@ public class FlexiBookPage extends Application {
         gridP.add(pf,1,1);
         gridP.add(btonLogin, 1,2 );
         gridP.add(lblMessage,1,2);
+        gridP.add(loginError, 1,3);
         errorMsg = new Label("");
         gridP.add(errorMsg,1,4);
         gridP.setAlignment(Pos.CENTER_LEFT);
@@ -1075,7 +1076,9 @@ defines logout action for both customers and owners
     private void logout() {
         try{
             FlexiBookController.logout();
-             loginError.setText("");
+            loginError.setText("");
+            pf.setText("");
+            textUserName.setText("");
             mainScene.setRoot(change2);
         }
         catch(Exception e){
@@ -1102,6 +1105,7 @@ defines logout action for both customers and owners
           }
         }
         catch(InvalidInputException e){
+           loginError.setVisible(true);
           loginError.setText(e.getMessage());
         }
     }
