@@ -1912,6 +1912,7 @@ defines logout action for both customers and owners
             }
         }
         refreshBusiness();
+        businessError.setText("");
 
     }
 
