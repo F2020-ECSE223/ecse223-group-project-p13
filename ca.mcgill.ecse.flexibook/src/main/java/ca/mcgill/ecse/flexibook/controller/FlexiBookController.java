@@ -504,18 +504,24 @@ public class FlexiBookController {
 						}
 						else{
 							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),calendar.get(0).getStartTime(),true,null,null));
-							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,calendar.get(calendar.size()-1).getEndTime(),b.getEndTime(),true,null,null));
-
 						}
-
 						for(int i = 0; i<calendar.size()-1;i++){
 							if (!calendar.get(i).getEndTime().equals(calendar.get(i+1).getStartTime()) && !calendar.get(i).getDescription().equals("available")&&calendar.get(i+1).getDescription().equals("available")) {
 								addItems.add(new TOAppointmentCalendarItem("business hours", sqlDate, calendar.get(i).getEndTime(),calendar.get(i+1).getStartTime(),true,null,null));
 
 							}
 						}
-
+						if(calendar.size() != 0 && calendar.get(calendar.size()-1).getStartTime().compareTo(b.getEndTime()) >= 0){
+							for(int i = calendar.size()-1;i>=0;i--){
+								if(calendar.get(i).getStartTime().compareTo(b.getEndTime()) < 0){
+									addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,calendar.get(i).getEndTime(),b.getEndTime(),true,null,null));
+									break;
+								}
+							}
+						}
 						calendar.addAll(addItems);
+					}
+
 
 					}
 				}
@@ -529,7 +535,6 @@ public class FlexiBookController {
 						addTO(calendar,t,"vacation",null);
 					}
 				}
-			}
 			return calendar;
 		}
 				
