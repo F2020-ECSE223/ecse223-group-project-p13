@@ -451,9 +451,6 @@ public class FlexiBookController {
 							LocalTime n3 = n2.plusMinutes(((Service) a.getBookableService()).getDowntimeDuration());
 							Time newT = Time.valueOf(n2);
 							Time newT2 = Time.valueOf(n3);
-							/*if(calendar.size()>0){
-								calendar.remove(count-1);
-							}*/
 
 							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(),
 									newT, false,a.getCustomer().getUsername(),a.getBookableService().getName());
@@ -506,6 +503,9 @@ public class FlexiBookController {
 						if(calendar.size() == 0){
 							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),b.getEndTime(),true,null,null));
 						}
+						if(calendar.size() !=0 && calendar.get(0).equals("business hours")){
+							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),b.getEndTime(),true,null,null));
+						}
 						else if(counter != 0){
 							counter=0;
 							for(int i = 0; i< calendar.size();i++){
@@ -521,7 +521,7 @@ public class FlexiBookController {
 							}
 							firstElement =counter;
 						}
-						else{
+						/*else{
 							if(calendar.get(0).getDescription().equals("business hours")){
 								addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),b.getEndTime(),true,null,null));
 
@@ -529,15 +529,8 @@ public class FlexiBookController {
 							else{
 								addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),calendar.get(0).getStartTime(),true,null,null));
 							}
-						}
-						if(firstElement <= calendar.size()-1){
-							for(int i = firstElement; i<calendar.size()-1;i++){
-								if (!calendar.get(i).getEndTime().equals(calendar.get(i+1).getStartTime()) && !calendar.get(i).getDescription().equals("available")&&calendar.get(i+1).getDescription().equals("available") && calendar.get(i).getEndTime().before(b.getEndTime())) {
-									addItems.add(new TOAppointmentCalendarItem("business hours", sqlDate, calendar.get(i).getEndTime(),calendar.get(i+1).getStartTime(),true,null,null));
+						}*/
 
-								}
-							}
-						}
 						calendar.addAll(addItems);
 						addItems.clear();
 						counter++;
