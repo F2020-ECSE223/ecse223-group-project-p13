@@ -495,33 +495,56 @@ public class FlexiBookController {
 				}
 			}
 			calendar.sort(Comparator.comparing(TOAppointmentCalendarItem::getStartTime));
+			int counter = 0;
+			Time end = null;
 			if(flexibook.getBusiness() != null){
 				for(BusinessHour b: flexibook.getHours()) {
 					if(b.getDayOfWeek().toString().equalsIgnoreCase(dayOfWeek.toString())) {
+						end = b.getEndTime();
+						int firstElement = 0;
 						ArrayList<TOAppointmentCalendarItem> addItems = new ArrayList<>();
 						if(calendar.size() == 0){
 							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),b.getEndTime(),true,null,null));
 						}
+						else if(counter != 0){
+							counter=0;
+							for(int i = 0; i< calendar.size();i++){
+								if(!calendar.get(i).getDescription().equals("business hours")){
+									if(b.getStartTime().compareTo(calendar.get(i).getStartTime()) >= 0){
+										if(!b.getStartTime().equals(calendar.get(i).getStartTime())){
+											addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),calendar.get(i).getStartTime(),true,null,null));
+										}
+										break;
+									}
+									counter++;
+								}
+							}
+							firstElement =counter;
+						}
 						else{
 							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),calendar.get(0).getStartTime(),true,null,null));
 						}
-						for(int i = 0; i<calendar.size()-1;i++){
-							if (!calendar.get(i).getEndTime().equals(calendar.get(i+1).getStartTime()) && !calendar.get(i).getDescription().equals("available")&&calendar.get(i+1).getDescription().equals("available")) {
-								addItems.add(new TOAppointmentCalendarItem("business hours", sqlDate, calendar.get(i).getEndTime(),calendar.get(i+1).getStartTime(),true,null,null));
+						if(firstElement <= calendar.size()-1){
+							for(int i = firstElement; i<calendar.size()-1;i++){
+								if (!calendar.get(i).getEndTime().equals(calendar.get(i+1).getStartTime()) && !calendar.get(i).getDescription().equals("available")&&calendar.get(i+1).getDescription().equals("available") && calendar.get(i).getEndTime().before(b.getEndTime())) {
+									addItems.add(new TOAppointmentCalendarItem("business hours", sqlDate, calendar.get(i).getEndTime(),calendar.get(i+1).getStartTime(),true,null,null));
 
+								}
 							}
 						}
-						if(calendar.size() != 0 && calendar.get(calendar.size()-1).getStartTime().compareTo(b.getEndTime()) >= 0){
+
+						/*if(calendar.size() != 0 && calendar.get(calendar.size()-1).getStartTime().compareTo(b.getEndTime()) >= 0){
 							for(int i = calendar.size()-1;i>=0;i--){
 								if(calendar.get(i).getStartTime().compareTo(b.getEndTime()) < 0){
 									addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,calendar.get(i).getEndTime(),b.getEndTime(),true,null,null));
 									break;
 								}
 							}
-						}
+						}*/
 						calendar.addAll(addItems);
+						addItems.clear();
+						counter++;
 					}
-
 
 					}
 				}
@@ -535,6 +558,20 @@ public class FlexiBookController {
 						addTO(calendar,t,"vacation",null);
 					}
 				}
+				if(end != null){
+					TOAppointmentCalendarItem endTime = new TOAppointmentCalendarItem("business hours", sqlDate,null,end,true,null,null);
+					Time s = null;
+					for(TOAppointmentCalendarItem item:calendar){
+						if(item.getDescription().equals("appointment")){
+							s = item.getEndTime();
+						}
+					}
+					if(s!= null){
+						endTime.setStartTime(s);
+						calendar.add(endTime);
+					}
+				}
+
 			return calendar;
 		}
 				
@@ -591,9 +628,9 @@ public class FlexiBookController {
 					if(time.getStartTime().equals(item.getStartTime())){
 						toRemove.add(item);
 						TOAppointmentCalendarItem item1= new TOAppointmentCalendarItem(description, item.getDate(),time.getStartTime(),time.getEndTime(),false,a.getCustomer().getUsername(),a.getBookableService().getName());
-						TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available",item.getDate(),time.getEndTime(),item.getEndTime(),true,null,null);
+						//TOAppointmentCalendarItem item2= new TOAppointmentCalendarItem("available",item.getDate(),time.getEndTime(),item.getEndTime(),true,null,null);
 						toAdd.add(item1);
-						toAdd.add(item2);
+						//toAdd.add(item2);
 						isAdded=true;
 					}
 				}
