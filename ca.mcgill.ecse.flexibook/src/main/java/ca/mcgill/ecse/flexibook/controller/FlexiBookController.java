@@ -522,7 +522,13 @@ public class FlexiBookController {
 							firstElement =counter;
 						}
 						else{
-							addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),calendar.get(0).getStartTime(),true,null,null));
+							if(calendar.get(0).getDescription().equals("business hours")){
+								addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),b.getEndTime(),true,null,null));
+
+							}
+							else{
+								addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,b.getStartTime(),calendar.get(0).getStartTime(),true,null,null));
+							}
 						}
 						if(firstElement <= calendar.size()-1){
 							for(int i = firstElement; i<calendar.size()-1;i++){

@@ -130,6 +130,10 @@ public class FlexiBookPage extends Application {
     TableView appointmentTable = new TableView<>();
     //JFXComboBox<Label> services = new JFXComboBox<Label>();
 
+    /**
+     * Starts the application and sets up the components
+     * @author Tomasz Mroz
+     */
     public void start(Stage s){
         mainStage = s;
         mainStage.setResizable(false);
@@ -144,7 +148,10 @@ public class FlexiBookPage extends Application {
         initComponents();
         mainStage.show();
     }
-    public FlexiBookPage(){}
+
+    /**
+     * Sets up most of the components for the application
+     */
     private void initComponents(){
         //Main Screen
         ownerMainScreenBorderPane = new BorderPane();
@@ -1150,6 +1157,13 @@ defines logout action for both customers and owners
         }
     }
 
+    /**
+     * Designed to set up components for both owner and customer calendars
+     * @author Tomasz Mroz
+     * @param entry list of days for owner and user
+     * @param owner boolean used to differentiate between owner and customer
+     * @return HBox containing calendar and associated buttons
+     */
     private HBox setCalendar(ArrayList<CalendarEntry> entry,boolean owner){
         HBox calendar =new HBox();
 
@@ -1467,6 +1481,11 @@ defines logout action for both customers and owners
         return calendar;
     }
 
+    /**
+     * Event handler for start appointment event
+     * @author Tomasz Mroz
+     * @param event start button being pressed
+     */
     private void startAppointmentEvent(ActionEvent event) {
         error = null;
         try {
@@ -1477,7 +1496,11 @@ defines logout action for both customers and owners
         }
 
     }
-
+    /**
+     * Event handler for end appointment event
+     * @author Tomasz Mroz
+     * @param event end button being pressed
+     */
     private void endAppointmentEvent(ActionEvent event) {
         error = null;
         try {
@@ -1489,7 +1512,11 @@ defines logout action for both customers and owners
             errorMessageAppointmentCalendar.setText(e.getMessage());
         }
     }
-
+    /**
+     * Event handler for register no show event
+     * @author Tomasz Mroz
+     * @param event no show button being pressed
+     */
     private void registerNoShowEvent(ActionEvent event) {
         error = null;
         try {
@@ -1502,6 +1529,10 @@ defines logout action for both customers and owners
         }
     }
 
+    /**
+     * @author Tomasz Mroz
+     * Switches root pane of scene to owner appointment calendar
+     */
     private void switchToOwnerAppointment() {
         mainScene.setRoot(ownerAppointmentCalendar);
         updateDate(listDays, calendarYearOwner, calendarMonthOwner,true);
@@ -1534,6 +1565,11 @@ defines logout action for both customers and owners
         setUpServicePage();
         mainScene.setRoot(servicePage);
     }
+
+    /**
+     * Reacts to any update in the calendar (Month change, Year change or Day change) and updates the daily appointments
+     * @param event calendar update event
+     */
     private void updateDailySchedule(ActionEvent event){
         if(event.getTarget() instanceof CalendarEntry){
             LocalDate date = ((CalendarEntry) event.getTarget()).getDate();
@@ -1546,7 +1582,7 @@ defines logout action for both customers and owners
         }
     }
 
-    private List<TOAppointmentCalendarItem> customerDailySchedule(ActionEvent e) {
+    private void customerDailySchedule(ActionEvent e) {
         if (e.getTarget() instanceof CalendarEntry) {
             LocalDate date = ((CalendarEntry) e.getTarget()).getDate();
             try {
@@ -1555,7 +1591,6 @@ defines logout action for both customers and owners
                 error = errr.getMessage();
             }
         }
-        return null;
     }
 
     private void switchToHomeScreen(){
@@ -1566,6 +1601,13 @@ defines logout action for both customers and owners
     }
 
     private void switchToCustomerAccount(){}
+
+    /**
+     * Updates table with daily appointments
+     * Sorts and combines redundant appointments
+     * @author Tomasz Mroz
+     * @param owner offers different services for owner and customer
+     */
     private void refreshDailyAppointments(List<TOAppointmentCalendarItem> calendarItems, boolean owner){
         ArrayList<TOAppointmentCalendarItem> addItems = new ArrayList<>();
         ArrayList<TOAppointmentCalendarItem> removeItems = new ArrayList<>();
@@ -1687,6 +1729,12 @@ defines logout action for both customers and owners
             appointmentTable.sort();
         }
     }
+
+    /**
+     * @author Tomasz Mroz
+     * Changes the numbers of the days based on the month/year and colors them if an appointment occurs
+     * @param owner checks between owner and customer
+     */
     private void updateDate(ArrayList<CalendarEntry> list,Label year,Label month,boolean owner){
         list.get(15).getStyleClass().add("calendar-holiday");
         year.setText(String.valueOf(renderDate.getYear()));
@@ -1728,6 +1776,10 @@ defines logout action for both customers and owners
         }
     }
 
+    /**
+     * @author Tomasz Mroz
+     * @param e Reacts to all 12 button event month occurring
+     */
     private void switchMonth(ActionEvent e) {
         if (e.getTarget() instanceof JFXButton) {
             String message = ((JFXButton) e.getTarget()).getText();
@@ -1773,6 +1825,13 @@ defines logout action for both customers and owners
             updateDate(dbvDays, calendarYearCustomer, calendarMonthCustomer,false);
         }
     }
+
+    /**
+     * Helper method which converts local date to string format needed by controller
+     * @author Tomasz Mroz
+     * @param date date to be converted
+     * @return String representation of date
+     */
     private String localDateToString(LocalDate date){
         String s = ""+ date.getYear() + "-";
         if(date.getMonthValue() <10){
