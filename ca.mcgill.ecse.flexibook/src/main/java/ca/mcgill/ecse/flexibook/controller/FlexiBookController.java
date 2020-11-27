@@ -463,11 +463,11 @@ public class FlexiBookController {
 							calendar.add(t1);
 							calendar.add(t2);
 						}
-						else{
+						/*else{
 							LocalTime n1 = a.getTimeSlot().getStartTime().toLocalTime();
 							TOAppointmentCalendarItem t0 = new TOAppointmentCalendarItem("appointment", sqlDate, a.getTimeSlot().getStartTime(), a.getTimeSlot().getEndTime(), false,a.getCustomer().getUsername(),a.getBookableService().getName());
 							calendar.add(t0);
-						}
+						}*/
 					} else {
 						for (ComboItem s : a.getChosenItems()) { //going through service times
 							if (s.getService().getDowntimeDuration() != 0) { //if there is a service time
@@ -538,15 +538,6 @@ public class FlexiBookController {
 								}
 							}
 						}
-
-						/*if(calendar.size() != 0 && calendar.get(calendar.size()-1).getStartTime().compareTo(b.getEndTime()) >= 0){
-							for(int i = calendar.size()-1;i>=0;i--){
-								if(calendar.get(i).getStartTime().compareTo(b.getEndTime()) < 0){
-									addItems.add(new TOAppointmentCalendarItem("business hours",sqlDate,calendar.get(i).getEndTime(),b.getEndTime(),true,null,null));
-									break;
-								}
-							}
-						}*/
 						calendar.addAll(addItems);
 						addItems.clear();
 						counter++;
