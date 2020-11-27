@@ -1624,6 +1624,12 @@ defines logout action for both customers and owners
                 if (!item.getDescription().equals("available") && !item.getDescription().equals("business hours")&& item.getUsername() == null) {
                     removeItems.add(item);
                 }
+                if(item.getDescription().equals("available")){
+                    item.setUsername("available");
+                }
+                if(item.getDescription().equals("business hours")){
+                    item.setUsername("business hours");
+                }
             }
         }
         calendarItems.removeAll(removeItems);
@@ -1663,8 +1669,9 @@ defines logout action for both customers and owners
             calendarItems.removeAll(removeItems);
 
 
-
+            //calendarItems.clear();
             calendarItems.addAll(addItems);
+            //calendarItems.clear();
             removeItems.clear();
             //addItems.get(0).getMainService().getDuration();
             boolean end = false;
