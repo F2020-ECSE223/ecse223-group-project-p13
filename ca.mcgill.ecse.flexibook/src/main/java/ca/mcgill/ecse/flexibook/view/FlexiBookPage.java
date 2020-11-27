@@ -1624,12 +1624,6 @@ defines logout action for both customers and owners
                 if (!item.getDescription().equals("available") && !item.getDescription().equals("business hours")&& item.getUsername() == null) {
                     removeItems.add(item);
                 }
-                if(item.getDescription().equals("available")){
-                    item.setUsername("available");
-                }
-                if(item.getDescription().equals("business hours")){
-                    item.setUsername("business hours");
-                }
             }
         }
         calendarItems.removeAll(removeItems);
@@ -1649,7 +1643,7 @@ defines logout action for both customers and owners
                     }
                 }
             }
-            else if(calendarItems.size() > 2 && calendarItems.size() < 5){
+            else{
                 for (int k = 0; k < calendarItems.size() - 1; k+=2) {
                     if (calendarItems.get(k).getDescription().equals("appointment") && calendarItems.get(k).getUsername() != null && (calendarItems.get(k).getUsername().equals(FlexiBookApplication.getUser().getUsername()) || owner)) {
                         //if (calendarItems.get(k + 1).getDescription().equals("available") && calendarItems.get(k+1).getUsername() != null && (calendarItems.get(k+1).getUsername().equals(FlexiBookApplication.getUser().getUsername()) || owner)) {
@@ -1657,22 +1651,6 @@ defines logout action for both customers and owners
                             removeItems.add(calendarItems.get(k));
                             removeItems.add(calendarItems.get(k + 1));
                             //removeItems.add(calendarItems.get(k + 2));
-                            addItems.add(new TOAppointmentCalendarItem("appointment",
-                                    calendarItems.get(k).getDate(),calendarItems.get(k).getStartTime(),calendarItems.get(k+1).getEndTime(),
-                                    false,calendarItems.get(k).getUsername(),calendarItems.get(k).getMainService()));
-                        }
-                        //}
-                    }
-                }
-            }
-            else{
-                for (int k = 0; k < calendarItems.size() - 2; k+=2) {
-                    if (calendarItems.get(k).getDescription().equals("appointment") && calendarItems.get(k).getUsername() != null && (calendarItems.get(k).getUsername().equals(FlexiBookApplication.getUser().getUsername()) || owner)) {
-                        //if (calendarItems.get(k + 1).getDescription().equals("available") && calendarItems.get(k+1).getUsername() != null && (calendarItems.get(k+1).getUsername().equals(FlexiBookApplication.getUser().getUsername()) || owner)) {
-                        if (calendarItems.get(k + 2).getDescription().equals("appointment") && calendarItems.get(k+2).getUsername() != null && (calendarItems.get(k+2).getUsername().equals(FlexiBookApplication.getUser().getUsername()) || owner)) {
-                            removeItems.add(calendarItems.get(k));
-                            removeItems.add(calendarItems.get(k + 1));
-                            removeItems.add(calendarItems.get(k + 2));
                             addItems.add(new TOAppointmentCalendarItem("appointment",
                                     calendarItems.get(k).getDate(),calendarItems.get(k).getStartTime(),calendarItems.get(k+1).getEndTime(),
                                     false,calendarItems.get(k).getUsername(),calendarItems.get(k).getMainService()));
